@@ -1,0 +1,73 @@
+.card-container{
+    display: flex;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+}
+
+.card{
+    display: flex;
+    justify-content: center;
+    height: 150px;
+    width: 180px;
+    flex-direction: column;
+    background-color: #fff;
+    margin: 20px;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    box-shadow: 0px 4px 4px rgba(119, 119, 119, 0.2);
+    border-bottom: 3px solid #73AD21;
+}
+
+.card:hover{
+    transform: scale(1.05);
+    background-color: #73AD21;
+}
+
+.card img{
+    height: 30px;
+    margin-left: auto;
+}
+
+.card p{
+    margin-top: 5px;
+}
+
+.timetable-update{
+    height: 400px;
+    width: 360px;
+    background-color: #fff;
+    position: absolute;
+    right: 0;
+    top: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+}
+
+.timetable-update p{
+    color: #737A91;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.timetable-update hr{
+    width: 99%;
+}
+
+.timetable-update p:first-child{
+    color: #000;
+}
+
+.timetable-update button{
+    padding: 10px;
+    background-color: #0395ff;
+    color: #fff;
+    border: none;
+    border-radius: .25rem;
+    font-size: 15px;
+    font-family: inherit;
+    margin-top: 40px;
+}
