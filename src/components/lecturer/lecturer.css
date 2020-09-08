@@ -97,7 +97,7 @@
 
 .modal{
   width: 500px;
-  height: 335px;
+  height: fit-content;
   position: absolute;
   background-color: #fff;
   left: 0;

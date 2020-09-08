@@ -1,32 +1,32 @@
 import React from "react"
-import "./room.css"
+import "./period.css"
 import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 
 
-const Room = () => {
+const Period = () => {
     return (
         <>
             <div className="room">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>
-                    <button><img src={plus} alt="plus"/>Add new room</button>
+                    <button><img src={plus} alt="plus"/>Add new period</button>
                 </div>
                 <div className="table-container">
                     <table className="table">
                     <thead className="table-head">
                         <tr className="row1">
-                        <th>Name of Rooms</th>
-                        <th>Room Capacity</th>
+                        <th>Period</th>
+                        <th>Courses</th>
                         <th>Action</th>
                         </tr>
                     </thead>
                     <tbody className="gfg">
                         <tr className="default">
-                        <td>Lecture room 1</td>
-                        <td>110</td>
+                        <td>8:00am - 10:00am</td>
+                        <td>GST 402</td>
                         <td>
                             <img
                             src={pen}
@@ -42,8 +42,8 @@ const Room = () => {
                         </tr>
 
                         <tr className="default">
-                        <td>Lecture room 1</td>
-                        <td>110</td>
+                        <td>8:00am - 10:00am</td>
+                        <td>GST 402</td>
                         <td>
                             <img
                             src={pen}
@@ -68,11 +68,11 @@ const Room = () => {
                     </div>
                     <div className="input-c">
                         <div className="input-g">
-                            <p>Name</p>
+                            <p>Course</p>
                             <input />
                         </div>
                         <div className="input-g">
-                            <p>Room Capacity</p>
+                            <p>Time</p>
                             <input />
                         </div>
                     </div>
@@ -88,4 +88,4 @@ const Room = () => {
     );
 }
 
-export default Room;
+export default Period;
