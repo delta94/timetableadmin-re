@@ -1,0 +1,43 @@
+.sidenav{
+  height: auto;
+  width: 100px;
+  position: absolute;
+  left: 0;
+  font-size: 15px;
+}
+
+.sidenav ul{
+  margin: 0;
+  padding: 0;
+}
+
+.sidenav li{
+  list-style-type: none;
+  padding: 13px;
+}
+
+.sidenav a{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  text-decoration: none;
+  color: #333;
+}
+
+.sidenav img{
+  margin: auto;
+  height: 20px;
+}
+
+.profile-image{
+  height: 50px !important;
+}
+
+.logout-image{
+  margin-top: 50px;
+}
+
+.active{
+  border-left: 5px solid lightseagreen;
+}
