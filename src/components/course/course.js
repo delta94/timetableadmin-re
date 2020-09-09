@@ -4,12 +4,21 @@ import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
+import bell from "../../images/alarm-bell@3x.png"
+import logo from "../../images/Logo.png"
 
 
 const Course = () => {
     const [modalOut, setModalOut] = useState(false)
     return (
         <>
+            <header>
+                  <div>
+                    <img src={logo} className="logo" alt="logo"/>
+                    <p>Courses</p>
+                  </div>
+                <img src={bell} alt="bell"/>
+            </header>
             <div className="course">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>

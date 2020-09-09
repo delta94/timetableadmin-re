@@ -4,7 +4,8 @@ import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
-
+import bell from "../../images/alarm-bell@3x.png"
+import logo from "../../images/Logo.png"
 
 const Classes = () => {
 
@@ -12,6 +13,13 @@ const Classes = () => {
 
     return (
         <>
+            <header>
+                  <div>
+                    <img src={logo} className="logo" alt="logo"/>
+                    <p>Classes</p>
+                  </div>
+                <img src={bell} alt="bell"/>
+            </header>
             <div className="class">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>

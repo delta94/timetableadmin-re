@@ -3,10 +3,19 @@ import course from "../../images/course-icon.png"
 import lecturer from "../../images/lecturer-icon.png"
 import room from "../../images/room-icon.png"
 import "./dashboard.css"
+import bell from "../../images/alarm-bell@3x.png"
+import logo from "../../images/Logo.png"
 
 const Dashboard = () => {
     return(
-        <>
+        <>  
+            <header>
+                  <div>
+                    <img src={logo} className="logo" alt="logo"/>
+                    <p>Dashboard</p>
+                  </div>
+                <img src={bell} alt="bell"/>
+              </header>
             <div className="card-container">
                 <div className="card">
                     <img src={room} alt="card"/>
