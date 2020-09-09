@@ -1,4 +1,4 @@
-import React from "react"
+import React,{useState} from "react"
 import "./class.css"
 import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
@@ -7,12 +7,17 @@ import cross from "../../images/close.png"
 
 
 const Classes = () => {
+
+    const [modalOut, setModalOut] = useState(false)
+
     return (
         <>
-            <div className="room">
+            <div className="class">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>
-                    <button><img src={plus} alt="plus"/>Add new class</button>
+                    <button onClick={()=>{
+                        setModalOut(!modalOut);
+                    }}><img src={plus} alt="plus"/>Add new class</button>
                 </div>
                 <div className="table-container">
                     <table className="table">
@@ -22,7 +27,7 @@ const Classes = () => {
                         <th>Class size</th>
                         <th>Course</th>
                         <th>Unavailable Rooms</th>
-                  <th>Action</th>
+                        <th>Action</th>
                         </tr>
                     </thead>
                     <tbody className="gfg">
@@ -53,10 +58,17 @@ const Classes = () => {
                     </table>
                 </div>
 
-                <div className="modal">
+                <div className={modalOut === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setModalOut(!modalOut);
+                }}></div>
+
+                <div className={modalOut === true ? "modal modOut" : "modal"}>
                     <div className="head">
                         <h3>Add new class</h3>
-                        <img src={cross} alt="cross"/>
+                        <img src={cross} alt="cross" onClick={()=>{
+                        setModalOut(!modalOut);
+                    }}/>
                     </div>
                     <div className="input-c">
                         <div className="input-g">

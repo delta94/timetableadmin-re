@@ -1,4 +1,4 @@
-.room{
+.lecturer{
     width: 100%;
     height: auto;
     padding-top: 30px;
@@ -109,6 +109,20 @@
   display: none;
 }
 
+.modOut{
+  display: block !important;
+}
+
+.overlay{
+  height: 100vh;
+  width: 100%;
+  background-color: #000;
+  opacity: 0.1;
+  position: fixed;
+  top: 0;
+  display: none;
+}
+
 .modal img{
   height: 20px;
 }
@@ -117,6 +131,10 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+}
+
+.head img{
+  cursor: pointer;
 }
 
 .modal input{
