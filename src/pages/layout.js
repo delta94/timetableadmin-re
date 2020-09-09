@@ -6,13 +6,18 @@ import {
   Link,
   NavLink
 } from "react-router-dom";
+
+// Components
 import Dashboard from "../components/dashboard/dashboard"
 import Course from "../components/course/course"
 import Classes from "../components/class/class"
 import Period from "../components/period/period"
 import Room from "../components/room/room"
 import Lecturer from "../components/lecturer/lecturer"
-import "../components/layout.css"
+import StudentPro from "../components/studentProfile/studentProfile"
+import "./layout.css"
+
+// Images
 import profileImg from "../images/profile-image.png"
 import dashboard from "../images/dashboard-icon-unclicked.png"
 import room from "../images/room-icon.png"
@@ -23,15 +28,7 @@ import period from "../images/clock.png"
 import acct from "../images/account-icon.png"
 import logout from "../images/logout-icon.png"
 
-// Each logical "route" has two components, one for
-// the sidebar and one for the main area. We want to
-// render both of them in different places when the
-// path matches the current URL.
 
-// We are going to use this route config in 2
-// spots: once for the sidebar and once in the main
-// content section. All routes are in the same
-// order they would appear in a <Switch>.
 const routes = [
   {
     path: "/Dashboard",
@@ -60,12 +57,13 @@ const routes = [
     path: "/Periods",
     main: () => <Period />
   }
-//   ,
-//   {
-//     path: "/My-Account",
-//     main: () => <Account />
-//   }
+  ,
+  {
+    path: "/studentPro",
+    main: () => <StudentPro />
+  }
 ];
+
 
 export default class SidebarExample extends Component  {
 
@@ -83,7 +81,7 @@ export default class SidebarExample extends Component  {
                         <img alt="Profile" className="profile-image" src={profileImg}/>
                             Admin</Link> 
         
-                        <NavLink to="/Dashboard" activeClassName="active">
+                        <NavLink to="/Dashboard" activeClassName="active" style={{marginTop: "10px"}}>
                         <img alt="sidenav" src={dashboard}/>Dashboard</NavLink>
 
                         <NavLink to="/Rooms" activeClassName="active">
@@ -105,21 +103,19 @@ export default class SidebarExample extends Component  {
                         <img alt="sidenav" src={period}/>
                         Periods</NavLink>   
         
-                        <Link to="/">
+                        <NavLink to="/studentPro" activeClassName="active">
                         <img alt="sidenav" src={acct}/>
-                        My Account</Link>  
+                        My Account</NavLink>  
             
-                        <Link href="/" className="logout-image">
+                        <Link to="/" className="logout-image">
                         <img alt="sidenav" src={logout}/> 
                         Logout</Link>
                     </ul>
-                    </aside>
+            </aside>
             <div className="main-content">
               <main>
               <Switch>
                     {routes.map((route, index) => (
-                    // Render more <Route>s with the same paths as
-                    // above, but different components this time.
                     <Route
                         key={index}
                         path={route.path}
