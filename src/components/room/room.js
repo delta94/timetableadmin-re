@@ -19,7 +19,7 @@ const Room = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Rooms</p>
                   </div>
-                  <Link to="/app//Notification">
+                  <Link to="/app/notification">
                         <img src={bell} alt="bell"/>
                   </Link>
             </header>

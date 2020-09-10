@@ -27,7 +27,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <Link to="/App//Dashboard">Sign In</Link><br/>
+                <Link to="/App/Dashboard">Sign In</Link><br/>
             </div>
         </div>   
     );

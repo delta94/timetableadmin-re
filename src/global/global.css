@@ -5,8 +5,8 @@
 }
 
 .search-container{
-    margin: auto;
-    width: fit-content;
+    margin-left: auto;
+    width: 75%;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -31,14 +31,14 @@
     color: #0395ff;
     background-color: transparent;
     display: flex;
-    margin: 0;
+    margin-left: 50px;
     padding: 10px;
 }
 
 /* Table */
 .table {
     border-collapse: collapse;
-    width: 80%;
+    width: 90%;
     margin: 30px auto;
   }
   

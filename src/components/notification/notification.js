@@ -1,7 +1,6 @@
 import React from "react";
 import "./notification.css"
 import "../../global/global.css";
-import bell from "../../images/alarm-bell@3x.png";
 import logo from "../../images/Logo.png";
 
 const Notif = () =>{
@@ -13,7 +12,6 @@ const Notif = () =>{
                         <img src={logo} className="logo" alt="logo"/>
                         <p>Notification</p>
                     </div>
-                    {/* <img src={bell} alt="bell"/> */}
                 </header>
 
                 <div className="section">

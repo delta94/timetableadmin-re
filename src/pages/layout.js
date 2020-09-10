@@ -31,39 +31,39 @@ import logout from "../images/logout-icon.png"
 
 const routes = [
   {
-    path: "/Dashboard",
+    path: "dashboard",
     exact: true,
     main: () => <Dashboard />
   },
   {
-    path: "/Rooms",
+    path: "rooms",
     main: () => <Room />
   },
   {
-    path: "/Courses",
+    path: "courses",
     main: () => <Course />
   },
   {
-    path: "/Lecturers",
+    path: "lecturers",
     main: () => <Lecturer />
   }
   ,
   {
-    path: "/Classes",
+    path: "classes",
     main: () => <Classes />
   }
   ,
   {
-    path: "/Periods",
+    path: "periods",
     main: () => <Period />
   }
   ,
   {
-    path: "/studentPro",
+    path: "studentPro",
     main: () => <StudentPro />
   },
   {
-    path: "/notification",
+    path: "notification",
     main: () => <Notification />
   }
 ];
@@ -81,29 +81,29 @@ export default class SidebarExample extends Component  {
                           <img alt="Profile" className="profile-image" src={profileImg}/>
                               Admin</Link> 
           
-                          <NavLink to="/app//Dashboard" activeClassName="active" style={{marginTop: "10px"}}>
+                          <NavLink to="/app/dashboard" activeClassName="active" style={{marginTop: "10px"}}>
                           <img alt="sidenav" src={dashboard}/>Dashboard</NavLink>
 
-                          <NavLink to="/app//Rooms" activeClassName="active">
+                          <NavLink to="/app/rooms" activeClassName="active">
                           <img alt="sidenav" src={room}/> 
                           Rooms</NavLink>
 
-                          <NavLink to="/app//Courses" activeClassName="active">
+                          <NavLink to="/app/courses" activeClassName="active">
                           <img alt="sidenav" src={course}/>
                           Courses</NavLink> 
           
-                          <NavLink to="/app//Lecturers" activeClassName="active">
+                          <NavLink to="/app/lecturers" activeClassName="active">
                           <img alt="sidenav" src={lecturer}/> Lecturer</NavLink>
           
-                          <NavLink to="/app//Classes" activeClassName="active">
+                          <NavLink to="/app/classes" activeClassName="active">
                           <img alt="sidenav" src={classes}/>
                           Classes</NavLink> 
           
-                          <NavLink to="/app//Periods" activeClassName="active">
+                          <NavLink to="/app/periods" activeClassName="active">
                           <img alt="sidenav" src={period}/>
                           Periods</NavLink>   
           
-                          <NavLink to="/App//studentPro" activeClassName="active">
+                          <NavLink to="/App/studentPro" activeClassName="active">
                           <img alt="sidenav" src={acct}/>
                           Student</NavLink>  
               

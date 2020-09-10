@@ -28,7 +28,7 @@ const Dashboard = () => {
                     onClick={()=>{
                         setUpdateOut(!updateOut);
                     }}/>
-                    <Link to="/app//Notification">
+                    <Link to="/app/notification">
                         <img src={bell} alt="bell"/>
                     </Link>
                   </div>
@@ -97,32 +97,32 @@ const Dashboard = () => {
                         <div className="input-g">
                             <p>Select days</p>
                             <div className="labels">
-                                <label class="container">Monday
-                                    <input type="checkbox" checked="checked" />
-                                    <span class="checkmark"></span>
+                                <label className="container">Monday
+                                    <input type="checkbox" defaultChecked="checked" />
+                                    <span className="checkmark"></span>
                                 </label>
 
-                                <label class="container">Tuesday
+                                <label className="container">Tuesday
                                     <input type="checkbox" />
-                                    <span class="checkmark"></span>
+                                    <span className="checkmark"></span>
                                 </label>
 
-                                <label class="container">Wednesday
+                                <label className="container">Wednesday
                                     <input type="checkbox" />
-                                    <span class="checkmark"></span>
+                                    <span className="checkmark"></span>
                                 </label>
 
-                                <label class="container">Thursday
+                                <label className="container">Thursday
                                     <input type="checkbox" />
-                                    <span class="checkmark"></span>
+                                    <span className="checkmark"></span>
                                 </label>
-                                <label class="container">Friday
+                                <label className="container">Friday
                                     <input type="checkbox" />
-                                    <span class="checkmark"></span>
+                                    <span className="checkmark"></span>
                                 </label>
-                                <label class="container">Saturday
+                                <label className="container">Saturday
                                     <input type="checkbox" />
-                                    <span class="checkmark"></span>
+                                    <span className="checkmark"></span>
                                 </label>
                             <div />
                         </div>
