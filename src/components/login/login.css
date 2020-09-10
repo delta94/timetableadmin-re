@@ -44,15 +44,17 @@
     margin-bottom: 5px;
 }
 
-.login button{
+.login a{
     padding: 10px;
     width: 100%;
     border: none;
     border-radius: .25rem;
     background-color: #0395ff;
     color: #fff;
-    margin: 20px 0px 20px 0px;
+    margin: 40px 0px 40px 0px;
     font-family: inherit;
+    text-decoration: none;
+    width: 150px;
 }
 
 .login em{
@@ -62,4 +64,12 @@
 em span{
     color: #0395ff;
     cursor: pointer;
+}
+
+.mb{
+    margin-bottom: 20px
+}
+
+.mt{
+    margin-top: 20px;
 }

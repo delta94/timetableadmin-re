@@ -10,16 +10,13 @@ import Layout from "./pages/layout"
 const App = () => {
     
     return(
-        <>  
-            <div>
-                <Router>
-                    <Switch>
-                        <Route path="/Login" component={Login}/>
-                    </Switch>
-                </Router>
-                <Layout />
-            </div>
-            
+        <>
+            <Router>
+                <Switch>
+                    <Route path="/" exact={true} component={Login}/>
+                    <Route path="/app" component={Layout}/>
+                </Switch>
+            </Router>     
         </>
     );
 }

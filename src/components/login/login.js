@@ -1,8 +1,7 @@
 import React from "react"
 import "./login.css"
 import logo from "../../images/Logo.png"
-// import {Link,BrowserRouter as Router,Switch,Route} from "react-router-dom"
-// import Layout from "../../pages/layout"
+import {Link} from "react-router-dom"
 
 const Login = () => {
 
@@ -22,21 +21,15 @@ const Login = () => {
                         <p className="grey">Admin Number</p>
                         <input placeholder="13CK015497"/>
                     </div>
-                    <div className="input-group">
+                    <div className="input-group mb">
                         <p className="grey">Password</p>
                         <input placeholder="Password"/>
                     </div>
                 </div>
 
-                {/* <Link to="/Dash">Sign In</Link><br/> */}
+                <Link to="/App//Dashboard">Sign In</Link><br/>
 
-                <em>Forgot your password? <span>Click here</span></em>
-
-                {/* <Router>
-                    <Switch>
-                        <Route path="/Dash" component={Layout}/>
-                    </Switch>
-                </Router> */}
+                <em className="mt">Forgot your password? <span>Click here</span></em>
             </div>
         </div>   
     );

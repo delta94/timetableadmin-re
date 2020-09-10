@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
   Link,
@@ -67,67 +66,62 @@ const routes = [
 
 export default class SidebarExample extends Component  {
 
-    state = {
-        active: "Dashboard"
-      }
       render(){
 
         return (
-        <Router>
             <div>
-            <aside className="sidenav">
-                    <ul>
-                        <Link to="/">
-                        <img alt="Profile" className="profile-image" src={profileImg}/>
-                            Admin</Link> 
-        
-                        <NavLink to="/Dashboard" activeClassName="active" style={{marginTop: "10px"}}>
-                        <img alt="sidenav" src={dashboard}/>Dashboard</NavLink>
+                <aside className="sidenav">
+                      <ul>
+                          <Link to="/">
+                          <img alt="Profile" className="profile-image" src={profileImg}/>
+                              Admin</Link> 
+          
+                          <NavLink to="/app//Dashboard" activeClassName="active" style={{marginTop: "10px"}}>
+                          <img alt="sidenav" src={dashboard}/>Dashboard</NavLink>
 
-                        <NavLink to="/Rooms" activeClassName="active">
-                        <img alt="sidenav" src={room}/> 
-                        Rooms</NavLink>
+                          <NavLink to="/app//Rooms" activeClassName="active">
+                          <img alt="sidenav" src={room}/> 
+                          Rooms</NavLink>
 
-                        <NavLink to="Courses" activeClassName="active">
-                        <img alt="sidenav" src={course}/>
-                        Courses</NavLink> 
-        
-                        <NavLink to="Lecturers" activeClassName="active">
-                        <img alt="sidenav" src={lecturer}/> Lecturer</NavLink>
-        
-                        <NavLink to="/Classes" activeClassName="active">
-                        <img alt="sidenav" src={classes}/>
-                        Classes</NavLink> 
-        
-                        <NavLink to="/Periods" activeClassName="active">
-                        <img alt="sidenav" src={period}/>
-                        Periods</NavLink>   
-        
-                        <NavLink to="/studentPro" activeClassName="active">
-                        <img alt="sidenav" src={acct}/>
-                        My Account</NavLink>  
-            
-                        <Link to="/" className="logout-image">
-                        <img alt="sidenav" src={logout}/> 
-                        Logout</Link>
-                    </ul>
-            </aside>
-            <div className="main-content">
-              <main>
-              <Switch>
-                    {routes.map((route, index) => (
-                    <Route
-                        key={index}
-                        path={route.path}
-                        exact={route.exact}
-                        children={<route.main />}
-                    />
-                    ))}
-                </Switch>
-              </main>
+                          <NavLink to="/app//Courses" activeClassName="active">
+                          <img alt="sidenav" src={course}/>
+                          Courses</NavLink> 
+          
+                          <NavLink to="/app//Lecturers" activeClassName="active">
+                          <img alt="sidenav" src={lecturer}/> Lecturer</NavLink>
+          
+                          <NavLink to="/app//Classes" activeClassName="active">
+                          <img alt="sidenav" src={classes}/>
+                          Classes</NavLink> 
+          
+                          <NavLink to="/app//Periods" activeClassName="active">
+                          <img alt="sidenav" src={period}/>
+                          Periods</NavLink>   
+          
+                          <NavLink to="/App//studentPro" activeClassName="active">
+                          <img alt="sidenav" src={acct}/>
+                          My Account</NavLink>  
+              
+                          <Link to="/" className="logout-image">
+                          <img alt="sidenav" src={logout}/> 
+                          Logout</Link>
+                      </ul>
+              </aside>
+                <div className="main-content">
+                  <main>
+                    <Switch>
+                          {routes.map((route, index) => (
+                          <Route
+                              key={index}
+                              path={`/App/${route.path}`}
+                              exact={route.exact}
+                              children={<route.main />}
+                          />
+                          ))}
+                      </Switch>
+                  </main>
+                </div>
             </div>
-            </div>
-        </Router>
     )
   }
 
