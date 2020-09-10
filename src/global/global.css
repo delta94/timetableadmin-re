@@ -1,0 +1,184 @@
+.section{
+    width: 100%;
+    height: auto;
+    padding-top: 30px;
+}
+
+.search-container{
+    margin: auto;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-container input{
+    font-size: 15px;
+    font-family: inherit;
+    padding: 10px;
+    border: none;
+    border-radius: .25rem;
+    width: 400px;
+    text-align: center;
+}
+
+.search-container button{
+    font-size: 15px;
+    font-family: inherit;
+    vertical-align: middle;
+    border: none;
+    color: #0395ff;
+    background-color: transparent;
+    display: flex;
+    margin: 0;
+    padding: 10px;
+}
+
+/* Table */
+.table {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 30px auto;
+  }
+  
+  .table-head {
+    color: white;
+  }
+  
+  td,
+  th {
+    text-align: center !important;
+  }
+  
+  tr {
+    height: 20px;
+    text-align: center !important;
+  }
+
+  th, td{
+      padding: 10px;
+  }
+  
+  .table .default {
+    background: #e8f1f9;
+  }
+  
+  .default{
+      border-bottom: 20px solid #e6eaee;
+  }
+
+  .table{
+    background: white;
+    height: 20px;
+  }
+  
+  .table .table-head .row1 {
+    background: #0395ff;
+  }
+  
+  .gfg {
+    border-collapse: separate;
+    border-spacing: 0 15px;
+  }
+  
+  .bin {
+    max-width: 20px;
+    max-height: 20px;
+  }
+  
+  .pencil {
+    max-width: 20px;
+    max-height: 20px;
+    margin-right: 10px;
+  }
+
+  /* Modal */
+
+.modal{
+  width: 500px;
+  height: fit-content;
+  position: absolute;
+  background-color: #fff;
+  left: 0;
+  top: 0;
+  margin: auto;
+  vertical-align: middle;
+  bottom: 0;
+  right: 0;
+  display: none;
+}
+
+.modOut{
+  display: block !important;
+}
+
+.overlay{
+  height: 100vh;
+  width: 100%;
+  background-color: #000;
+  opacity: 0.2;
+  position: fixed;
+  top: 0;
+  display: none;
+}
+
+.modal img{
+  height: 20px;
+}
+
+.head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: auto 40px;
+}
+
+.head img{
+  cursor: pointer;
+}
+
+.modal input{
+  width: 90%;
+  padding: 10px;
+  font-family: inherit;
+}
+
+.modal input::placeholder{
+  font-family: inherit;
+}
+
+.input-g{
+  width: 90%;
+  margin: auto;
+}
+
+.input-g p{
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-align: left !important;
+}
+
+.modal button{
+  padding: 8px;
+  width: 120px;
+  border: none;
+  border-radius: .5rem;
+  font-size: 15px;
+  font-family: inherit;
+  color: #fff;
+}
+
+.blue{
+  background-color: #0395ff;
+}
+
+.red{
+  background-color: red;
+  margin-right: 10px;
+}
+
+.buttons{
+  width: fit-content;
+  margin: 20px auto;
+}

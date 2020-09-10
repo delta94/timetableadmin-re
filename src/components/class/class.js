@@ -1,5 +1,6 @@
 import React,{useState} from "react"
 import "./class.css"
+import "../../global/global.css"
 import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
@@ -20,7 +21,7 @@ const Classes = () => {
                   </div>
                 <img src={bell} alt="bell"/>
             </header>
-            <div className="class">
+            <div className="section">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>
                     <button onClick={()=>{

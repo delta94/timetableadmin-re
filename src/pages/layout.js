@@ -100,7 +100,7 @@ export default class SidebarExample extends Component  {
           
                           <NavLink to="/App//studentPro" activeClassName="active">
                           <img alt="sidenav" src={acct}/>
-                          My Account</NavLink>  
+                          Student</NavLink>  
               
                           <Link to="/" className="logout-image">
                           <img alt="sidenav" src={logout}/> 

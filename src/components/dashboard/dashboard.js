@@ -1,12 +1,20 @@
-import React from "react"
+import React,{useState} from "react"
 import course from "../../images/course-icon.png"
 import lecturer from "../../images/lecturer-icon.png"
 import room from "../../images/room-icon.png"
 import "./dashboard.css"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
+import pro from "../../images/single-man-profile-picture.png"
+import cross from "../../images/close.png"
+import update from "../../images/refresh.png"
+
 
 const Dashboard = () => {
+
+    const [modalOut, setModalOut] = useState(false)
+
+    const [updateOut, setUpdateOut] = useState(false)
     return(
         <>  
             <header>
@@ -14,39 +22,115 @@ const Dashboard = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Dashboard</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <div>
+                    <img src={update} alt="update" className="update" 
+                    onClick={()=>{
+                        setUpdateOut(!updateOut);
+                    }}/>
+                    <img src={bell} alt="bell"/>
+                  </div>
               </header>
             <div className="card-container">
-                <div className="card">
+                <div className="card color1">
                     <img src={room} alt="card"/>
                     <h3>Lecture Rooms</h3>
                     <p>95</p>
                 </div>
-                <div className="card">
+                <div className="card color2">
                     <img src={course} alt="card"/>
                     <h3>Courses</h3>
-                    <p>95</p>
+                    <p>120</p>
                 </div>
-                <div className="card">
+                <div className="card color3">
                     <img src={lecturer} alt="card"/>
                     <h3>Lecturers</h3>
-                    <p>95</p>
+                    <p>32</p>
                 </div>
-                <div className="card">
+                <div className="card color4">
                     <img src={room} alt="card"/>
                     <h3>Classes</h3>
-                    <p>95</p>
+                    <p>46</p>
+                </div>
+                <div className="card color5">
+                    <img src={pro} alt="card"/>
+                    <h3>Students</h3>
+                    <p>41</p>
                 </div>
             </div>
 
-            <div className="timetable-update">
+            <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
                 <p>Timetable update</p>
 
                 <hr />
 
                 <p>Timetable unavailable for now</p>
 
-                <button>Update timetable now</button>
+                <button onClick={()=>{
+                        setModalOut(!modalOut);
+                    }}>Create new timetable now</button>
+            </div>
+
+                <div className={modalOut === true ? "overlay modOut" : "overlay"}
+                    onClick={()=>{
+                        setModalOut(!modalOut);
+                    }}></div>
+
+                <div className={modalOut === true ? "modal dashModal modOut" : " dashModal modal"}>
+                    <div className="head">
+                        <h3>Add new timetable</h3>
+                        <img src={cross} alt="cross" onClick={()=>{
+                        setModalOut(!modalOut);
+                    }}/>
+                    </div>
+                    <div className="input-c">
+                        <div className="input-g">
+                            <p>Timetable Name</p>
+                            <input />
+                        </div>
+                        <div className="input-g">
+                            <p>Select Academic Period</p>
+                            <input placeholder="Select an academic period"/>
+                        </div>
+                        <div className="input-g">
+                            <p>Select days</p>
+                            <div className="labels">
+                                <label class="container">Monday
+                                    <input type="checkbox" checked="checked" />
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label class="container">Tuesday
+                                    <input type="checkbox" />
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label class="container">Wednesday
+                                    <input type="checkbox" />
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label class="container">Thursday
+                                    <input type="checkbox" />
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container">Friday
+                                    <input type="checkbox" />
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container">Saturday
+                                    <input type="checkbox" />
+                                    <span class="checkmark"></span>
+                                </label>
+                            <div />
+                        </div>
+                    </div>
+                    <div className="buttons">
+                        <button className="red">Cancel</button>
+                        <button className="blue">
+                            Add course
+                        </button>
+                    </div>
+                </div>
             </div>
         </>
     );
