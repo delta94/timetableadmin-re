@@ -29,7 +29,10 @@ const Login = () => {
 
                 <Link to="/App//Dashboard">Sign In</Link><br/>
 
-                <em className="mt">Forgot your password? <span>Click here</span></em>
+                
+                <div className="mt">
+                    <em>Forgot your password? <span>Click here</span></em>
+                </div>
             </div>
         </div>   
     );
