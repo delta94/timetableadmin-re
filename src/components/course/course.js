@@ -1,4 +1,5 @@
 import React,{useState} from "react"
+import {Link} from "react-router-dom"
 import "./course.css"
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
@@ -18,7 +19,9 @@ const Course = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Courses</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>
+                  </Link>
             </header>
             <div className="section">
                 <div className="search-container">
@@ -68,7 +71,7 @@ const Course = () => {
 
                 <div className={modalOut === true ? "modal modOut" : "modal"}>
                     <div className="head">
-                        <h3>Add new class</h3>
+                        <h3>Add new course</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
@@ -80,7 +83,13 @@ const Course = () => {
                         </div>
                         <div className="input-g">
                             <p>Course code</p>
-                            <input />
+                            <input list="code" name="course-code" />
+                            <datalist id="code">
+                                <option value="100L"/>
+                                <option value="200L"/>
+                                <option value="300L"/>
+                                <option value="400L"/>
+                            </datalist>
                         </div>
                         <div className="input-g">
                             <p>Course unit</p>
@@ -88,11 +97,19 @@ const Course = () => {
                         </div>
                         <div className="input-g">
                             <p>Professor</p>
-                            <input />
+                            <input list="prof" name="prof" />
+                            <datalist id="prof">
+                                <option value="Mr Agbado"/>
+                                <option value="Dr Thompson"/>
+                            </datalist>
                         </div>
                         <div className="input-g">
                             <p>Venue</p>
-                            <input />
+                            <input list="venue" name="venue" />
+                            <datalist id="venue">
+                                <option value="New hall"/>
+                                <option value="Fsc"/>
+                            </datalist>
                         </div>
                     </div>
                     <div className="buttons">

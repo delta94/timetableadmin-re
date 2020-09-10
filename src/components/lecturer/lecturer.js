@@ -1,4 +1,5 @@
 import React,{useState} from "react"
+import {Link} from "react-router-dom"
 import "./lecturer.css"
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
@@ -18,14 +19,16 @@ const Lecturer = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Lecturer</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>
+                  </Link>
               </header>
             <div className="section">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
-                    }}><img src={plus} alt="plus"/>Add new lecturer</button>
+                    }}><img src={plus} alt="plus"/>Add new lecture</button>
                 </div>
                 <div className="table-container">
                     <table className="table">
@@ -68,7 +71,7 @@ const Lecturer = () => {
 
                 <div className={modalOut === true ? "modal modOut" : "modal"}>
                     <div className="head">
-                        <h3>Add new class</h3>
+                        <h3>Add new lecture</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
@@ -84,17 +87,25 @@ const Lecturer = () => {
                         </div>
                         <div className="input-g">
                             <p>Courses</p>
-                            <input />
+                            <input list="courses" name="courses" />
+                            <datalist id="courses">
+                                <option value="Maths"/>
+                                <option value="English"/>
+                            </datalist>
                         </div>
                         <div className="input-g">
-                            <p>Unavailable period</p>
-                            <input />
+                            <p>Unavailable periods</p>
+                            <input list="un-period" name="un-period" />
+                            <datalist id="un-period">
+                                <option value="10AM - 12AM"/>
+                                <option value="1PM - 3PM"/>
+                            </datalist>
                         </div>
                     </div>
                     <div className="buttons">
                         <button className="red">Cancel</button>
                         <button className="blue">
-                            Add course
+                            Add lecture
                         </button>
                     </div>
                 </div>

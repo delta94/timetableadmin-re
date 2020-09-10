@@ -1,4 +1,5 @@
 import React,{useState} from "react"
+import {Link} from "react-router-dom"
 import "./period.css"
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
@@ -18,14 +19,16 @@ const Period = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Period</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>
+                  </Link>
             </header>
             <div className="section">
                 <div className="search-container">
                     <input placeholder="Enter keyword to search"/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
-                    }}><img src={plus} alt="plus"/>Add new period</button>
+                    }}><img src={plus} alt="plus"/>Add new timeslot</button>
                 </div>
                 <div className="table-container">
                     <table className="table">
@@ -81,7 +84,7 @@ const Period = () => {
 
                 <div className={modalOut === true ? "modal modOut" : "modal"}>
                     <div className="head">
-                        <h3>Add new class</h3>
+                        <h3>Add new timeslot</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
@@ -93,13 +96,13 @@ const Period = () => {
                         </div>
                         <div className="input-g">
                             <p>Time</p>
-                            <input />
+                            <input type="time" min="8:00" max="18:00" />
                         </div>
                     </div>
                     <div className="buttons">
                         <button className="red">Cancel</button>
                         <button className="blue">
-                            Add room
+                            Add timeslot
                         </button>
                     </div>
                 </div>

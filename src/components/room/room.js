@@ -1,4 +1,5 @@
 import React,{useState} from "react"
+import {Link} from "react-router-dom"
 import "./room.css"
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
@@ -18,7 +19,9 @@ const Room = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Rooms</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>
+                  </Link>
             </header>
             <div className="section">
                 <div className="search-container">
@@ -81,7 +84,7 @@ const Room = () => {
 
                 <div className={modalOut === true ? "modal modOut" : "modal"}>
                     <div className="head">
-                        <h3>Add new class</h3>
+                        <h3>Add new room</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>

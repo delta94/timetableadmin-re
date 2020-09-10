@@ -48,12 +48,12 @@
   
   td,
   th {
-    text-align: center !important;
+    text-align: center;
   }
   
   tr {
     height: 20px;
-    text-align: center !important;
+    text-align: center;
   }
 
   th, td{
@@ -107,6 +107,7 @@
   bottom: 0;
   right: 0;
   display: none;
+  border-radius: .25rem;
 }
 
 .modOut{

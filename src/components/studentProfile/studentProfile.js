@@ -1,4 +1,5 @@
 import React from "react"
+import {Link} from "react-router-dom"
 import "./studentProfile.css"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
@@ -16,7 +17,9 @@ import icon from "../../images/Group.svg"
                     <img src={logo} className="logo" alt="logo"/>
                     <p>student Profile</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>  
+                  </Link>
             </header>
 
 

@@ -1,4 +1,5 @@
 import React,{useState} from "react"
+import {Link} from "react-router-dom"
 import course from "../../images/course-icon.png"
 import lecturer from "../../images/lecturer-icon.png"
 import room from "../../images/room-icon.png"
@@ -27,7 +28,9 @@ const Dashboard = () => {
                     onClick={()=>{
                         setUpdateOut(!updateOut);
                     }}/>
-                    <img src={bell} alt="bell"/>
+                    <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>
+                    </Link>
                   </div>
               </header>
             <div className="card-container">

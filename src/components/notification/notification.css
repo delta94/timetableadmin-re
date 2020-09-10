@@ -1,0 +1,18 @@
+.notif-tr{
+    text-align: left;
+    background-color: #fff;
+}
+
+.notif-tr2{
+    text-align: left;
+    background-color: #333;
+    color: #fff;    
+}
+
+.tr-no-bottom{
+    border-bottom: none;
+}
+
+.notif-tr span, .notif-tr2 span{
+    font-weight: bold;
+}

@@ -14,6 +14,7 @@ import Period from "../components/period/period"
 import Room from "../components/room/room"
 import Lecturer from "../components/lecturer/lecturer"
 import StudentPro from "../components/studentProfile/studentProfile"
+import Notification from "../components/notification/notification"
 import "./layout.css"
 
 // Images
@@ -60,6 +61,10 @@ const routes = [
   {
     path: "/studentPro",
     main: () => <StudentPro />
+  },
+  {
+    path: "/notification",
+    main: () => <Notification />
   }
 ];
 

@@ -1,4 +1,5 @@
 import React,{useState} from "react"
+import {Link} from "react-router-dom"
 import "./class.css"
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
@@ -19,7 +20,9 @@ const Classes = () => {
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Classes</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <Link to="/app//Notification">
+                        <img src={bell} alt="bell"/>
+                  </Link>
             </header>
             <div className="section">
                 <div className="search-container">
@@ -72,7 +75,7 @@ const Classes = () => {
                     setModalOut(!modalOut);
                 }}></div>
 
-                <div className={modalOut === true ? "modal modOut" : "modal"}>
+                <div className={modalOut === true ? "modal modalClass modOut" : "modal modalClass"}>
                     <div className="head">
                         <h3>Add new class</h3>
                         <img src={cross} alt="cross" onClick={()=>{
@@ -84,25 +87,49 @@ const Classes = () => {
                             <p>Name</p>
                             <input />
                         </div>
-                        <div className="input-g">
-                            <p>Course</p>
-                            <input />
+                        <div className="input-sub-group">
+                            <div className="input-g2">
+                                <p>Course</p>
+                                <input list="courses" name="courses" />
+                                <datalist id="courses">
+                                    <option value="Maths"/>
+                                    <option value="English"/>
+                                    <option value="Physics"/>
+                                </datalist>
+                            </div>
+                            <div className="input-g2">
+                                <p>Academic Period</p>
+                                <input list="aca-period" name="aca-period" />
+                                <datalist id="aca-period">
+                                    <option value="2015/2016"/>
+                                    <option value="2016/2017"/>
+                                </datalist>
+                            </div>
+                        </div>
+                        <div className="input-sub-group">
+                            <div className="input-g2">
+                                <p>Meeting</p>
+                                <input list="meeting" name="meeting" />
+                                <datalist id="meeting">
+                                    <option value="Xyz"/>
+                                </datalist>
+                            </div>
+                            <div className="input-g2">
+                                <p>Population</p>
+                                <input list="pop" name="pop" />
+                                <datalist id="pop">
+                                    <option value="100 - 400"/>
+                                    <option value="500 - 1000"/>
+                                </datalist>
+                            </div>
                         </div>
                         <div className="input-g">
-                            <p>Academic Period</p>
-                            <input />
-                        </div>
-                        <div className="input-g">
-                            <p>Meeting</p>
-                            <input />
-                        </div>
-                        <div className="input-g">
-                            <p>Population</p>
-                            <input />Name
-                        </div>
-                        <div className="input-g">
-                            <p>Unavailable rooms</p>
-                            <input />
+                            <p>Unavailable lecture rooms</p>
+                            <input list="un-rooms" name="un-rooms" />
+                            <datalist id="un-rooms">
+                                <option value="B12"/>
+                                <option value="A233"/>
+                            </datalist>
                         </div>
                     </div>
                     <div className="buttons">

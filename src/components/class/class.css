@@ -1,0 +1,12 @@
+.modalClass{
+    width: 700px !important;
+}
+
+.input-sub-group{
+    display: flex;
+    justify-content: space-around;
+}
+
+.input-g2{
+    width: 40%;
+}
