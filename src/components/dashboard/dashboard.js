@@ -34,27 +34,27 @@ const Dashboard = () => {
                   </div>
               </header>
             <div className="card-container">
-                <div className="card color1">
+                <div className="card">
                     <img src={room} alt="card"/>
                     <h3>Lecture Rooms</h3>
                     <p>95</p>
                 </div>
-                <div className="card color2">
+                <div className="card">
                     <img src={course} alt="card"/>
                     <h3>Courses</h3>
                     <p>120</p>
                 </div>
-                <div className="card color3">
+                <div className="card">
                     <img src={lecturer} alt="card"/>
                     <h3>Lecturers</h3>
                     <p>32</p>
                 </div>
-                <div className="card color4">
+                <div className="card">
                     <img src={room} alt="card"/>
                     <h3>Classes</h3>
                     <p>46</p>
                 </div>
-                <div className="card color5">
+                <div className="card">
                     <img src={pro} alt="card"/>
                     <h3>Students</h3>
                     <p>41</p>

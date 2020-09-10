@@ -3,7 +3,7 @@
     width: 100%;
     height: auto;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: left;
 }
 
 .card{
@@ -17,49 +17,13 @@
     padding: 1.25rem;
     border-radius: 1rem;
     box-shadow: 0px 4px 4px rgba(119, 119, 119, 0.2);
+    border-bottom: 3px solid #75ae25;
 }
 
 .card:hover{
     transform: scale(1.05);
     color: #fff;
-}
-
-.color1{
-    border-bottom: 3px solid #508bdb;
-}
-
-.color1:hover{
-    background-color: #508bdb;
-}
-
-.color2{
-    border-bottom: 3px solid #d55d5d;
-}
-
-.color2:hover{
-    background-color: #d55d5d;
-}
-.color3{
-    border-bottom: 3px solid #2a9357;
-}
-
-.color3:hover{
-    background-color: #2a9357;
-}
-.color4{
-    border-bottom: 3px solid #dec165;
-}
-
-.color4:hover{
-    background-color: #dec165;
-}
-
-.color5{
-    border-bottom: 3px solid #b47cca;
-}
-
-.color5:hover{
-    background-color: #b47cca;
+    background-color: #75ae25;
 }
 
 .card img{
