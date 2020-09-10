@@ -28,11 +28,6 @@ const Login = () => {
                 </div>
 
                 <Link to="/App//Dashboard">Sign In</Link><br/>
-
-                
-                <div className="mt">
-                    <em>Forgot your password? <span>Click here</span></em>
-                </div>
             </div>
         </div>   
     );
