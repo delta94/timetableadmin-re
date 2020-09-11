@@ -1,0 +1,13 @@
+.addLect{
+    display: flex;
+    text-decoration: none;
+    color: #0395ff;
+    position: absolute;
+    right: 50px;
+}
+
+@media only screen and (max-width: 900px){
+    .addLect{
+      position: inherit;
+    }
+}

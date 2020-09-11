@@ -29,9 +29,7 @@ const Lecturer = () => {
                 <div className="search-container">
                     <img src={search} className="search" alt="search"/>
                     <input placeholder="Enter keyword to search"/>
-                    <button onClick={()=>{
-                        setModalOut(!modalOut);
-                    }}><img src={plus} alt="plus"/>Add new lecture</button>
+                    <Link to="/app/lecturerPro" className="addLect"><img src={plus} alt="plus"/>Add new lecture</Link>
                 </div>
                 <div className="table-container">
                     <table className="table">

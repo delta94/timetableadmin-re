@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   Switch,
   Route,
   Link,
   NavLink
 } from "react-router-dom";
+
 
 // Components
 import Dashboard from "../components/dashboard/dashboard"
@@ -14,7 +15,10 @@ import Period from "../components/period/period"
 import Room from "../components/room/room"
 import Lecturer from "../components/lecturer/lecturer"
 import StudentPro from "../components/studentProfile/studentProfile"
+import LecturerPro from "../components/lecturerProfile/lecturerPro"
 import Notification from "../components/notification/notification"
+import Student from "../components/student/student"
+import StudentEditProfile from "../components/studentEditProfile/studentEditProfile"
 import "./layout.css"
 
 // Images
@@ -65,13 +69,25 @@ const routes = [
   {
     path: "notification",
     main: () => <Notification />
+  },
+  {
+    path: "lecturerPro",
+    main: () => <LecturerPro />
+  },
+  {
+    path: "student",
+    main: () => <Student />
+  },
+  {
+    path: "studentEditProfile",
+    main: () => <StudentEditProfile />
   }
 ];
 
+const SidebarExample = (props) => {
 
-export default class SidebarExample extends Component  {
-
-      render(){
+        
+        const eventhandler = data => console.log(data)
 
         return (
             <div>
@@ -103,7 +119,7 @@ export default class SidebarExample extends Component  {
                           <img alt="sidenav" src={period}/>
                           Periods</NavLink>   
           
-                          <NavLink to="/app/studentPro" activeClassName="active">
+                          <NavLink to="/app/student" activeClassName="active">
                           <img alt="sidenav" src={acct}/>
                           Student</NavLink>  
               
@@ -120,14 +136,15 @@ export default class SidebarExample extends Component  {
                               key={index}
                               path={`/App/${route.path}`}
                               exact={route.exact}
-                              children={<route.main />}
+                              children={<route.main onChange={eventhandler}/>}
                           />
                           ))}
                       </Switch>
                   </main>
                 </div>
             </div>
-    )
-  }
+        )
 
-}
+    }
+
+    export default SidebarExample;

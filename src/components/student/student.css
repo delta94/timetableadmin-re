@@ -22,10 +22,6 @@
     display: flex;
 }
 
-.name-group{
-    text-align: center;
-}
-
 .name-group p{
     margin: 5px;
     font-size: 15px;
@@ -39,7 +35,7 @@
     height: 150px;
 }
 
-.name-group a{
+td a{
     text-decoration: none;
     color: #0395ff;
 }

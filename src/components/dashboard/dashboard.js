@@ -11,16 +11,23 @@ import cross from "../../images/close.png"
 import update from "../../images/refresh.png"
 
 
-const Dashboard = () => {
+const Dashboard = (props) => {
 
     const [modalOut, setModalOut] = useState(false)
 
     const [updateOut, setUpdateOut] = useState(false)
+
+    const [sideOut, setSideOut] = useState(false)
+
     return(
         <>  
             <header>
                   <div>
-                    <img src={logo} className="logo" alt="logo"/>
+                    <img src={logo} className="logo" alt="logo" 
+                    onClick={() => {
+                        setSideOut(!sideOut);
+                        props.onChange("Hello");
+                    }}/>
                     <p>Dashboard</p>
                   </div>
                   <div>

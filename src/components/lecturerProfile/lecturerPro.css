@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 90%;
+    width: 100%;
     height: 200px;
     margin: 
     30px auto;
@@ -29,4 +29,119 @@
 
 .icon{
     height: 150px;
+}
+
+.editProfile h3{
+    margin: 30px auto;
+    width: 80%;
+}
+
+.editProfileContainer{
+    width: 96%;
+    height: auto;
+    background-color: #fff;
+    margin: auto;
+    padding: 30px 0px;
+}
+
+.editProfileContainer p{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.field-name{
+    font-weight: bold;
+    width: 400px;
+}
+
+/* .field-details{
+    margin-left: 100px;
+} */
+
+.field-details-flex{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.field-details-flex2{
+    display: flex;
+    flex-direction: column;
+}
+
+.input-field{
+    display: flex;
+    width: 80%;
+    margin: auto;
+    align-items: baseline;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.input-field input{
+    padding: 10px;
+    font-family: inherit;
+    border: 1px solid #000;
+    border-radius: .25rem;
+    width: 200px;
+}
+
+.input-field textarea{
+    padding: 10px;
+    font-family: inherit;
+    border: 1px solid #000;
+    border-radius: .25rem;
+    width: 250px;
+    height: 150px;
+}
+
+.pr{
+    padding-right: 30px;
+}
+
+.wid-4{
+    width: 500px !important;
+}
+
+.field{
+    margin-bottom: 30px;
+}
+
+.notbold{
+    font-weight: lighter !important;
+}
+
+.updateProfileBtn{
+    padding: 10px;
+    border: none;
+    background-color: #0395ff;
+    font-family: inherit;
+    color: #fff;
+    border-radius: .25rem;
+    margin-bottom: 30px;
+}
+
+@media only screen and (max-width: 850px){
+    .field-details{
+        width: 90%;
+    }
+
+    .field-details input{
+        width: 100%;
+    }
+
+    .wid-4{
+        width: 100% !important;
+    }
+    .pr{
+        padding-right: 0px;
+    }
+    .field{
+        width: 100%;
+    }
+    .input-field textarea{
+        width: 100%;
+    }
+    .icon{
+        display: none;
+    }
 }
