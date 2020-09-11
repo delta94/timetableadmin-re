@@ -7,6 +7,7 @@ import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
 import propic from "../../images/Profile Picture.svg"
 import icon from "../../images/Group.svg"
+import search from "../../images/search.png"
 
 
  const studentProfile = () => {
@@ -25,6 +26,7 @@ import icon from "../../images/Group.svg"
 
             <div className="student">
                 <div className="search-container">
+                    <img src={search} className="search" alt="search"/>
                     <input placeholder="Enter keyword to search"/>
                 </div>
 

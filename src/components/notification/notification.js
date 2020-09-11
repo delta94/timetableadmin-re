@@ -2,6 +2,8 @@ import React from "react";
 import "./notification.css"
 import "../../global/global.css";
 import logo from "../../images/Logo.png";
+import search from "../../images/search.png"
+
 
 const Notif = () =>{
     return (
@@ -16,6 +18,7 @@ const Notif = () =>{
 
                 <div className="section">
                         <div className="search-container">
+                            <img src={search} className="search" alt="search"/>
                             <input placeholder="Search for messages"/>
                         </div>
 

@@ -4,6 +4,8 @@ import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import propic from "../../images/Profile Picture.svg"
 import icon from "../../images/Group.svg"
+import search from "../../images/search.png"
+
  const lecturerProfile = () => {
      return (
         <>
@@ -18,6 +20,7 @@ import icon from "../../images/Group.svg"
 
             <div className="lecturer">
                 <div className="search-container">
+                    <img src={search} className="search" alt="search"/>
                     <input placeholder="Search for student"/>
                 </div>
 

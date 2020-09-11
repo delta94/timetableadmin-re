@@ -8,6 +8,7 @@ import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
+import search from "../../images/search.png"
 
 const Classes = () => {
 
@@ -26,6 +27,7 @@ const Classes = () => {
             </header>
             <div className="section">
                 <div className="search-container">
+                    <img src={search} className="search" alt="search"/>
                     <input placeholder="Enter keyword to search"/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
