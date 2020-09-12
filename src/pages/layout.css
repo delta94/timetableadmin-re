@@ -51,16 +51,6 @@
   display: block;
 }
 
-
-@media only screen and (max-width: 500px){
-  .sidenav{
-    transform: translateX(-100px);
-    transition: 0.3s ease-in-out all;
-  }
-  .main-content{
-    margin-left: 0px !important;
-  }
-}
 /* Header */
 header{
   height: 70px;
@@ -96,3 +86,15 @@ header img{
   margin-left: 105px;
 }
 
+@media only screen and (max-width: 500px){
+  .sidenav{
+    transform: translateX(-105px);
+    transition: 0.3s ease-in-out all;
+  }
+  .main-content{
+    margin-left: 0px !important;
+  }
+  header{
+    padding: 0px 10px 0px 10px;
+  }
+}
