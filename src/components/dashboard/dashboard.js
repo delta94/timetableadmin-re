@@ -9,28 +9,23 @@ import logo from "../../images/Logo.png"
 import pro from "../../images/single-man-profile-picture.png"
 import cross from "../../images/close.png"
 import update from "../../images/refresh.png"
+import ham from "../../images/ham.png"
 
 
-const Dashboard = (props) => {
+const Dashboard = ({onHelp}) => {
 
     const [modalOut, setModalOut] = useState(false)
 
     const [updateOut, setUpdateOut] = useState(false)
 
-    const [sideOut, setSideOut] = useState(false)
-
     return(
         <>  
             <header>
                   <div>
-                    <img src={logo} className="logo" alt="logo" 
-                    onClick={() => {
-                        setSideOut(!sideOut);
-                        props.onChange("Hello");
-                    }}/>
+                    <img src={logo} className="logo" alt="logo" />
                     <p>Dashboard</p>
                   </div>
-                  <div>
+                  <div className="navMobile">
                     <img src={update} alt="update" className="update" 
                     onClick={()=>{
                         setUpdateOut(!updateOut);
@@ -38,6 +33,9 @@ const Dashboard = (props) => {
                     <Link to="/app/notification">
                         <img src={bell} alt="bell"/>
                     </Link>
+                    <div onClick={() => onHelp()} className="ham">
+                        <img src={ham} alt="hamburger"/>
+                    </div>
                   </div>
               </header>
             <div className="card-container">

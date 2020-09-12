@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   Switch,
   Route,
@@ -37,93 +37,120 @@ const routes = [
   {
     path: "dashboard",
     exact: true,
-    main: () => <Dashboard />
+    main: Dashboard
   },
   {
     path: "rooms",
-    main: () => <Room />
+    main: Room
   },
   {
     path: "courses",
-    main: () => <Course />
+    main: Course
   },
   {
     path: "lecturers",
-    main: () => <Lecturer />
+    main: Lecturer
   }
   ,
   {
     path: "classes",
-    main: () => <Classes />
+    main: Classes
   }
   ,
   {
     path: "periods",
-    main: () => <Period />
+    main: Period
   }
   ,
   {
     path: "studentPro",
-    main: () => <StudentPro />
+    main: StudentPro
   },
   {
     path: "notification",
-    main: () => <Notification />
+    main: Notification
   },
   {
     path: "lecturerPro",
-    main: () => <LecturerPro />
+    main: LecturerPro
   },
   {
     path: "student",
-    main: () => <Student />
+    main: Student
   },
   {
     path: "studentEditProfile",
-    main: () => <StudentEditProfile />
+    main: StudentEditProfile
   }
 ];
 
-const SidebarExample = (props) => {
+class SidebarExample extends Component{
 
-        
-        const eventhandler = data => console.log(data)
+        state={
+          sideBarOut: false
+        }
+
+        eventhandler = () => {
+          this.setState( prevState => 
+            ({sideBarOut: !prevState.sideBarOut}))
+          console.log(this.state.sideBarOut)
+        }
+
+        render(){
 
         return (
             <div>
-                <aside className="sidenav">
+                <div className={this.state.sideBarOut === true ? "overlay overlayOut" : "overlay"}
+                  onClick={()=> this.setState({sideBarOut: false})}></div>
+                <aside className={this.state.sideBarOut === true ? "sidenav sidenavOut" : "sidenav"}>
                       <ul>
-                          <Link to="/">
+                          <Link to="/" onClick={()=> this.setState({sideBarOut: false})}>
                           <img alt="Profile" className="profile-image" src={profileImg}/>
                               Admin</Link> 
           
-                          <NavLink to="/app/dashboard" activeClassName="active" style={{marginTop: "10px"}}>
+                          <NavLink 
+                          to="/app/dashboard" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active" style={{marginTop: "10px"}}>
                           <img alt="sidenav" src={dashboard}/>Dashboard</NavLink>
 
-                          <NavLink to="/app/rooms" activeClassName="active">
+                          <NavLink 
+                          to="/app/rooms" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
                           <img alt="sidenav" src={room}/> 
                           Rooms</NavLink>
 
-                          <NavLink to="/app/courses" activeClassName="active">
+                          <NavLink 
+                          to="/app/courses" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
                           <img alt="sidenav" src={course}/>
                           Courses</NavLink> 
           
-                          <NavLink to="/app/lecturers" activeClassName="active">
+                          <NavLink 
+                          to="/app/lecturers" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
                           <img alt="sidenav" src={lecturer}/> Lecturer</NavLink>
           
-                          <NavLink to="/app/classes" activeClassName="active">
+                          <NavLink 
+                          to="/app/classes" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
                           <img alt="sidenav" src={classes}/>
                           Classes</NavLink> 
           
-                          <NavLink to="/app/periods" activeClassName="active">
+                          <NavLink 
+                          to="/app/periods" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
                           <img alt="sidenav" src={period}/>
                           Periods</NavLink>   
           
-                          <NavLink to="/app/student" activeClassName="active">
+                          <NavLink 
+                          to="/app/student" 
+                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
                           <img alt="sidenav" src={acct}/>
                           Student</NavLink>  
               
-                          <Link to="/" className="logout-image">
+                          <Link 
+                          to="/" 
+                          onClick={()=> this.setState({sideBarOut: false})} className="logout-image">
                           <img alt="sidenav" src={logout}/> 
                           Logout</Link>
                       </ul>
@@ -136,7 +163,7 @@ const SidebarExample = (props) => {
                               key={index}
                               path={`/App/${route.path}`}
                               exact={route.exact}
-                              children={<route.main onChange={eventhandler}/>}
+                              component={() => <route.main onHelp={this.eventhandler}/>}
                           />
                           ))}
                       </Switch>
@@ -144,7 +171,7 @@ const SidebarExample = (props) => {
                 </div>
             </div>
         )
-
+      }                        
     }
 
     export default SidebarExample;

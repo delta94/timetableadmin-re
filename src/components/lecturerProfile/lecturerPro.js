@@ -1,12 +1,14 @@
 import React from "react"
+import {Link} from "react-router-dom"
 import "./lecturerPro.css"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import propic from "../../images/Profile Picture.svg"
 import icon from "../../images/Group.svg"
 import search from "../../images/search.png"
+import ham from "../../images/ham.png"
 
- const lecturerProfile = () => {
+ const lecturerProfile = ({onHelp}) => {
      return (
         <>
             <header>
@@ -14,7 +16,14 @@ import search from "../../images/search.png"
                     <img src={logo} className="logo" alt="logo"/>
                     <p>Lecturer Profile</p>
                   </div>
-                <img src={bell} alt="bell"/>
+                  <div className="navMobile"> 
+                    <Link to="/app/notification">
+                            <img src={bell} alt="bell"/>
+                    </Link>
+                    <div onClick={() => onHelp()} className="ham">
+                        <img src={ham} alt="hamburger"/>
+                    </div>
+                  </div>
             </header>
 
 

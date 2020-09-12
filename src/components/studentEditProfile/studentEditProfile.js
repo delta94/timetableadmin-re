@@ -4,9 +4,10 @@ import "./studentEditProfile.css"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import search from "../../images/search.png"
+import ham from "../../images/ham.png"
 
 
- const studentProfile = () => {
+ const studentProfile = ({onHelp}) => {
      return (
         <>
             <header>
@@ -14,9 +15,14 @@ import search from "../../images/search.png"
                     <img src={logo} className="logo" alt="logo"/>
                     <p>student Profile</p>
                   </div>
-                  <Link to="/app/notification">
-                        <img src={bell} alt="bell"/>  
-                  </Link>
+                  <div className="navMobile"> 
+                    <Link to="/app/notification">
+                            <img src={bell} alt="bell"/>
+                    </Link>
+                    <div onClick={() => onHelp()} className="ham">
+                        <img src={ham} alt="hamburger"/>
+                    </div>
+                  </div>
             </header>
 
 
