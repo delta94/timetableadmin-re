@@ -6,6 +6,7 @@
   left: 0;
   font-size: 14px;
   background-color: #eaeff3;
+  z-index: 5;
 }
 
 .sidenav ul{
@@ -44,7 +45,6 @@
 
 .sidenavOut{
   transform: translateX(-0px) !important;
-  z-index: 5;
 }
 
 .overlayOut{
@@ -96,5 +96,11 @@ header img{
   }
   header{
     padding: 0px 10px 0px 10px;
+  }
+}
+
+@media only screen and (min-width: 500px){
+  .overlay{
+    display: none;
   }
 }

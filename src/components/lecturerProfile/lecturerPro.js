@@ -6,9 +6,8 @@ import logo from "../../images/Logo.png"
 import propic from "../../images/Profile Picture.svg"
 import icon from "../../images/Group.svg"
 import search from "../../images/search.png"
-import ham from "../../images/ham.png"
 
- const lecturerProfile = ({onHelp}) => {
+ const lecturerProfile = (props) => {
      return (
         <>
             <header>
@@ -20,9 +19,6 @@ import ham from "../../images/ham.png"
                     <Link to="/app/notification">
                             <img src={bell} alt="bell"/>
                     </Link>
-                    <div onClick={() => onHelp()} className="ham">
-                        <img src={ham} alt="hamburger"/>
-                    </div>
                   </div>
             </header>
 

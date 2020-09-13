@@ -31,6 +31,7 @@ import classes from "../images/room-icon.png"
 import period from "../images/clock.png"
 import acct from "../images/account-icon.png"
 import logout from "../images/logout-icon.png"
+import {Swipeable} from 'react-swipeable'
 
 
 const routes = [
@@ -90,18 +91,23 @@ class SidebarExample extends Component{
           sideBarOut: false
         }
 
-        eventhandler = () => {
+        userSwipedRight = () => {
           this.setState( prevState => 
             ({sideBarOut: !prevState.sideBarOut}))
-          console.log(this.state.sideBarOut)
+        }
+
+        userSwipedLeft = () => {
+          this.setState({sideBarOut: false})
         }
 
         render(){
 
         return (
             <div>
-                <div className={this.state.sideBarOut === true ? "overlay overlayOut" : "overlay"}
-                  onClick={()=> this.setState({sideBarOut: false})}></div>
+                <Swipeable onSwipedLeft={this.userSwipedLeft}>
+                  <div className={this.state.sideBarOut === true ? "overlay overlayOut" : "overlay"}
+                    onClick={()=> this.setState({sideBarOut: false})}></div>
+                </Swipeable>
                 <aside className={this.state.sideBarOut === true ? "sidenav sidenavOut" : "sidenav"}>
                       <ul>
                           <Link to="/" onClick={()=> this.setState({sideBarOut: false})}>
@@ -155,20 +161,25 @@ class SidebarExample extends Component{
                           Logout</Link>
                       </ul>
               </aside>
+              <Swipeable
+                onSwipedRight={this.userSwipedRight}
+                style={{height: "100vh"}}
+                >
                 <div className="main-content">
-                  <main>
-                    <Switch>
-                          {routes.map((route, index) => (
-                          <Route
-                              key={index}
-                              path={`/App/${route.path}`}
-                              exact={route.exact}
-                              component={() => <route.main onHelp={this.eventhandler}/>}
-                          />
-                          ))}
-                      </Switch>
-                  </main>
-                </div>
+                    <main>
+                      <Switch>
+                            {routes.map((route, index) => (
+                            <Route
+                                key={index}
+                                path={`/App/${route.path}`}
+                                exact={route.exact}
+                                component={() => <route.main onHelp={this.eventhandler}/>}
+                            />
+                            ))}
+                        </Switch>
+                    </main>
+                  </div>
+              </Swipeable>
             </div>
         )
       }                        

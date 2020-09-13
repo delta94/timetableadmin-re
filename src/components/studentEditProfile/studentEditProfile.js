@@ -4,10 +4,9 @@ import "./studentEditProfile.css"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import search from "../../images/search.png"
-import ham from "../../images/ham.png"
 
 
- const studentProfile = ({onHelp}) => {
+ const studentProfile = (props) => {
      return (
         <>
             <header>
@@ -19,9 +18,6 @@ import ham from "../../images/ham.png"
                     <Link to="/app/notification">
                             <img src={bell} alt="bell"/>
                     </Link>
-                    <div onClick={() => onHelp()} className="ham">
-                        <img src={ham} alt="hamburger"/>
-                    </div>
                   </div>
             </header>
 
