@@ -16,10 +16,12 @@
     font-family: inherit;
     padding-top: 10px;
     padding-bottom: 10px;
+    padding-left: 60px;
     border: none;
     border-radius: .25rem;
     width: 400px;
-    text-align: center;
+    text-align: left;
+    box-sizing: border-box;
 }
 
 .search-container button{
