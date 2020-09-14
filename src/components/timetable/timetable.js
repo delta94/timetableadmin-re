@@ -24,7 +24,7 @@ import logo from "../../images/Logo.png"
             <div className="student">
 
                 <div className="table-container">
-                        <table className="table">
+                        <table className="table table2">
                         <thead className="table-head">
                             <tr className="row1">
                             <th></th>

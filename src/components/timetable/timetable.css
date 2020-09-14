@@ -6,3 +6,9 @@
 .default2 td{
     border: 1px solid #0395ff;
 }
+
+@media only screen and (max-width: 500px){
+    .table2{
+      width: 180%;
+    }
+}
