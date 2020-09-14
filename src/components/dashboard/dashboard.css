@@ -6,6 +6,11 @@
     justify-content: left;
 }
 
+.card-container a{
+  text-decoration: none;
+  color: #000;
+}
+
 .card{
     display: flex;
     justify-content: center;
@@ -13,7 +18,7 @@
     width: 180px;
     flex-direction: column;
     background-color: #fff;
-    margin: 20px;
+    margin: 30px;
     padding: 1.25rem;
     border-radius: 1rem;
     box-shadow: 0px 4px 4px rgba(119, 119, 119, 0.2);
@@ -36,7 +41,8 @@
 }
 
 .timetable-update{
-    height: 380px;
+    height: auto;
+    padding: 20px 20px;
     width: 360px;
     background-color: #fff;
     position: absolute;
@@ -44,8 +50,6 @@
     top: 70px;
     display: none;
     justify-content: center;
-    align-items: center;
-    text-align: center;
     flex-direction: column;
 }
 
@@ -72,10 +76,47 @@
     font-size: 15px;
     font-family: inherit;
     margin-top: 40px;
+    width: 250px;
+    margin: auto;
 }
 
 .updateOut{
     display: flex;
+}
+
+.update{
+  cursor: pointer;
+}
+
+.timetable-stats{
+  display: flex;
+  justify-content: flex-start;
+  width: 300px;
+}
+
+.timetable-stats p{
+  font-size: 15px;
+  margin-right: 10px;
+}
+
+.timetable-update a{
+  text-decoration: none;
+  color: #0395ff;
+  font-weight: bold;
+  text-align: center;
+}
+
+.timetable-update em{
+  font-style: normal;
+  color: #0395ff;
+}
+
+.mb-30{
+  margin-bottom: 30px;
+}
+
+.mb-20{
+  margin-bottom: 20px;
 }
 
 /* Checkbox */
@@ -160,5 +201,12 @@
   @media only screen and (max-width: 500px){
     .card-container{
       justify-content: center;
+    }
+    .card{
+      height: 170px;
+      width: 200px;
+    }
+    .timetable-update{
+      width: auto;
     }
   }

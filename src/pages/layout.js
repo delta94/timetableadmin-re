@@ -19,6 +19,7 @@ import LecturerPro from "../components/lecturerProfile/lecturerPro"
 import Notification from "../components/notification/notification"
 import Student from "../components/student/student"
 import StudentEditProfile from "../components/studentEditProfile/studentEditProfile"
+import Timetable from "../components/timetable/timetable";
 import "./layout.css"
 
 // Images
@@ -82,6 +83,10 @@ const routes = [
   {
     path: "studentEditProfile",
     main: StudentEditProfile
+  },
+  {
+    path: "timetable",
+    main: Timetable
   }
 ];
 
