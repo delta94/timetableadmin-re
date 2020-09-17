@@ -58,6 +58,10 @@
   .table-head {
     color: white;
   }
+
+  td img{
+    cursor: pointer;
+  }
   
   td,
   th {
