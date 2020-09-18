@@ -10,12 +10,109 @@ import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import search from "../../images/search.png"
 import axios from "axios"
+import spinner from "../../images/spinner.gif"
 
 
 const Course = (props) => {
     const [modalOut, setModalOut] = useState(false)
-
+    const [loading, setLoading] = useState(false)
     const [courses, setCourses] = useState([])
+
+    const [formData, updateFormData] = useState(
+        {
+            name: "",
+            code: "",
+            unit: "",
+            time: ""
+        }
+    );
+
+    const [lecturer, lecturerData] = useState(
+        {
+            lecturer: ""
+        }
+    )
+
+    const [venue, venueData] = useState(
+        {
+            venue: ""
+        }
+    )
+
+    var finalDataObj = {}
+
+    // Post Request
+    const courseFormData = (e) => {
+
+        updateFormData({
+            ...formData,
+      
+            // Trimming any whitespace
+            [e.target.name]: e.target.value.trim()
+          });
+
+          console.log(formData)
+    }
+
+    const venueFormData = (e) => {
+
+        venueData({
+            ...venue,
+      
+            // Trimming any whitespace
+            [e.target.name]: {
+                _id: e.target.value.trim()
+            }
+          });
+
+    }
+
+    const lecturerFormData = (e) => {
+
+        lecturerData({
+            ...lecturer,
+      
+            // Trimming any whitespace
+            [e.target.name]: {
+                _id: e.target.value.trim()
+            }
+          });
+
+          console.log(lecturer)
+
+          finalDataObj = {
+            ...formData,
+            ...lecturer,
+            ...venue
+        }
+        console.log(finalDataObj)
+    }
+
+    const createCourses = () => {
+        let data = JSON.stringify(finalDataObj);
+
+        let config = {
+        method: 'post',
+        url: 'https://tbe-node-deploy.herokuapp.com/Admin/course',
+        headers: { 
+            'Content-Type': 'application/json'
+        },
+        data : data
+        };
+
+        console.log(data) 
+        
+        axios(config)
+        .then((response) => {
+        console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+
+    }
+
+
 
 
     // Get request
@@ -31,6 +128,7 @@ const Course = (props) => {
                 var res = response.data.data
                 console.log(res)
                 setCourses(res)
+                setLoading(true)
             })
             .catch((error) => {
                 console.log(error);
@@ -43,29 +141,6 @@ const Course = (props) => {
             fetchCourses()
         },[]
     )
-
-    // Post Request
-    // const createCourse = () => {
-    //     var myHeaders = new Headers();
-    //     myHeaders.append("Content-Type", "application/json");
-
-    //     var raw = JSON.stringify({"name":"English","code":"505","unit":2,"day":"Friday","description":"English Language","level":200,"venue":"5f1f5uhbucw662gs0017f255463","time":"5.00pm - 7.00pm"});
-
-    //     var requestOptions = {
-    //     method: 'POST',
-    //     headers: myHeaders,
-    //     body: raw,
-    //     redirect: 'follow'
-    //     };
-
-    //     fetch("https://tbe-node-deploy.herokuapp.com/Admin/course", requestOptions)
-    //     .then(response => response.text())
-    //     .then(result => console.log(result))
-    //     .catch(error => console.log('error', error));
-
-
-    //     console.log("created")
-    // }
 
     // Delete request
     const deleteCourse = (data) => {
@@ -81,11 +156,13 @@ const Course = (props) => {
           .then((response) => {
             console.log(JSON.stringify(response.data));
           })
+          .then(()=> {
+              fetchCourses()
+          })
           .catch((error) => {
             console.log(error);
           });
           
-
         console.log("deleted")
     }
     
@@ -109,7 +186,6 @@ const Course = (props) => {
                     <input placeholder="Enter keyword to search"/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
-                        // createCourse()
                     }}><img src={plus} alt="plus"/>Add new course</button>
                 </div>
                 <div className="table-container">
@@ -124,7 +200,7 @@ const Course = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {courses.map(course => {
+                       {loading === true ?  courses.map(course => {
                             return(
                                 <tr className="default" key={course.name}>
                                     <td>{course.code}</td>
@@ -145,7 +221,7 @@ const Course = (props) => {
                                         />
                                     </td>
                                 </tr>
-                            )})
+                            )}) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         }
                     </tbody>
                     </table>
@@ -163,37 +239,40 @@ const Course = (props) => {
                         setModalOut(!modalOut);
                     }}/>
                     </div>
-                    <form name="createCourse">
+                    <form  name="courseFormData" id="courses">
                         <div className="input-c">
                             <div className="input-g">
                                 <p>Name</p>
-                                <input />
+                                <input name="name" onChange={courseFormData}/>
                             </div>
                             <div className="input-g">
                                 <p>Course code</p>
-                                <input list="code" name="course-code" />
+                                <input list="code" name="code" onChange={courseFormData}/>
                                 <datalist id="code">
-                                    <option value="100L"/>
-                                    <option value="200L"/>
-                                    <option value="300L"/>
-                                    <option value="400L"/>
+                                    <option value="100"/>
+                                    <option value="200"/>
+                                    <option value="300"/>
+                                    <option value="400"/>
                                 </datalist>
                             </div>
                             <div className="input-g">
                                 <p>Course unit</p>
-                                <input />
+                                <input name="unit" onChange={courseFormData}/>
+                            </div>
+                            <div className="input-g">
+                                <p>Time</p>
+                                <input name="time" onChange={courseFormData}/>
                             </div>
                             <div className="input-g">
                                 <p>Professor</p>
-                                <input list="prof" name="prof" />
+                                <input list="prof" name="lecturer" onChange={lecturerFormData}/>
                                 <datalist id="prof">
-                                    <option value="Mr Agbado"/>
-                                    <option value="Dr Thompson"/>
+                                    <option value="5f20c555cae3fa29e54c63c6"/>
                                 </datalist>
                             </div>
                             <div className="input-g">
                                 <p>Venue</p>
-                                <input list="venue" name="venue" />
+                                <input list="venue" name="venue" onChange={venueFormData}/>
                                 <datalist id="venue">
                                     <option value="New hall"/>
                                     <option value="Fsc"/>
@@ -202,7 +281,13 @@ const Course = (props) => {
                         </div>
                         <div className="buttons">
                             <button className="red">Cancel</button>
-                            <button className="blue">
+                            <button className="blue" type="submit" onClick={(e) => {
+                                e.preventDefault()
+                                courseFormData(e);
+                                lecturerFormData(e);
+                                venueFormData(e);
+                                createCourses()
+                            }}>
                                 Add course
                             </button>
                         </div>  
