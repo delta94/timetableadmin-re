@@ -15,8 +15,11 @@ import spinner from "../../images/spinner.gif"
 
 const Course = (props) => {
     const [modalOut, setModalOut] = useState(false)
+    const [editModalOut, setEditModalOut] = useState(false)
     const [loading, setLoading] = useState(false)
     const [courses, setCourses] = useState([])
+    const [lecturers, setLecturers] = useState([])
+    const [venues, setVenues] = useState([])
 
     const [formData, updateFormData] = useState(
         {
@@ -51,7 +54,6 @@ const Course = (props) => {
             [e.target.name]: e.target.value.trim()
           });
 
-          console.log(formData)
     }
 
     const venueFormData = (e) => {
@@ -78,14 +80,11 @@ const Course = (props) => {
             }
           });
 
-          console.log(lecturer)
-
           finalDataObj = {
             ...formData,
             ...lecturer,
             ...venue
         }
-        console.log(finalDataObj)
     }
 
     const createCourses = () => {
@@ -99,9 +98,34 @@ const Course = (props) => {
         },
         data : data
         };
-
-        console.log(data) 
         
+        axios(config)
+        .then((response) => {
+        console.log(JSON.stringify(response.data));
+        })
+        .then(()=> {
+            fetchCourses()
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+
+    }
+
+
+    const editCourses = () => {
+        let data = JSON.stringify(finalDataObj);
+
+        let config = {
+        method: 'patch',
+        url: 'https://tbe-node-deploy.herokuapp.com/Admin/course/update',
+        headers: { 
+            '_id': '5f2365078b96ba006c0d607d', 
+            'Content-Type': 'application/json'
+        },
+        data : data
+        };
+
         axios(config)
         .then((response) => {
         console.log(JSON.stringify(response.data));
@@ -110,8 +134,8 @@ const Course = (props) => {
         console.log(error);
         });
 
+        console.log(data)
     }
-
 
 
 
@@ -135,10 +159,48 @@ const Course = (props) => {
             });
     }
 
+    // Getting lecturers
+    const getLect = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
+            headers: { }
+          };
+          
+          axios(config)
+          .then((response) => {
+                setLecturers(response.data.data)
+
+                console.log(lecturers)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    }
+
+    const getVenue = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
+            headers: { }
+          };
+          
+          axios(config)
+          .then((response) => {
+            setVenues(response.data.data)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          
+    }
+
 
 
     useEffect( () => {
             fetchCourses()
+            getLect()
+            getVenue()
         },[]
     )
 
@@ -212,6 +274,7 @@ const Course = (props) => {
                                         src={pen}
                                         alt="pencil"
                                         className="pencil"
+                                        onClick={() => setEditModalOut(!editModalOut)}
                                         />
                                         <img
                                         src={bin}
@@ -227,11 +290,16 @@ const Course = (props) => {
                     </table>
                 </div>
 
+
+
+                {/* Overlay */}
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setModalOut(!modalOut);
                 }}></div>
 
+
+                {/* Create course form */}
                 <div className={modalOut === true ? "modal modOut" : "modal"}>
                     <div className="head">
                         <h3>Add new course</h3>
@@ -265,18 +333,23 @@ const Course = (props) => {
                             </div>
                             <div className="input-g">
                                 <p>Professor</p>
-                                <input list="prof" name="lecturer" onChange={lecturerFormData}/>
-                                <datalist id="prof">
-                                    <option value="5f20c555cae3fa29e54c63c6"/>
-                                </datalist>
+                                <select className="select-css" name="lecturer" onChange={lecturerFormData}>
+                                    <option value="" defaultValue>Select a lecturer</option>
+                                    {lecturers.map(lect => {
+                                        return(
+                                        <option value={lect._id} label={lect.name} key={lect._id}/>
+                                    )})}
+                                </select>
                             </div>
                             <div className="input-g">
                                 <p>Venue</p>
-                                <input list="venue" name="venue" onChange={venueFormData}/>
-                                <datalist id="venue">
-                                    <option value="New hall"/>
-                                    <option value="Fsc"/>
-                                </datalist>
+                                <select className="select-css" name="venue" onChange={venueFormData}>
+                                <option value="" defaultValue>Select a venue</option>
+                                    {venues.map(venue => {
+                                        return(
+                                        <option value={venue._id} label={venue.name} key={venue._id}/>
+                                    )})}
+                                </select>
                             </div>
                         </div>
                         <div className="buttons">
@@ -289,6 +362,74 @@ const Course = (props) => {
                                 createCourses()
                             }}>
                                 Add course
+                            </button>
+                        </div>  
+                    </form>
+                </div>
+
+                {/* Edit course form */}
+                <div className={editModalOut === true ? "modal modOut" : "modal"}>
+                    <div className="head">
+                        <h3>Edit course</h3>
+                        <img src={cross} alt="cross" onClick={()=>{
+                        setEditModalOut(false);
+                    }}/>
+                    </div>
+                    <form  name="editCourseFormData">
+                        <div className="input-c">
+                            <div className="input-g">
+                                <p>Name</p>
+                                <input name="name" onChange={courseFormData}/>
+                            </div>
+                            <div className="input-g">
+                                <p>Course code</p>
+                                <input list="code" name="code" onChange={courseFormData}/>
+                                <datalist id="code">
+                                    <option value="100"/>
+                                    <option value="200"/>
+                                    <option value="300"/>
+                                    <option value="400"/>
+                                </datalist>
+                            </div>
+                            <div className="input-g">
+                                <p>Course unit</p>
+                                <input name="unit" onChange={courseFormData}/>
+                            </div>
+                            <div className="input-g">
+                                <p>Time</p>
+                                <input name="time" onChange={courseFormData}/>
+                            </div>
+                            <div className="input-g">
+                                <p>Professor</p>
+                                <select className="select-css" name="lecturer" onChange={lecturerFormData}>
+                                    <option value="" defaultValue>Select a lecturer</option>
+                                    {lecturers.map(lect => {
+                                        return(
+                                        <option value={lect._id} label={lect.name} key={lect._id}/>
+                                    )})}
+                                </select>
+                            </div>
+                            <div className="input-g">
+                                <p>Venue</p>
+                                <select className="select-css" name="venue" onChange={venueFormData}>
+                                <option value="" defaultValue>Select a venue</option>
+                                    {venues.map(venue => {
+                                        return(
+                                        <option value={venue._id} label={venue.name} key={venue._id}/>
+                                    )})}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="buttons">
+                            <button className="red">Cancel</button>
+                            <button className="blue" type="submit" onClick={(e) => {
+                                e.preventDefault()
+                                courseFormData(e);
+                                lecturerFormData(e);
+                                venueFormData(e);
+                                editCourses()
+                            }}>
+                                Edit course
                             </button>
                         </div>  
                     </form>
