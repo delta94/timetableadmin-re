@@ -13,6 +13,10 @@ import search from "../../images/search.png"
 const Period = (props) => {
 
     const [modalOut, setModalOut] = useState(false)
+    // const [periods,setPeriods] = useState([])   
+    // const [loading, setLoading] = useState(false) 
+
+    
     return (
         <>
             <header>
@@ -96,7 +100,7 @@ const Period = (props) => {
                     <div className="input-c">
                         <div className="input-g">
                             <p>Course</p>
-                            <input />
+                            <input/>
                         </div>
                         <div className="input-g">
                             <p>Time</p>

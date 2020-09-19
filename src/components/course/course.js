@@ -47,8 +47,25 @@ const Course = (props) => {
 
     var finalDataObj = {}
 
+    // Labels
+    const [labelData, setLabelData] = useState(
+        {
+            nameLabel: "",
+            codeLabel: "",
+            unitLabel: "",
+            timeLabel: "",
+            lecturerLabel: "",
+            venueLabel: ""
+        }
+    );
+
+    // setting key for edit form
+    const [id, setId] = useState("123");
+
 
     // Http requests and relatives
+    // For cancelling requests
+    const source = axios.CancelToken.source();
     // Post Request
     const courseFormData = (e) => {
 
@@ -145,6 +162,24 @@ const Course = (props) => {
         console.log(data)
     }
 
+    // Generating form labels for edit
+    const genFormLabels = (data) => {
+        // eslint-disable-next-line array-callback-return
+        courses.map((course) => {
+                if(course._id === data){
+                    setLabelData({
+                        ...labelData,
+                        nameLabel: course.name,
+                        codeLabel: course.code,
+                        unitLabel: course.unit,
+                        timeLabel: course.time,
+                        lecturerLabel: course.lecturer.name,
+                        venueLabel: course.venue.name
+                    })
+                }
+            })
+    }
+
     // Remove empty inputs in edit form obj
     const cleanObj = () => {
         Object.keys(finalDataObj).forEach((key) => (finalDataObj[key] === "") && delete finalDataObj[key]);
@@ -159,7 +194,8 @@ const Course = (props) => {
             let config = {
                 method: 'get',
                 url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-                headers: { }
+                headers: { },
+                cancelToken: source.token
             };
             
             axios(config)
@@ -179,7 +215,8 @@ const Course = (props) => {
         let config = {
             method: 'get',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
-            headers: { }
+            headers: { },
+            cancelToken: source.token
           };
           
           axios(config)
@@ -197,7 +234,8 @@ const Course = (props) => {
         let config = {
             method: 'get',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
-            headers: { }
+            headers: { },
+            cancelToken: source.token
           };
           
           axios(config)
@@ -216,6 +254,11 @@ const Course = (props) => {
             fetchCourses()
             getLect()
             getVenue()
+
+
+            return () => {
+                source.cancel("Component got unmounted");
+            };
         // eslint-disable-next-line react-hooks/exhaustive-deps
         },[]
     )
@@ -280,7 +323,7 @@ const Course = (props) => {
                     <tbody className="gfg">
                        {loading === true ?  courses.map(course => {
                             return(
-                                <tr className="default" key={course.name}>
+                                <tr className="default" key={course._id}>
                                     <td>{course.code}</td>
                                     <td>{course.name}</td>
                                     <td>{course.unit}</td>
@@ -293,6 +336,8 @@ const Course = (props) => {
                                         onClick={() => {
                                             setEditModalOut(!editModalOut)
                                             setEditCourseId(course._id)
+                                            genFormLabels(course._id)
+                                            setId(Math.random().toString())
                                         }}
                                         />
                                         <img
@@ -390,7 +435,7 @@ const Course = (props) => {
                 </div>
 
                 {/* Edit course form */}
-                <div className={editModalOut === true ? "modal modOut" : "modal"}>
+                <div className={editModalOut === true ? "modal modOut" : "modal"} key={id}>
                     <div className="head">
                         <h3>Edit course</h3>
                         <img src={cross} alt="cross" onClick={()=>{
@@ -401,11 +446,11 @@ const Course = (props) => {
                         <div className="input-c">
                             <div className="input-g">
                                 <p>Name</p>
-                                <input name="name" onChange={courseFormData}/>
+                                <input name="name" placeholder={labelData.nameLabel} onChange={courseFormData}/>
                             </div>
                             <div className="input-g">
                                 <p>Course code</p>
-                                <input list="code" name="code" onChange={courseFormData}/>
+                                <input list="code" name="code" placeholder={labelData.codeLabel} onChange={courseFormData}/>
                                 <datalist id="code">
                                     <option value="100"/>
                                     <option value="200"/>
@@ -415,16 +460,16 @@ const Course = (props) => {
                             </div>
                             <div className="input-g">
                                 <p>Course unit</p>
-                                <input name="unit" onChange={courseFormData}/>
+                                <input name="unit" placeholder={labelData.unitLabel} onChange={courseFormData}/>
                             </div>
                             <div className="input-g">
                                 <p>Time</p>
-                                <input name="time" onChange={courseFormData}/>
+                                <input name="time" placeholder={labelData.timeLabel} onChange={courseFormData}/>
                             </div>
                             <div className="input-g">
                                 <p>Professor</p>
                                 <select className="select-css" name="lecturer" onChange={lecturerFormData}>
-                                    <option value="" defaultValue>Select a lecturer</option>
+                                    <option value="" disabled defaultValue selected>{labelData.lecturerLabel}</option>
                                     {lecturers.map(lect => {
                                         return(
                                         <option value={lect._id} label={lect.name} key={lect._id}/>
@@ -434,7 +479,7 @@ const Course = (props) => {
                             <div className="input-g">
                                 <p>Venue</p>
                                 <select className="select-css" name="venue" onChange={venueFormData}>
-                                <option value="" defaultValue>Select a venue</option>
+                                <option value="" defaultValue>{labelData.venueLabel}</option>
                                     {venues.map(venue => {
                                         return(
                                         <option value={venue._id} label={venue.name} key={venue._id}/>
