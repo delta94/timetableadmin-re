@@ -14,12 +14,15 @@ import spinner from "../../images/spinner.gif"
 
 
 const Course = (props) => {
+
+    // Course app state
     const [modalOut, setModalOut] = useState(false)
     const [editModalOut, setEditModalOut] = useState(false)
     const [loading, setLoading] = useState(false)
     const [courses, setCourses] = useState([])
     const [lecturers, setLecturers] = useState([])
     const [venues, setVenues] = useState([])
+    const [editCourseId, setEditCourseId] = useState("")
 
     const [formData, updateFormData] = useState(
         {
@@ -44,6 +47,8 @@ const Course = (props) => {
 
     var finalDataObj = {}
 
+
+    // Http requests and relatives
     // Post Request
     const courseFormData = (e) => {
 
@@ -112,7 +117,7 @@ const Course = (props) => {
 
     }
 
-
+    // Patch request
     const editCourses = () => {
         let data = JSON.stringify(finalDataObj);
 
@@ -120,7 +125,7 @@ const Course = (props) => {
         method: 'patch',
         url: 'https://tbe-node-deploy.herokuapp.com/Admin/course/update',
         headers: { 
-            '_id': '5f2365078b96ba006c0d607d', 
+            '_id': editCourseId, 
             'Content-Type': 'application/json'
         },
         data : data
@@ -130,11 +135,21 @@ const Course = (props) => {
         .then((response) => {
         console.log(JSON.stringify(response.data));
         })
+        .then(()=>{ 
+            fetchCourses()
+        })
         .catch((error) => {
         console.log(error);
         });
 
         console.log(data)
+    }
+
+    // Remove empty inputs in edit form obj
+    const cleanObj = () => {
+        Object.keys(finalDataObj).forEach((key) => (finalDataObj[key] === "") && delete finalDataObj[key]);
+
+        console.log(finalDataObj)
     }
 
 
@@ -275,7 +290,10 @@ const Course = (props) => {
                                         src={pen}
                                         alt="pencil"
                                         className="pencil"
-                                        onClick={() => setEditModalOut(!editModalOut)}
+                                        onClick={() => {
+                                            setEditModalOut(!editModalOut)
+                                            setEditCourseId(course._id)
+                                        }}
                                         />
                                         <img
                                         src={bin}
@@ -354,7 +372,10 @@ const Course = (props) => {
                             </div>
                         </div>
                         <div className="buttons">
-                            <button className="red">Cancel</button>
+                            <button className="red" onClick={(e) => {
+                                e.preventDefault()
+                                setModalOut(false)
+                            }}>Cancel</button>
                             <button className="blue" type="submit" onClick={(e) => {
                                 e.preventDefault()
                                 courseFormData(e);
@@ -422,12 +443,17 @@ const Course = (props) => {
                             </div>
                         </div>
                         <div className="buttons">
-                            <button className="red">Cancel</button>
+                            <button className="red" onClick={(e) => {
+                                e.preventDefault()
+                                setEditModalOut(false)
+                            }}>Cancel</button>
                             <button className="blue" type="submit" onClick={(e) => {
                                 e.preventDefault()
                                 courseFormData(e);
                                 lecturerFormData(e);
                                 venueFormData(e);
+                                setEditModalOut(false)
+                                cleanObj()
                                 editCourses()
                             }}>
                                 Edit course

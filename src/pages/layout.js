@@ -97,8 +97,7 @@ class SidebarExample extends Component{
         }
 
         userSwipedRight = () => {
-          this.setState( prevState => 
-            ({sideBarOut: !prevState.sideBarOut}))
+          this.setState({sideBarOut: true})
         }
 
         userSwipedLeft = () => {
