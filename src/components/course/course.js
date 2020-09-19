@@ -201,6 +201,7 @@ const Course = (props) => {
             fetchCourses()
             getLect()
             getVenue()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         },[]
     )
 
