@@ -183,8 +183,6 @@ const Course = (props) => {
     // Remove empty inputs in edit form obj
     const cleanObj = () => {
         Object.keys(finalDataObj).forEach((key) => (finalDataObj[key] === "") && delete finalDataObj[key]);
-
-        console.log(finalDataObj)
     }
 
 
@@ -468,8 +466,8 @@ const Course = (props) => {
                             </div>
                             <div className="input-g">
                                 <p>Professor</p>
-                                <select className="select-css" name="lecturer" onChange={lecturerFormData}>
-                                    <option value="" disabled defaultValue selected>{labelData.lecturerLabel}</option>
+                                <select className="select-css" name="lecturer" defaultValue={labelData.lecturerLabel} onChange={lecturerFormData}>
+                                    <option disabled value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
                                     {lecturers.map(lect => {
                                         return(
                                         <option value={lect._id} label={lect.name} key={lect._id}/>
@@ -478,8 +476,8 @@ const Course = (props) => {
                             </div>
                             <div className="input-g">
                                 <p>Venue</p>
-                                <select className="select-css" name="venue" onChange={venueFormData}>
-                                <option value="" defaultValue>{labelData.venueLabel}</option>
+                                <select className="select-css" name="venue" defaultValue={labelData.venueLabel} onChange={venueFormData}>
+                                <option value={labelData.venueLabel} disabled>{labelData.venueLabel}</option>
                                     {venues.map(venue => {
                                         return(
                                         <option value={venue._id} label={venue.name} key={venue._id}/>

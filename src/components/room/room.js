@@ -18,7 +18,7 @@ const Room = (props) => {
     //Room states
     const [rooms,setRooms] = useState([])   
     const [loading, setLoading] = useState(false) 
-    const [roomData, setRoomFormData] = useState(
+    const [roomData, setRoomData] = useState(
         {
             name: "",
             capacity: ""
@@ -44,7 +44,7 @@ const Room = (props) => {
     // Create rooms
     const roomFormData = (e) => {
 
-        setRoomFormData({
+        setRoomData({
             ...roomData,
       
             // Trimming any whitespace
@@ -151,6 +151,7 @@ const Room = (props) => {
     // Generating form labels for edit
     const genFormLabels = (data) => {
         rooms.map(
+            // eslint-disable-next-line array-callback-return
             (room) => {
                 if(room._id === data){
                     setLabelData({

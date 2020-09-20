@@ -2,11 +2,12 @@
     width: 700px !important;
 }
 
-.input-sub-group{
+.input-sub-group {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    width: 95%;
 }
 
 .input-g2{
-    width: 40%;
+    width: 45%;
 }
