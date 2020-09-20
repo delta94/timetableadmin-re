@@ -100,7 +100,7 @@ const Room = (props) => {
         return () => {
             source.cancel("Component got unmounted");
         };
-    },[])
+    })
 
 
     // Delete room
