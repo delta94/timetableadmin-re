@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from "react"
+import React,{useEffect, useState, useRef} from "react"
 import {Link} from "react-router-dom"
 import "./course.css"
 import "../../global/global.css"
@@ -29,7 +29,10 @@ const Course = (props) => {
             name: "",
             code: "",
             unit: "",
-            time: ""
+            time: "",
+            level: "",
+            day: "",
+            description: ""
         }
     );
 
@@ -55,7 +58,10 @@ const Course = (props) => {
             unitLabel: "",
             timeLabel: "",
             lecturerLabel: "",
-            venueLabel: ""
+            venueLabel: "",
+            levelL: "",
+            dayLabel: "",
+            descLabel: ""
         }
     );
 
@@ -174,7 +180,10 @@ const Course = (props) => {
                         unitLabel: course.unit,
                         timeLabel: course.time,
                         lecturerLabel: course.lecturer.name,
-                        venueLabel: course.venue.name
+                        venueLabel: course.venue.name,
+                        levelL: course.level,
+                        dayLabel: course.day.join(),
+                        descLabel: course.description
                     })
                 }
             })
@@ -284,6 +293,14 @@ const Course = (props) => {
           
         console.log("deleted")
     }
+
+    // Filtering
+    const onChangeHandler = () =>{
+        console.log(textInput.current.value)
+        fetchCourses()
+    }
+
+    const textInput = useRef(null)
     
 
     return (
@@ -301,8 +318,8 @@ const Course = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search"/>
-                    <input placeholder="Enter keyword to search"/>
+                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
+                    <input placeholder="Enter keyword to search" ref={textInput}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new course</button>
@@ -319,7 +336,11 @@ const Course = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                       {loading === true ?  courses.map(course => {
+                       {loading === true ?  
+                        courses.filter(d=> {
+                        return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
+                        })
+                        .map(course => {
                             return(
                                 <tr className="default" key={course._id}>
                                     <td>{course.code}</td>
@@ -371,39 +392,38 @@ const Course = (props) => {
                     </div>
                     <form  name="courseFormData" id="courses">
                         <div className="input-c">
-                            <div className="input-g">
-                                <p>Name</p>
-                                <input name="name" onChange={courseFormData}/>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Name</p>
+                                    <input name="name" className="mInput"  onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>Course code</p>
+                                    <input list="code" className="mInput" name="code" onChange={courseFormData}/>
+                                    <datalist id="code">
+                                        <option value="100"/>
+                                        <option value="200"/>
+                                        <option value="300"/>
+                                        <option value="400"/>
+                                    </datalist>
+                                </div>
                             </div>
-                            <div className="input-g">
-                                <p>Course code</p>
-                                <input list="code" name="code" onChange={courseFormData}/>
-                                <datalist id="code">
-                                    <option value="100"/>
-                                    <option value="200"/>
-                                    <option value="300"/>
-                                    <option value="400"/>
-                                </datalist>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Course unit</p>
+                                    <input name="unit" className="mInput" onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>Time</p>
+                                    <input name="time" className="mInput" onChange={courseFormData}/>
+                                </div>
                             </div>
-                            <div className="input-g">
-                                <p>Course unit</p>
-                                <input name="unit" onChange={courseFormData}/>
-                            </div>
-                            <div className="input-g">
-                                <p>Time</p>
-                                <input name="time" onChange={courseFormData}/>
-                            </div>
-                            <div className="input-g">
-                                <p>Professor</p>
-                                <select className="select-css" name="lecturer" onChange={lecturerFormData}>
-                                    <option value="" defaultValue>Select a lecturer</option>
-                                    {lecturers.map(lect => {
-                                        return(
-                                        <option value={lect._id} label={lect.name} key={lect._id}/>
-                                    )})}
-                                </select>
-                            </div>
-                            <div className="input-g">
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Level</p>
+                                    <input name="level" className="mInput" onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
                                 <p>Venue</p>
                                 <select className="select-css" name="venue" onChange={venueFormData}>
                                 <option value="" defaultValue>Select a venue</option>
@@ -412,6 +432,28 @@ const Course = (props) => {
                                         <option value={venue._id} label={venue.name} key={venue._id}/>
                                     )})}
                                 </select>
+                            </div>
+                                
+                            </div>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>day</p>
+                                    <input name="day" className="mInput" placeholder="E.g monday,tuesday" onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>Description</p>
+                                    <input name="description" className="mInput" onChange={courseFormData}/>
+                                </div>
+                            </div>
+                            <div className="input-gi">
+                                    <p>Professor</p>
+                                    <select className="select-css" name="lecturer" onChange={lecturerFormData}>
+                                        <option value="" defaultValue>Select a lecturer</option>
+                                        {lecturers.map(lect => {
+                                            return(
+                                            <option value={lect._id} label={lect.name} key={lect._id}/>
+                                        )})}
+                                    </select>
                             </div>
                         </div>
                         <div className="buttons">
@@ -442,39 +484,60 @@ const Course = (props) => {
                     </div>
                     <form  name="editCourseFormData">
                         <div className="input-c">
-                            <div className="input-g">
-                                <p>Name</p>
-                                <input name="name" placeholder={labelData.nameLabel} onChange={courseFormData}/>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Name</p>
+                                    <input name="name" placeholder={labelData.nameLabel} onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>Course code</p>
+                                    <input list="code" name="code" placeholder={labelData.codeLabel} onChange={courseFormData}/>
+                                    <datalist id="code">
+                                        <option value="100"/>
+                                        <option value="200"/>
+                                        <option value="300"/>
+                                        <option value="400"/>
+                                    </datalist>
+                                </div>
                             </div>
-                            <div className="input-g">
-                                <p>Course code</p>
-                                <input list="code" name="code" placeholder={labelData.codeLabel} onChange={courseFormData}/>
-                                <datalist id="code">
-                                    <option value="100"/>
-                                    <option value="200"/>
-                                    <option value="300"/>
-                                    <option value="400"/>
-                                </datalist>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Course unit</p>
+                                    <input name="unit" placeholder={labelData.unitLabel} onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>Time</p>
+                                    <input name="time" placeholder={labelData.timeLabel} onChange={courseFormData}/>
+                                </div>
                             </div>
-                            <div className="input-g">
-                                <p>Course unit</p>
-                                <input name="unit" placeholder={labelData.unitLabel} onChange={courseFormData}/>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Level</p>
+                                    <input name="level" placeholder={labelData.levelL} onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>Professor</p>
+                                    <select className="select-css" name="lecturer" defaultValue={labelData.lecturerLabel} onChange={lecturerFormData}>
+                                        <option disabled value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
+                                        {lecturers.map(lect => {
+                                            return(
+                                            <option value={lect._id} label={lect.name} key={lect._id}/>
+                                        )})}
+                                    </select>
+                                </div>
                             </div>
-                            <div className="input-g">
-                                <p>Time</p>
-                                <input name="time" placeholder={labelData.timeLabel} onChange={courseFormData}/>
+                            
+                            <div className="input-flex">
+                                    <div className="input-gi">
+                                        <p>day</p>
+                                        <input name="day" placeholder={labelData.dayLabel} onChange={courseFormData}/>
+                                    </div>
+                                    <div className="input-gi">
+                                        <p>Description</p>
+                                        <input name="description" placeholder={labelData.descLabel} onChange={courseFormData}/>
+                                    </div>
                             </div>
-                            <div className="input-g">
-                                <p>Professor</p>
-                                <select className="select-css" name="lecturer" defaultValue={labelData.lecturerLabel} onChange={lecturerFormData}>
-                                    <option disabled value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
-                                    {lecturers.map(lect => {
-                                        return(
-                                        <option value={lect._id} label={lect.name} key={lect._id}/>
-                                    )})}
-                                </select>
-                            </div>
-                            <div className="input-g">
+                            <div className="input-gi">
                                 <p>Venue</p>
                                 <select className="select-css" name="venue" defaultValue={labelData.venueLabel} onChange={venueFormData}>
                                 <option value={labelData.venueLabel} disabled>{labelData.venueLabel}</option>

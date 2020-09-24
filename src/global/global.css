@@ -116,7 +116,7 @@
   /* Modal */
 
 .modal{
-  width: 500px;
+  width: 600px;
   height: fit-content;
   position: absolute;
   background-color: #fff;
@@ -209,6 +209,206 @@
   display: flex;
   justify-content: space-around;
   width: 100px;
+}
+
+/* Edit profile */
+.profile{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    margin: 30px auto;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
+
+.detail{
+  display: flex;
+}
+
+.name-group{
+  width: auto;
+}
+.name-groupl{
+  width: 600px;
+}
+
+.name-groupl p{
+  margin: 5px;
+  font-size: 15px;
+}
+
+.name-groupl p:first-child{
+  font-weight: bold;
+}
+
+
+.name-group p{
+  margin: 5px;
+  font-size: 15px;
+}
+
+.name-group p:first-child{
+  font-weight: bold;
+}
+
+.editProfile h3{
+  margin: 20px auto;
+  width: 70%;
+}
+
+.editHeading{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto 40px;
+}
+
+.editHeading img{
+  height: 30px;
+  cursor: pointer;
+}
+
+.editProfileContainer{
+  width: 96%;
+  height: auto;
+  background-color: #fff;
+  margin: auto;
+  padding: 30px 0px;
+}
+
+.editProfileContainer p{
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.field-name{
+  font-weight: bold;
+  width: 400px;
+  margin-bottom: 20px;
+}
+
+.field-details-flex{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.field-details-flex2{
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field{
+  display: flex;
+  width: 70%;
+  margin: auto;
+  align-items: baseline;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.input-field input{
+  padding: 10px;
+  font-family: inherit;
+  border: 1px solid #000;
+  border-radius: .25rem;
+  width: 225px;
+}
+
+.input-field textarea{
+  padding: 10px;
+  font-family: inherit;
+  border: 1px solid #000;
+  border-radius: .25rem;
+  width: 250px;
+  height: 150px;
+}
+
+.pr{
+  padding-right: 30px;
+}
+
+.icon{
+  width: 43%;
+}
+
+.wid-4{
+  width: 500px !important;
+}
+
+.field{
+  margin-bottom: 30px;
+}
+
+.notbold{
+  font-weight: lighter !important;
+}
+
+.updateProfileBtn{
+  padding: 10px;
+  border: none;
+  background-color: #0395ff;
+  font-family: inherit;
+  color: #fff;
+  border-radius: .25rem;
+  margin-bottom: 30px;
+}
+
+.proBtn{
+  border: none;
+  background-color: transparent;
+  font-size: 15px;
+  font-family: inherit;
+  color: #0395ff;
+}
+
+.backBtn{
+  background-color: red !important;
+  margin-right: 10px;
+}
+
+.ma{
+  margin: 10px auto;
+}
+
+.detail button{
+  border: none;
+  background-color: #0395ff;
+  font-size: 16px;
+  font-family: inherit;
+  color: #fff;
+  padding: 4px;
+  border-radius: 5px;
+  width: 100px;
+}
+
+@media only screen and (max-width: 850px){
+  .field-details{
+      width: 90%;
+  }
+
+  .field-details input{
+      width: 100%;
+  }
+
+  .wid-4{
+      width: 100% !important;
+  }
+  .pr{
+      padding-right: 0px;
+  }
+  .field{
+      width: 100%;
+  }
+  .input-field textarea{
+      width: 100%;
+  }
+  .icon{
+      display: none;
+  }
 }
 
 @media only screen and (min-width: 500px){

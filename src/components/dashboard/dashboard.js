@@ -1,4 +1,4 @@
-import React,{useState} from "react"
+import React,{useState, useEffect} from "react"
 import {Link} from "react-router-dom"
 import course from "../../images/course-icon.png"
 import lecturer from "../../images/lecturer-icon.png"
@@ -9,6 +9,7 @@ import logo from "../../images/Logo.png"
 import pro from "../../images/single-man-profile-picture.png"
 import cross from "../../images/close.png"
 import update from "../../images/refresh.png"
+import axios from "axios"
 
 
 const Dashboard = (props) => {
@@ -16,6 +17,78 @@ const Dashboard = (props) => {
     const [modalOut, setModalOut] = useState(false)
 
     const [updateOut, setUpdateOut] = useState(false)
+
+    const [rooms,setRooms] = useState([])   
+
+    const [courses, setCourses] = useState([])
+
+    // For cancelling requests
+    const source = axios.CancelToken.source();
+
+    // const [loading, setLoading] = useState(false)
+
+    const [roomL, setRoomL] = useState("")
+
+    const [courseL, setCourseL] = useState("")
+
+    const getRooms = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
+            headers: { },
+            cancelToken: source.token
+          };
+          
+          axios(config)
+          .then((response) => {
+            setRooms(response.data.data)
+            // setLoading(true)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          
+    }
+
+    const getRoomLength = () => {
+        setRoomL(rooms.length)
+    }
+
+
+    // Getting courses
+    const fetchCourses = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
+            headers: { },
+            cancelToken: source.token
+        };
+        
+        axios(config)
+        .then((response) => {
+            var res = response.data.data
+            console.log(res)
+            setCourses(res)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
+
+    const getCourseLength = () => {
+        setCourseL(courses.length)
+    }
+
+    useEffect(() => {
+        getRooms()
+        getRoomLength()
+        fetchCourses()
+        getCourseLength()
+
+        return () => {
+            source.cancel("Component got unmounted");
+        };
+    })
 
     return(
         <>  
@@ -39,14 +112,14 @@ const Dashboard = (props) => {
                     <div className="card">
                         <img src={room} alt="card"/>
                         <h3>Lecture Rooms</h3>
-                        <p>95</p>
+                        <p>{roomL}</p>
                     </div>
                 </Link>
                 <Link to="/app/courses">
                     <div className="card">
                         <img src={course} alt="card"/>
                         <h3>Courses</h3>
-                        <p>120</p>
+                        <p>{courseL}</p>
                     </div>
                 </Link>
                 <Link to="/app/lecturers">

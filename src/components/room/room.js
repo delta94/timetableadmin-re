@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from "react"
+import React,{useEffect, useState, useRef} from "react"
 import {Link} from "react-router-dom"
 import "./room.css"
 import "../../global/global.css"
@@ -34,6 +34,7 @@ const Room = (props) => {
             capacityLabel: ""
         }
     );
+    const [modalOut, setModalOut] = useState(false)
 
      // setting key for edit form
      const [id, setId] = useState("123");
@@ -100,7 +101,8 @@ const Room = (props) => {
         return () => {
             source.cancel("Component got unmounted");
         };
-    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
 
 
     // Delete room
@@ -170,7 +172,15 @@ const Room = (props) => {
 
         console.log(roomData)
     }
-    const [modalOut, setModalOut] = useState(false)
+
+    // Filtering
+    const onChangeHandler = () =>{
+        console.log(textInput.current.value)
+        getRooms()
+    }
+
+    const textInput = useRef(null)
+
     return (
         <>
             <header>
@@ -186,8 +196,8 @@ const Room = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search"/>
-                    <input placeholder="Enter keyword to search"/>
+                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
+                    <input placeholder="Enter keyword to search" ref={textInput} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new room</button>
@@ -202,7 +212,11 @@ const Room = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {loading === true ? rooms.map(room => {
+                        {loading === true ? rooms
+                        .filter(d=> {
+                            return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
+                        })
+                        .map(room => {
                             return(
                                 <tr className="default" key={room._id}>
                                     <td>{room.name}</td>

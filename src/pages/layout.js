@@ -14,11 +14,8 @@ import Classes from "../components/class/class"
 import Period from "../components/period/period"
 import Room from "../components/room/room"
 import Lecturer from "../components/lecturer/lecturer"
-import StudentPro from "../components/studentProfile/studentProfile"
-import LecturerPro from "../components/lecturerProfile/lecturerPro"
 import Notification from "../components/notification/notification"
 import Student from "../components/student/student"
-import StudentEditProfile from "../components/studentEditProfile/studentEditProfile"
 import Timetable from "../components/timetable/timetable";
 import "./layout.css"
 
@@ -62,27 +59,14 @@ const routes = [
   {
     path: "periods",
     main: Period
-  }
-  ,
-  {
-    path: "studentPro",
-    main: StudentPro
   },
   {
     path: "notification",
     main: Notification
   },
   {
-    path: "lecturerPro",
-    main: LecturerPro
-  },
-  {
     path: "student",
     main: Student
-  },
-  {
-    path: "studentEditProfile",
-    main: StudentEditProfile
   },
   {
     path: "timetable",

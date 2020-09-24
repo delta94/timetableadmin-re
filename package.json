@@ -9,10 +9,12 @@
     "axios": "^0.20.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-dropzone": "^11.2.0",
     "react-easy-swipe": "0.0.18",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
-    "react-swipeable": "^5.5.1"
+    "react-swipeable": "^5.5.1",
+    "superagent": "^6.1.0"
   },
   "scripts": {
     "start": "react-scripts start",

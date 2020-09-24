@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react"
+import React,{useState,useEffect,useRef} from "react"
 import {Link} from "react-router-dom"
 import "./period.css"
 import "../../global/global.css"
@@ -191,6 +191,15 @@ const Period = (props) => {
             })
     }
 
+    // Filtering
+    const onChangeHandler = () =>{
+        console.log(textInput.current.value)
+        getPeriods()
+    }
+
+    const textInput = useRef(null)
+
+
     return (
         <>
             <header>
@@ -206,8 +215,8 @@ const Period = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search"/>
-                    <input placeholder="Enter keyword to search"/>
+                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
+                    <input placeholder="Enter keyword to search" ref={textInput}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new timeslot</button>
@@ -222,7 +231,11 @@ const Period = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {loading === true ? periods.map(period => {
+                        {loading === true ? periods
+                        .filter(d=> {
+                            return d.course.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
+                        })
+                        .map(period => {
                             return (
                                 <tr className="default" key={period._id}>
                                     <td>{period.startTime} - {period.endTime}</td>

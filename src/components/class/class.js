@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react"
+import React,{useState,useEffect,useRef} from "react"
 import {Link} from "react-router-dom"
 import "./class.css"
 import "../../global/global.css"
@@ -195,6 +195,15 @@ const Classes = (props) => {
             })
     }
 
+    // Filtering
+    const onChangeHandler = () =>{
+        console.log(textInput.current.value)
+        getClasses()
+    }
+
+    const textInput = useRef(null)
+
+
     return (
         <>
             <header>
@@ -210,8 +219,8 @@ const Classes = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search"/>
-                    <input placeholder="Enter keyword to search"/>
+                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
+                    <input placeholder="Enter keyword to search" ref={textInput}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new class</button>
@@ -228,7 +237,11 @@ const Classes = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                       {loading === true ? classes.map((clas) => {
+                       {loading === true ? classes
+                       .filter(d=> {
+                        return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
+                        })
+                       .map((clas) => {
                                return (
                                 <tr className="default" key={clas._id}>
                                 <td>{clas.name}</td>
