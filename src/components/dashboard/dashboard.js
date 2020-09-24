@@ -10,85 +10,117 @@ import pro from "../../images/single-man-profile-picture.png"
 import cross from "../../images/close.png"
 import update from "../../images/refresh.png"
 import axios from "axios"
+import spinner from "../../images/spinner.gif"
 
 
 const Dashboard = (props) => {
 
     const [modalOut, setModalOut] = useState(false)
-
     const [updateOut, setUpdateOut] = useState(false)
-
+    const [loading, setLoading] = useState(false)
     const [rooms,setRooms] = useState([])   
-
     const [courses, setCourses] = useState([])
+    const [lecturers,setLecturers] = useState([])
+    const [classes,setClasses] = useState([])
+    const [students,setStudents] = useState([])   
 
     // For cancelling requests
     const source = axios.CancelToken.source();
 
-    // const [loading, setLoading] = useState(false)
-
     const [roomL, setRoomL] = useState("")
-
     const [courseL, setCourseL] = useState("")
+    const [lectL, setLectL] = useState("")
+    const [classL, setClassL] = useState("")
+    const [studentsL,setStudentsL] = useState([])   
 
-    const getRooms = () => {
-        let config = {
+    const getDetails = () => {
+
+            axios({
+                method: 'get',
+                url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
+                headers: { },
+                cancelToken: source.token
+            })
+            .then((response) => {
+                setRooms(response.data.data)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+            axios({
+                method: 'get',
+                url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
+                headers: { },
+                cancelToken: source.token
+                })
+            .then((response) => {
+                var res = response.data.data
+                console.log(res)
+                setCourses(res)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+            axios({
             method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
             headers: { },
             cancelToken: source.token
-          };
-          
-          axios(config)
-          .then((response) => {
-            setRooms(response.data.data)
-            // setLoading(true)
-          })
-          .catch((error) => {
+            })
+            .then((response) => {
+            setLecturers(response.data.data)
+            })
+            .catch((error) => {
             console.log(error);
-          });
-          
+            });
+
+            axios({
+                method: 'get',
+                url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/all',
+                headers: { },
+                cancelToken: source.token
+                })
+            .then((response) => {
+                setClasses(response.data.data)
+            })
+            .catch((error) => {
+            console.log(error);
+            });
+
+            axios({
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/all',
+            headers: { },
+            cancelToken: source.token
+            })
+            .then((response) => {
+            setStudents(response.data.data)
+            setLoading(true)
+            })
+            .catch((error) => {
+            console.log(error);
+            });
     }
 
-    const getRoomLength = () => {
+    const getDetailsLength = () => {
         setRoomL(rooms.length)
-    }
-
-
-    // Getting courses
-    const fetchCourses = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-            var res = response.data.data
-            console.log(res)
-            setCourses(res)
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    }
-
-    const getCourseLength = () => {
         setCourseL(courses.length)
+        setLectL(lecturers.length)
+        setClassL(classes.length)
+        setStudentsL(students.length)
     }
 
     useEffect(() => {
-        getRooms()
-        getRoomLength()
-        fetchCourses()
-        getCourseLength()
-
+        getDetails()
+        getDetailsLength()
+        console.log(students)
         return () => {
             source.cancel("Component got unmounted");
         };
-    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[students])
 
     return(
         <>  
@@ -107,43 +139,45 @@ const Dashboard = (props) => {
                     </Link>
                   </div>
               </header>
-            <div className="card-container">
-                <Link to="/app/rooms">
-                    <div className="card">
-                        <img src={room} alt="card"/>
-                        <h3>Lecture Rooms</h3>
-                        <p>{roomL}</p>
-                    </div>
-                </Link>
-                <Link to="/app/courses">
-                    <div className="card">
-                        <img src={course} alt="card"/>
-                        <h3>Courses</h3>
-                        <p>{courseL}</p>
-                    </div>
-                </Link>
-                <Link to="/app/lecturers">
-                    <div className="card">
-                        <img src={lecturer} alt="card"/>
-                        <h3>Lecturers</h3>
-                        <p>32</p>
-                    </div>
-                </Link>
-                <Link to="/app/classes">
-                    <div className="card">
-                        <img src={room} alt="card"/>
-                        <h3>Classes</h3>
-                        <p>46</p>
-                    </div>
-                </Link>
-                <Link to='/app/student'>
-                    <div className="card">
-                        <img src={pro} alt="card"/>
-                        <h3>Students</h3>
-                        <p>41</p>
-                    </div>
-                </Link>
+              {loading === true ?  
+                <div className="card-container">       
+                    <Link to="/app/rooms">
+                        <div className="card">
+                            <img src={room} alt="card"/>
+                            <h3>Lecture Rooms</h3>
+                            <p>{roomL}</p>
+                        </div>
+                    </Link>
+                    <Link to="/app/courses">
+                        <div className="card">
+                            <img src={course} alt="card"/>
+                            <h3>Courses</h3>
+                            <p>{courseL}</p>
+                        </div>
+                    </Link>
+                    <Link to="/app/lecturers">
+                        <div className="card">
+                            <img src={lecturer} alt="card"/>
+                            <h3>Lecturers</h3>
+                            <p>{lectL}</p>
+                        </div>
+                    </Link>
+                    <Link to="/app/classes">
+                        <div className="card">
+                            <img src={room} alt="card"/>
+                            <h3>Classes</h3>
+                            <p>{classL}</p>
+                        </div>
+                    </Link>
+                    <Link to='/app/student'>
+                        <div className="card">
+                            <img src={pro} alt="card"/>
+                            <h3>Students</h3>
+                            <p>{studentsL}</p>
+                        </div>
+                    </Link>
             </div>
+            : <div className="spinnerContainer"><img src={spinner} alt="loading.."/></div>}
 
             <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
                 <p>Timetable update</p>

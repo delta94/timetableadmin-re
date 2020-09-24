@@ -15,7 +15,7 @@ import cross from "../../images/close.png"
 
 const Student = (props) => {
 
-    const [Students,setStudents] = useState([])   
+    const [students,setStudents] = useState([])   
     const [loading, setLoading] = useState(false)
     const [pageSwitch, setPageSwitch] = useState("home")
     const [studId, setstudId] = useState("")
@@ -56,6 +56,8 @@ const Student = (props) => {
     )
 
     const [coursesHandled, coursesHandler] = useState([])
+
+    const [studL,setStudL] = useState("")
 
     const setFormDataFn = (e) => {
         setFormData({
@@ -129,7 +131,7 @@ const Student = (props) => {
 
     // Generate profile data
     const genProfileData = (data) => {
-        Students.map((stud) => {
+        students.map((stud) => {
             if(stud._id === data){
                 setProfileData({
                     ...profileData,
@@ -147,7 +149,7 @@ const Student = (props) => {
 
     // Generate label for edit form
     const genLabelData = (data) => {
-        Students.map((stud) => {
+        students.map((stud) => {
             if(stud._id === data){
                 setLabelData({
                     ...labelData,
@@ -186,18 +188,25 @@ const Student = (props) => {
 
     useEffect(() => {
         getStudents()
+        studentLength()
         return () => {
             source.cancel("Component got unmounted");
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[students])
 
+    // Generating courses handled
     const setCoursesHandled = (data) => {
-        Students.map(stud => {
+        students.map(stud => {
             if(stud._id === data){
                 coursesHandler(stud.courses)
             }
         }) 
+    }
+
+    // Generating no of students registered
+    const studentLength = () => {
+        setStudL(students.length)
     }
 
     // Filtering
@@ -225,6 +234,7 @@ const Student = (props) => {
                 <div className="search-container">
                     <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
                     <input placeholder="Enter keyword to search" ref={textInput}/>
+                    <p style={{marginLeft: "30px"}}>Students registered : {studL}</p>
                 </div>
                 {pageSwitch === "home" ? 
                 <div className="table-container">
@@ -239,7 +249,7 @@ const Student = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {loading === true ? Students
+                        {loading === true ? students
                         .filter(d=> {
                             return d.firstname.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
                         })
