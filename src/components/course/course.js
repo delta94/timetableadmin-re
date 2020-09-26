@@ -1,4 +1,4 @@
-import React,{useEffect, useState, useRef} from "react"
+import React,{useEffect, useState} from "react"
 import {Link} from "react-router-dom"
 import "./course.css"
 import "../../global/global.css"
@@ -8,7 +8,6 @@ import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
-import search from "../../images/search.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 
@@ -23,7 +22,9 @@ const Course = (props) => {
     const [lecturers, setLecturers] = useState([])
     const [venues, setVenues] = useState([])
     const [editCourseId, setEditCourseId] = useState("")
-
+    const [newArr, setNewArr] = useState([])
+    const [switchState, setSwitchState] = useState("")  
+    const [target, setTarget] = useState("")
     const [formData, updateFormData] = useState(
         {
             name: "",
@@ -261,13 +262,13 @@ const Course = (props) => {
             fetchCourses()
             getLect()
             getVenue()
-
+            filterFn()
 
             return () => {
                 source.cancel("Component got unmounted");
             };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        },[]
+        },[courses]
     )
 
     // Delete request
@@ -295,12 +296,30 @@ const Course = (props) => {
     }
 
     // Filtering
-    const onChangeHandler = () =>{
-        console.log(textInput.current.value)
-        fetchCourses()
+    const onChangeHandler = (e) =>{
+        console.log(e.target.value)
+        setTarget(e.target.value)
+    }
+    const switchFilter = (e) => {
+        setSwitchState(e.target.value)
     }
 
-    const textInput = useRef(null)
+    const filterFn = () => {
+            setNewArr(courses
+            .filter(d=> {
+                if(switchState === "Name"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "" || switchState === "All"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || d.code.toString().toLowerCase().includes(target.toLowerCase()) === true || d.unit.toString().toLowerCase().includes(target.toLowerCase()) === true || d.lecturer.name.toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "Code"){
+                    return d.code.toString().toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "Unit"){
+                    return d.unit.toString().toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "Lecturer"){
+                    return d.lecturer.name.toLowerCase().includes(target.toLowerCase()) === true
+                }
+            }))
+    }
     
 
     return (
@@ -318,8 +337,14 @@ const Course = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
-                    <input placeholder="Enter keyword to search" ref={textInput}/>
+                    <select className="select-css2" name="switch" onChange={switchFilter}>
+                        <option>All</option>
+                        <option>Code</option>
+                        <option>Name</option>
+                        <option>Unit</option>
+                        <option>Lecturer</option>
+                    </select>
+                    <input placeholder="Enter keyword to search" onChange={onChangeHandler}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new course</button>
@@ -336,11 +361,7 @@ const Course = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                       {loading === true ?  
-                        courses.filter(d=> {
-                        return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
-                        })
-                        .map(course => {
+                       {loading === true ? newArr.map(course => {
                             return(
                                 <tr className="default" key={course._id}>
                                     <td>{course.code}</td>
@@ -369,6 +390,7 @@ const Course = (props) => {
                                 </tr>
                             )}) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         }
+                        {newArr.length === 0 && loading === true ? <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr> : null}
                     </tbody>
                     </table>
                 </div>

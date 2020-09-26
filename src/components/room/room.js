@@ -1,4 +1,4 @@
-import React,{useEffect, useState, useRef} from "react"
+import React,{useEffect, useState} from "react"
 import {Link} from "react-router-dom"
 import "./room.css"
 import "../../global/global.css"
@@ -8,7 +8,6 @@ import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
-import search from "../../images/search.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 
@@ -97,12 +96,12 @@ const Room = (props) => {
 
     useEffect(() => {
         getRooms()
-
+        filterFn()
         return () => {
             source.cancel("Component got unmounted");
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[rooms])
 
 
     // Delete room
@@ -173,13 +172,36 @@ const Room = (props) => {
         console.log(roomData)
     }
 
+    const [target, setTarget] = useState("")
+
     // Filtering
-    const onChangeHandler = () =>{
-        console.log(textInput.current.value)
-        getRooms()
+    const onChangeHandler = (e) =>{
+        console.log(e.target.value)
+        setTarget(e.target.value)
     }
 
-    const textInput = useRef(null)
+    const [newArr, setNewArr] = useState([])
+
+    const [switchState, setSwitchState] = useState("")
+    
+    const switchFilter = (e) => {
+        setSwitchState(e.target.value)
+    }
+
+    const filterFn = () => {
+            setNewArr(rooms
+            // eslint-disable-next-line array-callback-return
+            .filter(d=> {
+                if(switchState === "Name"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "" || switchState === "All"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || d.capacity.toString().toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "Capacity"){
+                    return d.capacity.toString().toLowerCase().includes(target.toLowerCase()) === true
+                }
+            }))
+    }
+
 
     return (
         <>
@@ -196,8 +218,12 @@ const Room = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
-                    <input placeholder="Enter keyword to search" ref={textInput} />
+                    <select className="select-css2" name="switch" onChange={switchFilter}>
+                        <option>All</option>
+                        <option>Name</option>
+                        <option>Capacity</option>
+                    </select>
+                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new room</button>
@@ -212,10 +238,7 @@ const Room = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {loading === true ? rooms
-                        .filter(d=> {
-                            return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
-                        })
+                        {loading === true ? newArr
                         .map(room => {
                             return(
                                 <tr className="default" key={room._id}>
@@ -243,7 +266,8 @@ const Room = (props) => {
                                 </tr>
                             );
                         }) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>}
-                    </tbody>
+                        {newArr.length === 0 && loading === true ? <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr> : null}
+                    </tbody> 
                     </table>
                 </div>
 

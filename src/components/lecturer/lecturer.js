@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useState,useEffect,useRef} from "react"
+import React,{useState,useEffect} from "react"
 import {Link} from "react-router-dom"
 import "./lecturer.css"
 import "../../global/global.css"
@@ -7,7 +7,6 @@ import bin from "../../images/bin.png"
 import plus from "../../images/plus.svg"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
-import search from "../../images/search.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import propic from "../../images/Profile Picture.svg"
@@ -142,11 +141,14 @@ const Lecturer = (props) => {
 
     useEffect(() => {
         getLecturers()
+        filterFn()
+
+
         return () => {
             source.cancel("Component got unmounted");
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[lecturers])
 
 
     // Generate profile data
@@ -208,13 +210,34 @@ const Lecturer = (props) => {
           
     }
     
+    const [target, setTarget] = useState("")
+
     // Filtering
-    const onChangeHandler = () =>{
-        console.log(textInput.current.value)
-        getLecturers()
+    const onChangeHandler = (e) =>{
+        console.log(e.target.value)
+        setTarget(e.target.value)
     }
 
-    const textInput = useRef(null)
+    const [newArr, setNewArr] = useState([])
+
+    const [switchState, setSwitchState] = useState("")
+    
+    const switchFilter = (e) => {
+        setSwitchState(e.target.value)
+    }
+
+    const filterFn = () => {
+            setNewArr(lecturers
+            .filter(d=> {
+                if(switchState === "Name"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "" || switchState === "All"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || d.email.toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "Email"){
+                    return d.email.toLowerCase().includes(target.toLowerCase()) === true
+                }
+            }))
+    }
 
     return (
         <>
@@ -231,8 +254,12 @@ const Lecturer = (props) => {
               </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
-                    <input placeholder="Enter keyword to search" ref={textInput}/>
+                    <select className="select-css2" name="switch" onChange={switchFilter}>
+                        <option>All</option>
+                        <option>Name</option>
+                        <option>Email</option>
+                    </select>
+                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <button onClick={()=>setPageSwitch("create")}><img src={plus} alt="plus"/>Add new lecturer</button>
                 </div>
                 {pageSwitch === "home" ? 
@@ -248,10 +275,7 @@ const Lecturer = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {loading === true ? lecturers
-                        .filter(d=> {
-                            return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
-                        })
+                        {loading === true ? newArr
                         .map((lect) => {
                             return (
                                 <tr className="default" key={lect._id}>
@@ -276,6 +300,7 @@ const Lecturer = (props) => {
                                 </tr>
                             );
                         }) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>}
+                        {newArr.length === 0 && loading === true ? <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr> : null}
                     </tbody>
                     </table>
                 </div>

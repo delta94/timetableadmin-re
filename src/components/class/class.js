@@ -1,4 +1,4 @@
-import React,{useState,useEffect,useRef} from "react"
+import React,{useState,useEffect} from "react"
 import {Link} from "react-router-dom"
 import "./class.css"
 import "../../global/global.css"
@@ -8,7 +8,6 @@ import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
-import search from "../../images/search.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 
@@ -122,11 +121,12 @@ const Classes = (props) => {
     useEffect(() => {
         getClasses()
         fetchCourses()
+        filterFn()
         return () => {
             source.cancel("Component got unmounted");
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[classes])
 
     // Delete class
     const deleteClass = (data) => {
@@ -195,13 +195,50 @@ const Classes = (props) => {
             })
     }
 
+    const [target, setTarget] = useState("")
+
     // Filtering
-    const onChangeHandler = () =>{
-        console.log(textInput.current.value)
-        getClasses()
+    const onChangeHandler = (e) =>{
+        console.log(e.target.value)
+        setTarget(e.target.value)
     }
 
-    const textInput = useRef(null)
+    const [newArr, setNewArr] = useState([])
+
+    const [switchState, setSwitchState] = useState("")
+    
+    const switchFilter = (e) => {
+        setSwitchState(e.target.value)
+    }
+
+    const filterFn = () => {
+            setNewArr(classes
+            // eslint-disable-next-line array-callback-return
+            .filter(d=> {
+                if(switchState === "Name"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "" || switchState === "All"){
+                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || 
+                    d.Courses[0].name.toLowerCase().includes(target.toLowerCase()) === true ||
+                    d.UnavailableRooms.toString().toLowerCase().includes(target.toLowerCase()) === true 
+                    || 
+                    d.Population.toString().toLowerCase().includes(target.toLowerCase()) === true
+                }else if(switchState === "Course"){
+
+                    return d.Courses[0].name.toLowerCase().includes(target.toLowerCase()) === true
+
+                }else if(switchState === "Un-Rooms"){
+
+                    return d.UnavailableRooms.toString().toLowerCase().includes(target.toLowerCase()) === true
+
+                }else if(switchState === "Size"){
+
+                    return d.Population.toString().toLowerCase().includes(target.toLowerCase()) === true
+
+                }
+            }))
+    }
+
 
 
     return (
@@ -219,8 +256,14 @@ const Classes = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
-                    <input placeholder="Enter keyword to search" ref={textInput}/>
+                    <select className="select-css2" name="switch" onChange={switchFilter}>
+                        <option>All</option>
+                        <option>Name</option>
+                        <option>Size</option>
+                        <option>Course</option>
+                        <option>Un-Rooms</option>
+                    </select>
+                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}><img src={plus} alt="plus"/>Add new class</button>
@@ -237,10 +280,7 @@ const Classes = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                       {loading === true ? classes
-                       .filter(d=> {
-                        return d.name.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
-                        })
+                       {loading === true ? newArr
                        .map((clas) => {
                                return (
                                 <tr className="default" key={clas._id}>
@@ -271,6 +311,7 @@ const Classes = (props) => {
                                );
                            }
                        ) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>}
+                       {newArr.length === 0 && loading === true ? <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr> : null}
                     </tbody>
                     </table>
                 </div>

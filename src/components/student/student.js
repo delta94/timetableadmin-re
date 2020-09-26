@@ -1,12 +1,11 @@
 /* eslint-disable array-callback-return */
-import React,{useState,useEffect,useRef} from "react"
+import React,{useState,useEffect} from "react"
 import {Link} from "react-router-dom"
 import "./student.css"
 import "../../global/global.css"
 import bin from "../../images/bin.png"
 import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
-import search from "../../images/search.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import propic from "../../images/Profile Picture.svg"
@@ -189,6 +188,7 @@ const Student = (props) => {
     useEffect(() => {
         getStudents()
         studentLength()
+        filterFn()
         return () => {
             source.cancel("Component got unmounted");
         };
@@ -209,14 +209,34 @@ const Student = (props) => {
         setStudL(students.length)
     }
 
+    const [target, setTarget] = useState("")
+
     // Filtering
-    const onChangeHandler = () =>{
-        console.log(textInput.current.value)
-        getStudents()
+    const onChangeHandler = (e) =>{
+        console.log(e.target.value)
+        setTarget(e.target.value)
     }
 
-    const textInput = useRef(null)
+    const [newArr, setNewArr] = useState([])
 
+    const [switchState, setSwitchState] = useState("")
+    
+    const switchFilter = (e) => {
+        setSwitchState(e.target.value)
+    }
+
+    const filterFn = () => {
+        setNewArr(students
+        .filter(d=> {
+            if(switchState === "Name"){
+                return d.firstname.toLowerCase().includes(target.toLowerCase()) === true
+            }else if(switchState === "" || switchState === "All"){
+                return d.firstname.toLowerCase().includes(target.toLowerCase()) === true || d.email.toLowerCase().includes(target.toLowerCase()) === true
+            }else if(switchState === "Email"){
+                return d.email.toLowerCase().includes(target.toLowerCase()) === true
+            }
+        }))
+}
     return (
         <>
             <header>
@@ -232,8 +252,12 @@ const Student = (props) => {
               </header>
             <div className="section">
                 <div className="search-container">
-                    <img src={search} className="search" alt="search" onClick={()=> onChangeHandler()}/>
-                    <input placeholder="Enter keyword to search" ref={textInput}/>
+                <select className="select-css2" name="switch" onChange={switchFilter}>
+                        <option>All</option>
+                        <option>Name</option>
+                        <option>Email</option>
+                    </select>
+                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <p style={{marginLeft: "30px"}}>Students registered : {studL}</p>
                 </div>
                 {pageSwitch === "home" ? 
@@ -249,10 +273,7 @@ const Student = (props) => {
                         </tr>
                     </thead>
                     <tbody className="gfg">
-                        {loading === true ? students
-                        .filter(d=> {
-                            return d.firstname.toLowerCase().includes(textInput.current.value.toLowerCase()) === true
-                        })
+                        {loading === true ? newArr
                         .map((stud) => {
                             return (
                                 <tr className="default" key={stud._id}>
@@ -278,6 +299,7 @@ const Student = (props) => {
                                 </tr>
                             );
                         }) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>}
+                        {newArr.length === 0 && loading === true ? <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr> : null}
                     </tbody>
                     </table>
                 </div>
