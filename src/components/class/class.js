@@ -55,6 +55,7 @@ const Classes = (props) => {
     // For cancelling requests
     const source = axios.CancelToken.source();
 
+    const [err, setErr] = useState(false)
     // Create Classes
     const createClass = () => {
         let data = JSON.stringify(classData);
@@ -74,7 +75,13 @@ const Classes = (props) => {
         })
         .then(()=> getClasses())
         .catch((error) => {
-        console.log(error);
+            if({...error}.response.status === 401){
+                setErr(true)
+            }else{
+                setErr(false)
+            }
+            console.log({...error}.response.status);
+            console.log(err)
         });
     }
 
@@ -239,7 +246,19 @@ const Classes = (props) => {
             }))
     }
 
-
+    //Form Validation
+    function success() {
+        if(document.getElementById("modInput").value==="" 
+        || document.getElementById("modInput2").value==="" 
+        || document.getElementById("modInput3").value==="" 
+        || document.getElementById("modInput4").value===""
+        || document.getElementById("modInput5").value===""
+        || err){ 
+               document.querySelector('.warning').style.display = "block"; 
+           } else { 
+                document.querySelector('.warning').style.display = "none"; 
+           }
+    }
 
     return (
         <>
@@ -329,14 +348,17 @@ const Classes = (props) => {
                         setModalOut(!modalOut);
                     }}/>
                     </div>
+                    <div className="input-g">
+                        <div className="warning">Make sure all fields are filled & Room does not already exist </div>
+                    </div>
                     <div className="input-c">
                         <div className="input-g">
                             <p>Name</p>
-                            <input name="name" onChange={classFormData}/>
+                            <input name="name" id="modInput" onChange={classFormData}/>
                         </div>
                         <div className="input-g">
                                 <p>Course</p>
-                                <select className="select-css" name="Courses" onChange={classFormData}>
+                                <select className="select-css" id="modInput2" name="Courses" onChange={classFormData}>
                                     <option value="" defaultValue>Select a course</option>
                                     {courses.map(course => {
                                         return(
@@ -347,16 +369,16 @@ const Classes = (props) => {
                         <div className="input-sub-group">
                             <div className="input-g2">
                                 <p>Meeting</p>
-                                <input name="Meeting" onChange={classFormData}/>
+                                <input name="Meeting" id="modInput3" onChange={classFormData}/>
                             </div>
                             <div className="input-g2">
                                 <p>Population</p>
-                                <input name="Population" onChange={classFormData}/>
+                                <input name="Population" id="modInput4" type="number" onChange={classFormData}/>
                             </div>
                         </div>
                         <div className="input-g">
                             <p>Unavailable lecture rooms</p>
-                            <input name="UnavailableRooms" onChange={classFormData}/>
+                            <input name="UnavailableRooms" id="modInput5" onChange={classFormData}/>
                         </div>
                     </div>
                     <div className="buttons">
@@ -365,8 +387,9 @@ const Classes = (props) => {
                             classFormData(e)
                             setEditModalOut(false)
                             createClass()
+                            success()
                         }}>
-                            Add course
+                            Add class
                         </button>
                     </div>
                 </div>
@@ -401,7 +424,7 @@ const Classes = (props) => {
                             </div>
                             <div className="input-g2">
                                 <p>Population</p>
-                                <input name="Population" onChange={classFormData} placeholder={labelData.populationLabel}/>
+                                <input name="Population" onChange={classFormData} type="number" placeholder={labelData.populationLabel}/>
                             </div>
                         </div>
                         <div className="input-g">

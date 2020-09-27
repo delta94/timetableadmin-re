@@ -239,6 +239,21 @@ const Lecturer = (props) => {
             }))
     }
 
+    function success() {
+        if(document.getElementById("modInput").value==="" 
+        || document.getElementById("modInput2").value===""
+        || document.getElementById("modInput3").value===""
+        || document.getElementById("modInput4").value===""
+        || document.getElementById("modInput5").value===""
+        || document.getElementById("modInput6").value===""
+        || document.getElementById("modInput7").value===""
+        || document.getElementById("modInput8").value===""){ 
+               document.querySelector('.warning').style.display = "block"; 
+           } else { 
+                document.querySelector('.warning').style.display = "none"; 
+           }
+    }
+
     return (
         <>
             <header>
@@ -357,6 +372,11 @@ const Lecturer = (props) => {
                         <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
                     </div>
                     <div className="editProfileContainer">
+                        {/* <div className="field">
+                                <p>Edit Picture</p>
+                                <input type="file" className="wid-4"/>
+                                <img className="preview" alt="preview"/>
+                        </div> */}
                         <div className="input-field">
                             <div className="field-details">
                                 <div className="field pr">
@@ -428,7 +448,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" type="number" onChange={setFormDataFn}/>
                                 </div>
                                 <button className="updateProfileBtn" onClick={(e)=> {
                                     cleanObj()
@@ -483,10 +503,13 @@ const Lecturer = (props) => {
                     </div>
                     <div className="editProfileContainer">
                         <div className="input-field">
+                            <div className="input-g">
+                                <div className="warning">Make sure all fields are filled</div>
+                            </div>
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
-                                    <input name="name" onChange={setFormDataFn} className="wid-4"/>
+                                    <input name="name" id="modInput" onChange={setFormDataFn} className="wid-4"/>
                                 </div>
                             </div>
                         </div>
@@ -499,11 +522,11 @@ const Lecturer = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Position</p>
-                                        <input name="ranking" onChange={setFormDataFn}/>
+                                        <input name="ranking" id="modInput2" onChange={setFormDataFn}/>
                                     </div>
                                     <div className="field">
                                         <p>Area of specialization</p>
-                                        <textarea name="areaOfSpec" onChange={setFormDataFn}/>
+                                        <textarea name="areaOfSpec" id="modInput3" onChange={setFormDataFn}/>
                                     </div>
                                 </div>
                                 {/* <div className="field-details">
@@ -518,15 +541,15 @@ const Lecturer = (props) => {
                         <div className="input-field">
                                 <div className="field">
                                     <p>Education Background</p>
-                                    <input className="wid-4" name="education_bg" onChange={setFormDataFn}/>
+                                    <input className="wid-4" id="modInput4" name="education_bg" onChange={setFormDataFn}/>
                                 </div>
                                 <div className="field">
                                     <p>Office No</p>
-                                    <input className="wid-4" name="office_no" onChange={setFormDataFn}/>
+                                    <input className="wid-4" id="modInput5" name="office_no" onChange={setFormDataFn}/>
                                 </div>
                                 <div className="field">
                                     <p>Degree</p>
-                                    <input className="wid-4" name="degree" onChange={setFormDataFn}/>
+                                    <input className="wid-4" id="modInput6" name="degree" onChange={setFormDataFn}/>
                                 </div>
                             <div className="field-name">
                                 Email Address
@@ -535,7 +558,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input className="wid-4" name="email" onChange={setFormDataFn}/>
+                                    <input className="wid-4" id="modInput7" name="email" type="email" onChange={setFormDataFn}/>
                                 </div>
                             </div>
                         </div>
@@ -548,11 +571,12 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input className="wid-4" name="phone_no" onChange={setFormDataFn}/>
+                                    <input className="wid-4" id="modInput8" type="number" name="phone_no" onChange={setFormDataFn}/>
                                 </div>
                                 <button className="updateProfileBtn" onClick={(e)=> {
                                     setFormDataFn(e)
                                     createLect()
+                                    success()
                                 }}>
                                     Create lecturer
                                 </button>

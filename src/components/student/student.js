@@ -8,7 +8,6 @@ import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
-import propic from "../../images/Profile Picture.svg"
 import cross from "../../images/close.png"
 
 
@@ -26,7 +25,8 @@ const Student = (props) => {
             dob: "",
             matric: "",
             level: "",
-            role: ""
+            role: "",
+            img: ""
         }
     )
 
@@ -98,16 +98,6 @@ const Student = (props) => {
     // For cancelling requests
     const source = axios.CancelToken.source();
 
-    //  var formData = new FormData();
-    // var imagefile = document.querySelector('#file');
-    // formData.append("image", imagefile.files[0]);
-    // axios.post('upload_file', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data'
-    //     }
-    // })
-
-
     // Get request
     const getStudents = () => {
         let config = {
@@ -140,7 +130,8 @@ const Student = (props) => {
                     dob: stud.dob,
                     matric: stud.matric,
                     level: stud.level,
-                    role: stud.role
+                    role: stud.role,
+                    img: stud.image
                 })
             }
         })
@@ -228,7 +219,7 @@ const Student = (props) => {
     const filterFn = () => {
         setNewArr(students
         .filter(d=> {
-            if(switchState === "Name"){
+            if(switchState === "First Name"){
                 return d.firstname.toLowerCase().includes(target.toLowerCase()) === true
             }else if(switchState === "" || switchState === "All"){
                 return d.firstname.toLowerCase().includes(target.toLowerCase()) === true || d.email.toLowerCase().includes(target.toLowerCase()) === true
@@ -236,7 +227,9 @@ const Student = (props) => {
                 return d.email.toLowerCase().includes(target.toLowerCase()) === true
             }
         }))
-}
+    }
+
+
     return (
         <>
             <header>
@@ -254,7 +247,7 @@ const Student = (props) => {
                 <div className="search-container">
                 <select className="select-css2" name="switch" onChange={switchFilter}>
                         <option>All</option>
-                        <option>Name</option>
+                        <option>First Name</option>
                         <option>Email</option>
                     </select>
                     <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
@@ -308,7 +301,7 @@ const Student = (props) => {
                 {pageSwitch === "profile" ?
                 <div className="profile-container">
                     <div className="profile">
-                        <img src={propic} alt="profile"/>
+                        <img src={profileData.img} className="profile-picture" alt="profile"/>
                         <div className="name-group">
                             <div className="detail">
                                 <p>First Name:</p>

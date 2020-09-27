@@ -51,6 +51,7 @@ const Period = (props) => {
     const source = axios.CancelToken.source();
 
     // Create periods
+    const [err, setErr] = useState(false)
     const createPeriods = () => {
         let data = JSON.stringify(periodData);
 
@@ -71,7 +72,13 @@ const Period = (props) => {
             getPeriods()
         })
         .catch((error) => {
-        console.log(error);
+            if({...error}.response.status === 401){
+                setErr(true)
+            }else{
+                setErr(false)
+            }
+            console.log({...error}.response.status);
+            console.log(err)
         });
     }
 
@@ -220,6 +227,14 @@ const Period = (props) => {
             }))
     }
 
+    function success() {
+        if(document.getElementById("modInput").value==="" || document.getElementById("modInput2").value==="" || document.getElementById("modInput3").value==="" || err){ 
+               document.querySelector('.warning').style.display = "block"; 
+           } else { 
+                document.querySelector('.warning').style.display = "none"; 
+           }
+    }
+
 
     return (
         <>
@@ -302,10 +317,13 @@ const Period = (props) => {
                         setModalOut(!modalOut);
                     }}/>
                     </div>
+                    <div className="input-g">
+                        <div className="warning">Make sure all fields are filled & Room does not already exist </div>
+                    </div>
                     <div className="input-c">
                         <div className="input-g">
                             <p>Course</p>
-                            <select className="select-css" name="course" onChange={periodFormData}>
+                            <select className="select-css" id="modInput" name="course" onChange={periodFormData}>
                                     <option value="" defaultValue>Select a course</option>
                                     {courses.map(course => {
                                         return(
@@ -315,11 +333,11 @@ const Period = (props) => {
                         </div>
                         <div className="input-g">
                             <p>Start Time</p>
-                            <input name="startTime" onChange={periodFormData}/>
+                            <input name="startTime" id="modInput2" onChange={periodFormData}/>
                         </div>
                         <div className="input-g">
                             <p>End Time</p>
-                            <input name="endTime" onChange={periodFormData}/>
+                            <input name="endTime" id="modInput3" onChange={periodFormData}/>
                         </div>
                     </div>
                     <div className="buttons">
@@ -328,8 +346,8 @@ const Period = (props) => {
                             (e)=> {
                                 e.preventDefault()
                                 periodFormData(e)
-                                setModalOut(!modalOut)
                                 createPeriods()
+                                success()
                             }}>
                             Add timeslot
                         </button>
@@ -371,7 +389,6 @@ const Period = (props) => {
                                 e.preventDefault()
                                 periodFormData(e)
                                 cleanObj()
-                                setEditModalOut(!editModalOut)
                                 editPeriod()
                             }}>
                             Edit timeslot

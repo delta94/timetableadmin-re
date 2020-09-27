@@ -52,6 +52,8 @@ const Room = (props) => {
           });
 
     }
+
+    const [err, setErr] = useState(false)
     const createRooms = () => {
         let data = JSON.stringify(roomData);
 
@@ -70,7 +72,13 @@ const Room = (props) => {
         })
         .then(()=> getRooms())
         .catch((error) => {
-        console.log(error);
+            if({...error}.response.status === 401){
+                setErr(true)
+            }else{
+                setErr(false)
+            }
+            console.log({...error}.response.status);
+            console.log(err)
         });
     }
 
@@ -145,7 +153,7 @@ const Room = (props) => {
         })
         .then(()=> getRooms())
         .catch((error) => {
-        console.log(error);
+        console.log(error.response.status);
         });
     }
 
@@ -202,6 +210,13 @@ const Room = (props) => {
             }))
     }
 
+    function success() {
+        if(document.getElementById("modInput").value==="" || document.getElementById("modInput2").value==="" || err){ 
+               document.querySelector('.warning').style.display = "block"; 
+           } else { 
+                document.querySelector('.warning').style.display = "none"; 
+           }
+    }
 
     return (
         <>
@@ -285,14 +300,18 @@ const Room = (props) => {
                         setModalOut(!modalOut);
                     }}/>
                     </div>
+                    <div className="input-g">
+                        <div className="warning">Make sure all fields are filled & Room does not already exist </div>
+                    </div>
+                    
                     <div className="input-c">
                         <div className="input-g">
                             <p>Name</p>
-                            <input name="name" onChange={roomFormData}/>
+                            <input name="name" onChange={roomFormData} id="modInput"/>
                         </div>
                         <div className="input-g">
                             <p>Room Capacity</p>
-                            <input name="capacity" onChange={roomFormData}/>
+                            <input name="capacity" type="number" onChange={roomFormData} id="modInput2"/>
                         </div>
                     </div>
                     <div className="buttons">
@@ -305,6 +324,7 @@ const Room = (props) => {
                                 e.preventDefault()
                                 roomFormData(e)
                                 createRooms()
+                                success()
                             }
                         }>
                             Add room
@@ -327,7 +347,7 @@ const Room = (props) => {
                         </div>
                         <div className="input-g">
                             <p>Room Capacity</p>
-                            <input name="capacity" onChange={roomFormData} placeholder={labelData.capacityLabel}/>
+                            <input name="capacity" type="number" onChange={roomFormData} placeholder={labelData.capacityLabel}/>
                         </div>
                     </div>
                     <div className="buttons">

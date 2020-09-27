@@ -116,6 +116,7 @@ const Course = (props) => {
         }
     }
 
+    const [err, setErr] = useState(false)
     const createCourses = () => {
         let data = JSON.stringify(finalDataObj);
 
@@ -136,7 +137,13 @@ const Course = (props) => {
             fetchCourses()
         })
         .catch((error) => {
-        console.log(error);
+            if({...error}.response.status === 401){
+                setErr(true)
+            }else{
+                setErr(false)
+            }
+            console.log({...error}.response.status);
+            console.log(err)
         });
 
     }
@@ -306,6 +313,7 @@ const Course = (props) => {
 
     const filterFn = () => {
             setNewArr(courses
+            // eslint-disable-next-line array-callback-return
             .filter(d=> {
                 if(switchState === "Name"){
                     return d.name.toLowerCase().includes(target.toLowerCase()) === true
@@ -321,6 +329,21 @@ const Course = (props) => {
             }))
     }
     
+    function success() {
+        if(document.getElementById("modInput").value==="" 
+        || document.getElementById("modInput2").value===""
+        || document.getElementById("modInput3").value===""
+        || document.getElementById("modInput4").value===""
+        || document.getElementById("modInput5").value===""
+        || document.getElementById("modInput6").value===""
+        || document.getElementById("modInput7").value===""
+        || document.getElementById("modInput8").value===""
+        || document.getElementById("modInput9").value==="" || err){ 
+               document.querySelector('.warning').style.display = "block"; 
+           } else { 
+                document.querySelector('.warning').style.display = "none"; 
+           }
+    }
 
     return (
         <>
@@ -413,41 +436,38 @@ const Course = (props) => {
                     }}/>
                     </div>
                     <form  name="courseFormData" id="courses">
+                        <div className="input-g">
+                            <div className="warning">Make sure all fields are filled & Course does not already exist</div>
+                        </div>
                         <div className="input-c">
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Name</p>
-                                    <input name="name" className="mInput"  onChange={courseFormData}/>
+                                    <input name="name" className="mInput" id="modInput"  onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Course code</p>
-                                    <input list="code" className="mInput" name="code" onChange={courseFormData}/>
-                                    <datalist id="code">
-                                        <option value="100"/>
-                                        <option value="200"/>
-                                        <option value="300"/>
-                                        <option value="400"/>
-                                    </datalist>
+                                    <input list="code" className="mInput" type="number" id="modInput2" name="code" onChange={courseFormData}/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Course unit</p>
-                                    <input name="unit" className="mInput" onChange={courseFormData}/>
+                                    <input name="unit" className="mInput" type="number" id="modInput3" onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Time</p>
-                                    <input name="time" className="mInput" onChange={courseFormData}/>
+                                    <input name="time" className="mInput" id="modInput4" onChange={courseFormData}/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Level</p>
-                                    <input name="level" className="mInput" onChange={courseFormData}/>
+                                    <input name="level" className="mInput" type="number" id="modInput5" onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
                                 <p>Venue</p>
-                                <select className="select-css" name="venue" onChange={venueFormData}>
+                                <select className="select-css" name="venue" id="modInput6" onChange={venueFormData}>
                                 <option value="" defaultValue>Select a venue</option>
                                     {venues.map(venue => {
                                         return(
@@ -460,16 +480,16 @@ const Course = (props) => {
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>day</p>
-                                    <input name="day" className="mInput" placeholder="E.g monday,tuesday" onChange={courseFormData}/>
+                                    <input name="day" className="mInput" id="modInput7" placeholder="E.g monday,tuesday" onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Description</p>
-                                    <input name="description" className="mInput" onChange={courseFormData}/>
+                                    <input name="description" className="mInput" id="modInput8" onChange={courseFormData}/>
                                 </div>
                             </div>
                             <div className="input-gi">
                                     <p>Professor</p>
-                                    <select className="select-css" name="lecturer" onChange={lecturerFormData}>
+                                    <select className="select-css" id="modInput9" name="lecturer" onChange={lecturerFormData}>
                                         <option value="" defaultValue>Select a lecturer</option>
                                         {lecturers.map(lect => {
                                             return(
@@ -489,6 +509,7 @@ const Course = (props) => {
                                 lecturerFormData(e);
                                 venueFormData(e);
                                 createCourses()
+                                success()
                             }}>
                                 Add course
                             </button>
@@ -513,19 +534,13 @@ const Course = (props) => {
                                 </div>
                                 <div className="input-gi">
                                     <p>Course code</p>
-                                    <input list="code" name="code" placeholder={labelData.codeLabel} onChange={courseFormData}/>
-                                    <datalist id="code">
-                                        <option value="100"/>
-                                        <option value="200"/>
-                                        <option value="300"/>
-                                        <option value="400"/>
-                                    </datalist>
+                                    <input list="code" name="code" type="number" placeholder={labelData.codeLabel} onChange={courseFormData}/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Course unit</p>
-                                    <input name="unit" placeholder={labelData.unitLabel} onChange={courseFormData}/>
+                                    <input name="unit" type="number" placeholder={labelData.unitLabel} onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Time</p>
@@ -535,7 +550,7 @@ const Course = (props) => {
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Level</p>
-                                    <input name="level" placeholder={labelData.levelL} onChange={courseFormData}/>
+                                    <input name="level" type="number" placeholder={labelData.levelL} onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Professor</p>
