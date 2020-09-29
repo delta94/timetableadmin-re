@@ -49,6 +49,8 @@ const Course = (props) => {
         }
     )
 
+    const [id2, setId2] = useState("1234");
+
     var finalDataObj = {}
 
     // Labels
@@ -116,8 +118,8 @@ const Course = (props) => {
         }
     }
 
-    const [err, setErr] = useState(false)
-    const createCourses = () => {
+    const createCourses = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(finalDataObj);
 
         let config = {
@@ -136,14 +138,9 @@ const Course = (props) => {
         .then(()=> {
             fetchCourses()
         })
+        .then(()=> setModalOut(false))
         .catch((error) => {
-            if({...error}.response.status === 401){
-                setErr(true)
-            }else{
-                setErr(false)
-            }
-            console.log({...error}.response.status);
-            console.log(err)
+            
         });
 
     }
@@ -169,6 +166,7 @@ const Course = (props) => {
         .then(()=>{ 
             fetchCourses()
         })
+        .then(()=> setEditModalOut(false))
         .catch((error) => {
         console.log(error);
         });
@@ -216,7 +214,6 @@ const Course = (props) => {
             axios(config)
             .then((response) => {
                 var res = response.data.data
-                console.log(res)
                 setCourses(res)
                 setLoading(true)
             })
@@ -237,11 +234,9 @@ const Course = (props) => {
           axios(config)
           .then((response) => {
                 setLecturers(response.data.data)
-
-                console.log(lecturers)
           })
           .catch((error) => {
-            console.log(error);
+            
           });
     }
 
@@ -258,7 +253,7 @@ const Course = (props) => {
             setVenues(response.data.data)
           })
           .catch((error) => {
-            console.log(error);
+           
           });
           
     }
@@ -328,21 +323,55 @@ const Course = (props) => {
                 }
             }))
     }
+
+    const success = () => {
+        const nameIn = document.querySelector(".nameInput")
+        const warningInput = document.querySelector(".warning")
+        courses.map((course)=> {
+            if(course.name === nameIn.value){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
+    }
+
+    //Get all the inputs...
+    const inputs = document.querySelectorAll('form input,select');
+    // const textareas = document.querySelectorAll('textarea');
+
+    // Loop through them...
+    for(let input of inputs) {
+    // Just before submit, the invalid event will fire, let's apply our class there.
+    input.addEventListener('invalid', (event) => {
+        input.classList.add('error');    
+    }, false);
     
-    function success() {
-        if(document.getElementById("modInput").value==="" 
-        || document.getElementById("modInput2").value===""
-        || document.getElementById("modInput3").value===""
-        || document.getElementById("modInput4").value===""
-        || document.getElementById("modInput5").value===""
-        || document.getElementById("modInput6").value===""
-        || document.getElementById("modInput7").value===""
-        || document.getElementById("modInput8").value===""
-        || document.getElementById("modInput9").value==="" || err){ 
-               document.querySelector('.warning').style.display = "block"; 
-           } else { 
-                document.querySelector('.warning').style.display = "none"; 
-           }
+    // Optional: Check validity onblur
+    input.addEventListener('blur', (event) => {
+        input.checkValidity();
+
+        if(input.validity.valid){
+            input.classList.remove('error')
+            input.classList.add('good')
+        }
+    })
+
+    }
+
+    const successEdit = () => {
+        const nameIn = document.querySelector(".nameInput2")
+        const warningInput = document.querySelector(".warning2")
+        courses.map((course)=> {
+            if(course.name.toString() === nameIn.value.toString()){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
+    }
+    
+    const formSubmit = (e) => {
+        createCourses(e)
+        success()
     }
 
     return (
@@ -370,6 +399,7 @@ const Course = (props) => {
                     <input placeholder="Enter keyword to search" onChange={onChangeHandler}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
+                        setId2(Math.random().toString());
                     }}><img src={plus} alt="plus"/>Add new course</button>
                 </div>
                 <div className="table-container">
@@ -428,46 +458,53 @@ const Course = (props) => {
 
 
                 {/* Create course form */}
-                <div className={modalOut === true ? "modal modOut" : "modal"}>
+                <div className={modalOut === true ? "modal modOut" : "modal"} key={id2}>
                     <div className="head">
                         <h3>Add new course</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
                     </div>
-                    <form  name="courseFormData" id="courses">
+                    <form  name="courseFormData" id="courses" onSubmit={formSubmit}>
                         <div className="input-g">
-                            <div className="warning">Make sure all fields are filled & Course does not already exist</div>
+                            
                         </div>
                         <div className="input-c">
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Name</p>
-                                    <input name="name" className="mInput" id="modInput"  onChange={courseFormData}/>
+                                    <input name="name" className="nameInput"  onChange={courseFormData} required/>
+                                    <em className="warning">Course already exist</em>
                                 </div>
                                 <div className="input-gi">
                                     <p>Course code</p>
-                                    <input list="code" className="mInput" type="number" id="modInput2" name="code" onChange={courseFormData}/>
+                                    <input list="code" type="number" name="code" onChange={courseFormData}required/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Course unit</p>
-                                    <input name="unit" className="mInput" type="number" id="modInput3" onChange={courseFormData}/>
+                                    <input name="unit" type="number" onChange={courseFormData} required/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Time</p>
-                                    <input name="time" className="mInput" id="modInput4" onChange={courseFormData}/>
+                                    <input name="time" onChange={courseFormData} required/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Level</p>
-                                    <input name="level" className="mInput" type="number" id="modInput5" onChange={courseFormData}/>
+                                    <input list="levels" name="level" type="number" onChange={courseFormData} required/>
+                                    <datalist id="levels">
+                                        <option value="100"></option>
+                                        <option value="200"></option>
+                                        <option value="300"></option>
+                                        <option value="400"></option>
+                                    </datalist>
                                 </div>
                                 <div className="input-gi">
                                 <p>Venue</p>
-                                <select className="select-css" name="venue" id="modInput6" onChange={venueFormData}>
+                                <select className="select-css" name="venue" onChange={venueFormData} required>
                                 <option value="" defaultValue>Select a venue</option>
                                     {venues.map(venue => {
                                         return(
@@ -480,16 +517,16 @@ const Course = (props) => {
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>day</p>
-                                    <input name="day" className="mInput" id="modInput7" placeholder="E.g monday,tuesday" onChange={courseFormData}/>
+                                    <input name="day" placeholder="E.g monday,tuesday" onChange={courseFormData} required/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Description</p>
-                                    <input name="description" className="mInput" id="modInput8" onChange={courseFormData}/>
+                                    <input name="description" onChange={courseFormData} required/>
                                 </div>
                             </div>
                             <div className="input-gi">
                                     <p>Professor</p>
-                                    <select className="select-css" id="modInput9" name="lecturer" onChange={lecturerFormData}>
+                                    <select className="select-css" name="lecturer" onChange={lecturerFormData} required>
                                         <option value="" defaultValue>Select a lecturer</option>
                                         {lecturers.map(lect => {
                                             return(
@@ -504,12 +541,9 @@ const Course = (props) => {
                                 setModalOut(false)
                             }}>Cancel</button>
                             <button className="blue" type="submit" onClick={(e) => {
-                                e.preventDefault()
                                 courseFormData(e);
                                 lecturerFormData(e);
                                 venueFormData(e);
-                                createCourses()
-                                success()
                             }}>
                                 Add course
                             </button>
@@ -530,7 +564,8 @@ const Course = (props) => {
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Name</p>
-                                    <input name="name" placeholder={labelData.nameLabel} onChange={courseFormData}/>
+                                    <input name="name" className="nameInput2" placeholder={labelData.nameLabel} onChange={courseFormData}/>
+                                    <em className="warning warning2">Course already exist</em>
                                 </div>
                                 <div className="input-gi">
                                     <p>Course code</p>
@@ -595,9 +630,9 @@ const Course = (props) => {
                                 courseFormData(e);
                                 lecturerFormData(e);
                                 venueFormData(e);
-                                setEditModalOut(false)
                                 cleanObj()
                                 editCourses()
+                                successEdit()
                             }}>
                                 Edit course
                             </button>

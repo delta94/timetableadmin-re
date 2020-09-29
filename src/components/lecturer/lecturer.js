@@ -9,7 +9,6 @@ import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
-import propic from "../../images/Profile Picture.svg"
 import cross from "../../images/close.png"
 
 const Lecturer = (props) => {
@@ -27,7 +26,8 @@ const Lecturer = (props) => {
             degree: "",
             areaOfSpec: "",
             ranking: "",
-            educationBg: ""
+            educationBg: "",
+            image:""
         }
     )
 
@@ -71,7 +71,8 @@ const Lecturer = (props) => {
     }
 
     // Edit request(patch)
-    const editLect = () => {
+    const editLect = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(formData);
 
         let config = {
@@ -89,6 +90,7 @@ const Lecturer = (props) => {
           console.log(JSON.stringify(response.data));
         })
         .then(()=> getLecturers())
+        .then(()=> setPageSwitch("home"))
         .catch((error) => {
           console.log(error);
         });
@@ -99,7 +101,8 @@ const Lecturer = (props) => {
 
 
     // Create lecturer(post)
-    const createLect = () => {
+    const createLect = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(formData);
 
         let config = {
@@ -116,6 +119,7 @@ const Lecturer = (props) => {
           console.log(JSON.stringify(response.data));
         })
         .then(()=> getLecturers())
+        .then(()=> setPageSwitch("home"))
         .catch((error) => {
           console.log(error);
         });
@@ -126,7 +130,8 @@ const Lecturer = (props) => {
         let config = {
             method: 'get',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
-            headers: { }
+            headers: { },
+            cancelToken: source.token
           };
           
           axios(config)
@@ -164,7 +169,8 @@ const Lecturer = (props) => {
                     degree: lect.degree,
                     areaOfSpec: lect.areaOfSpec,
                     ranking: lect.ranking,
-                    educationBg: lect.education_bg
+                    educationBg: lect.education_bg,
+                    image: lect.image
                 })
             }
         })
@@ -239,19 +245,60 @@ const Lecturer = (props) => {
             }))
     }
 
-    function success() {
-        if(document.getElementById("modInput").value==="" 
-        || document.getElementById("modInput2").value===""
-        || document.getElementById("modInput3").value===""
-        || document.getElementById("modInput4").value===""
-        || document.getElementById("modInput5").value===""
-        || document.getElementById("modInput6").value===""
-        || document.getElementById("modInput7").value===""
-        || document.getElementById("modInput8").value===""){ 
-               document.querySelector('.warning').style.display = "block"; 
-           } else { 
-                document.querySelector('.warning').style.display = "none"; 
-           }
+    const updateImage = () => {
+        var data = new FormData()
+        var file = document.getElementById("fileInput").files[0]
+
+        data.append("image", file)
+
+        console.log([...data])
+
+        let config = {
+        method: 'patch',
+        url: 'https://tbe-node-deploy.herokuapp.com/image',
+        headers: { 
+            '_id': lectId,
+            'content-type': 'multipart/form-data'
+        },
+        data : data
+        };
+
+        axios(config)
+        .then((response) => {
+        console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+    }
+
+    const editSub = (e) => {
+        editLect(e) || updateImage()
+    }
+
+    
+    //Get all the inputs...
+    const inputs = document.querySelectorAll('.editProfileContainer input, textarea');
+    // const textareas = document.querySelectorAll('textarea');
+
+    // Loop through them...
+    for(let input of inputs) {
+    // Just before submit, the invalid event will fire, let's apply our class there.
+    input.addEventListener('invalid', (event) => {
+        input.classList.add('error');    
+    }, false);
+    
+    // Optional: Check validity onblur
+    input.addEventListener('blur', (event) => {
+        input.checkValidity();
+
+        if(input.validity.valid){
+            console.log("valid")
+            input.classList.remove('error')
+            input.classList.add('good')
+        }
+    })
+
     }
 
     return (
@@ -323,7 +370,9 @@ const Lecturer = (props) => {
 
                 {pageSwitch === "profile" ?
                 <div className="profile">
-                        <img src={propic} alt="profile"/>
+                        <div className="circular">
+                            <img src={profileData.image} alt="profile"/>
+                        </div>
                         <div className="name-groupl">
                             <div className="detail">
                                 <p>Name:</p>
@@ -371,13 +420,13 @@ const Lecturer = (props) => {
                         <h3>Edit your profile</h3>
                         <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
                     </div>
+                    <form onSubmit={editSub}>
                     <div className="editProfileContainer">
-                        {/* <div className="field">
-                                <p>Edit Picture</p>
-                                <input type="file" className="wid-4"/>
-                                <img className="preview" alt="preview"/>
-                        </div> */}
                         <div className="input-field">
+                            <div className="field">
+                                <p>Edit Picture</p>
+                                <input type="file" className="wid-4" id="fileInput"/>
+                            </div>
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
@@ -435,7 +484,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input placeholder={labelData.emailL} className="wid-4" name="email" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.emailL} className="wid-4" name="email" onChange={setFormDataFn} type="email"/>
                                 </div>
                             </div>
                         </div>
@@ -448,12 +497,11 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" type="number" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" type="tel" pattern="^[0]\d{10}$" onChange={setFormDataFn}/>
                                 </div>
-                                <button className="updateProfileBtn" onClick={(e)=> {
+                                <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                     cleanObj()
                                     setFormDataFn(e)
-                                    editLect()
                                 }}>
                                     Update Profile
                                 </button>
@@ -492,6 +540,7 @@ const Lecturer = (props) => {
                             </div>
                         </div>
                     </div>
+                    </form>
                 </div> : null}
 
                 {/* Create lecturer form */}
@@ -502,14 +551,12 @@ const Lecturer = (props) => {
                         <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
                     </div>
                     <div className="editProfileContainer">
+                    <form onSubmit={createLect}>
                         <div className="input-field">
-                            <div className="input-g">
-                                <div className="warning">Make sure all fields are filled</div>
-                            </div>
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
-                                    <input name="name" id="modInput" onChange={setFormDataFn} className="wid-4"/>
+                                    <input name="name" onChange={setFormDataFn} className="wid-4" required placeholder="Name"/>
                                 </div>
                             </div>
                         </div>
@@ -522,34 +569,28 @@ const Lecturer = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Position</p>
-                                        <input name="ranking" id="modInput2" onChange={setFormDataFn}/>
+                                        <input name="ranking" onChange={setFormDataFn} required/>
                                     </div>
                                     <div className="field">
                                         <p>Area of specialization</p>
-                                        <textarea name="areaOfSpec" id="modInput3" onChange={setFormDataFn}/>
+                                        <textarea name="areaOfSpec" onChange={setFormDataFn} required/>
                                     </div>
                                 </div>
-                                {/* <div className="field-details">
-                                    <div className="field">
-                                        <p>Courses</p>
-                                        <input className="wid-4"/>
-                                    </div>
-                                </div> */}
                             </div>
                         </div>
 
                         <div className="input-field">
                                 <div className="field">
                                     <p>Education Background</p>
-                                    <input className="wid-4" id="modInput4" name="education_bg" onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="education_bg" onChange={setFormDataFn} required/>
                                 </div>
                                 <div className="field">
                                     <p>Office No</p>
-                                    <input className="wid-4" id="modInput5" name="office_no" onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="office_no" onChange={setFormDataFn} required/>
                                 </div>
                                 <div className="field">
                                     <p>Degree</p>
-                                    <input className="wid-4" id="modInput6" name="degree" onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="degree" onChange={setFormDataFn} required/>
                                 </div>
                             <div className="field-name">
                                 Email Address
@@ -558,7 +599,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input className="wid-4" id="modInput7" name="email" type="email" onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="email" type="email" onChange={setFormDataFn} required/>
                                 </div>
                             </div>
                         </div>
@@ -571,17 +612,16 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input className="wid-4" id="modInput8" type="number" name="phone_no" onChange={setFormDataFn}/>
+                                    <input className="wid-4" type="tel" pattern="^[0]\d{10}$" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
                                 </div>
-                                <button className="updateProfileBtn" onClick={(e)=> {
+                                <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                     setFormDataFn(e)
-                                    createLect()
-                                    success()
                                 }}>
                                     Create lecturer
                                 </button>
                             </div>
                         </div>
+                        </form>
                     </div>
                 </div> : null}
                

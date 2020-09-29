@@ -72,7 +72,8 @@ const Student = (props) => {
     }
 
     // Edit request(patch)
-    const editstud = () => {
+    const editstud = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(formData);
 
         let config = {
@@ -90,6 +91,7 @@ const Student = (props) => {
           console.log(JSON.stringify(response.data));
         })
         .then(()=> getStudents())
+        .then(()=> setPageSwitch("home"))
         .catch((error) => {
           console.log(error);
         });
@@ -372,6 +374,7 @@ const Student = (props) => {
                         <h3>Edit your profile</h3>
                         <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
                     </div>
+                    <form onSubmit={editstud}>
                     <div className="editProfileContainer">
                     <div className="input-field field-details-flex2">
                             <div className="field-name">
@@ -403,7 +406,13 @@ const Student = (props) => {
                                     </div>
                                     <div className="field">
                                         <p>Level</p>
-                                        <input placeholder={labelData.levelL} name="level" onChange={setFormDataFn}/>
+                                        <input placeholder={labelData.levelL} type="number" list="levels" name="level" onChange={setFormDataFn}/>
+                                        <datalist id="levels">
+                                            <option value="100"></option>
+                                            <option value="200"></option>
+                                            <option value="300"></option>
+                                            <option value="400"></option>
+                                        </datalist>
                                     </div>
                                 </div>
                             </div>
@@ -417,21 +426,21 @@ const Student = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input placeholder={labelData.emailL} className="wid-4" name="email" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.emailL} className="wid-4" name="email" onChange={setFormDataFn} type="email"/>
                                 </div>
                             </div>
                         </div>
 
                         <div className="input-field">
-                            <button className="updateProfileBtn" onClick={(e)=> {
+                            <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                 cleanObj()
                                 setFormDataFn(e)
-                                editstud()
                             }}>
                                 Update Profile
                             </button>
                         </div>
                     </div>
+                    </form>
                 </div> : null}
             </div>
         </>

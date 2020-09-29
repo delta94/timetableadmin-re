@@ -37,6 +37,7 @@ const Room = (props) => {
 
      // setting key for edit form
      const [id, setId] = useState("123");
+     const [id2, setId2] = useState("1234");
 
     // For cancelling requests
     const source = axios.CancelToken.source();
@@ -53,8 +54,8 @@ const Room = (props) => {
 
     }
 
-    const [err, setErr] = useState(false)
-    const createRooms = () => {
+    const createRooms = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(roomData);
 
         let config = {
@@ -71,14 +72,8 @@ const Room = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getRooms())
+        .then(()=> setModalOut(false))
         .catch((error) => {
-            if({...error}.response.status === 401){
-                setErr(true)
-            }else{
-                setErr(false)
-            }
-            console.log({...error}.response.status);
-            console.log(err)
         });
     }
 
@@ -152,6 +147,7 @@ const Room = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getRooms())
+        .then(()=> setEditModalOut(false))
         .catch((error) => {
         console.log(error.response.status);
         });
@@ -210,14 +206,56 @@ const Room = (props) => {
             }))
     }
 
-    function success() {
-        if(document.getElementById("modInput").value==="" || document.getElementById("modInput2").value==="" || err){ 
-               document.querySelector('.warning').style.display = "block"; 
-           } else { 
-                document.querySelector('.warning').style.display = "none"; 
-           }
+    const success = () => {
+        const nameIn = document.querySelector(".nameInput")
+        const warningInput = document.querySelector(".warning")
+        rooms.map((room)=> {
+            if(room.name === nameIn.value){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
     }
 
+    const successEdit = () => {
+        const nameIn = document.querySelector(".nameInputEdit")
+        const warningInput = document.querySelector(".warning2")
+        rooms.map((room)=> {
+            if(room.name.toString() === nameIn.value.toString()){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+            console.log(room.name)
+        })
+    }
+
+    //Get all the inputs...
+    const inputs = document.querySelectorAll('form input');
+    // const textareas = document.querySelectorAll('textarea');
+
+    // Loop through them...
+    for(let input of inputs) {
+    // Just before submit, the invalid event will fire, let's apply our class there.
+    input.addEventListener('invalid', (event) => {
+        input.classList.add('error');    
+    }, false);
+    
+    // Optional: Check validity onblur
+    input.addEventListener('blur', (event) => {
+        input.checkValidity();
+
+        if(input.validity.valid){
+            input.classList.remove('error')
+            input.classList.add('good')
+        }
+    })
+
+    }
+
+    const formSubmit = (e) => {
+        createRooms(e)
+        success()
+    }
     return (
         <>
             <header>
@@ -241,6 +279,7 @@ const Room = (props) => {
                     <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
+                        setId2(Math.random().toString());
                     }}><img src={plus} alt="plus"/>Add new room</button>
                 </div>
                 <div className="table-container">
@@ -293,43 +332,38 @@ const Room = (props) => {
 
 
                 {/* Create room form */}
-                <div className={modalOut === true ? "modal modOut" : "modal"}>
+                <div className={modalOut === true ? "modal modOut" : "modal"} key={id2}>
                     <div className="head">
                         <h3>Add new room</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
                     </div>
-                    <div className="input-g">
-                        <div className="warning">Make sure all fields are filled & Room does not already exist </div>
-                    </div>
-                    
+                    <form onSubmit={formSubmit}>
                     <div className="input-c">
                         <div className="input-g">
                             <p>Name</p>
-                            <input name="name" onChange={roomFormData} id="modInput"/>
+                            <input name="name" onChange={roomFormData} id="modInput" className="nameInput" required/>
+                            <em className="warning">Room already exists</em>
                         </div>
                         <div className="input-g">
                             <p>Room Capacity</p>
-                            <input name="capacity" type="number" onChange={roomFormData} id="modInput2"/>
+                            <input name="capacity" type="number" onChange={roomFormData} id="modInput2" required/>
                         </div>
                     </div>
                     <div className="buttons">
                         <button className="red" onClick={(e) => {
-                                e.preventDefault()
                                 setModalOut(false)
                             }}>Cancel</button>
-                        <button className="blue" onClick={
+                        <button className="blue" type="submit" onClick={
                             (e)=> {
-                                e.preventDefault()
                                 roomFormData(e)
-                                createRooms()
-                                success()
                             }
                         }>
                             Add room
                         </button>
                     </div>
+                    </form>
                 </div>
 
                 {/* Edit room form */}
@@ -343,7 +377,8 @@ const Room = (props) => {
                     <div className="input-c">
                         <div className="input-g">
                             <p>Name</p>
-                            <input name="name" onChange={roomFormData} placeholder={labelData.nameLabel}/>
+                            <input name="name" className="nameInputEdit" onChange={roomFormData} placeholder={labelData.nameLabel}/>
+                            <em className="warning warning2">Room already exists</em>
                         </div>
                         <div className="input-g">
                             <p>Room Capacity</p>
@@ -357,10 +392,10 @@ const Room = (props) => {
                             }}>Cancel</button>
                         <button className="blue" onClick={
                             (e)=> {
-                                e.preventDefault()
                                 roomFormData(e)
                                 cleanObj()
                                 editRooms()
+                                successEdit()
                             }
                         }>
                             Edit room

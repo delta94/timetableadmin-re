@@ -45,7 +45,6 @@ const Dashboard = (props) => {
                 setRooms(response.data.data)
             })
             .catch((error) => {
-                console.log(error);
             });
 
             axios({
@@ -56,11 +55,9 @@ const Dashboard = (props) => {
                 })
             .then((response) => {
                 var res = response.data.data
-                console.log(res)
                 setCourses(res)
             })
             .catch((error) => {
-                console.log(error);
             });
 
             axios({
@@ -73,7 +70,6 @@ const Dashboard = (props) => {
             setLecturers(response.data.data)
             })
             .catch((error) => {
-            console.log(error);
             });
 
             axios({
@@ -86,7 +82,6 @@ const Dashboard = (props) => {
                 setClasses(response.data.data)
             })
             .catch((error) => {
-            console.log(error);
             });
 
             axios({
@@ -100,7 +95,6 @@ const Dashboard = (props) => {
             setLoading(true)
             })
             .catch((error) => {
-            console.log(error);
             });
     }
 
@@ -115,7 +109,6 @@ const Dashboard = (props) => {
     useEffect(() => {
         getDetails()
         getDetailsLength()
-        console.log(students)
         return () => {
             source.cancel("Component got unmounted");
         };

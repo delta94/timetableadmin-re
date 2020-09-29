@@ -409,30 +409,44 @@
 }
 
 .profile-picture{
-  height: 150px;
-  border-radius: 5rem;
+    border-radius: 50%; 
+    width: 150px;
+    height: 100%;
+}
+
+.circular img{
+  width:250px;
+  height:250px;
+  object-fit:cover;
+  border-radius:50%;
 }
 
 .warning{
-  border: 1px solid red;
   color: red;
+  width: 90%;
+  display: none;
+  font-size: 13px;
+}
+
+.success{
+  border: 1px solid green;
+  color: green;
   padding: 7px;
   width: 90%;
   display: none;
   font-size: 13px;
 }
 
-.warning2{
-  border: 1px solid red;
-  color: red;
-  padding: 7px;
-  width: 90%;
-  display: none;
-  font-size: 13px;
+.good{
+  border: 1px solid green !important;
+}
+
+.error{
+  border: 1px solid red !important;
 }
 
 .display{
-  display: block;
+  display: block !important;
 }
 
 @media only screen and (max-width: 850px){

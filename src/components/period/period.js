@@ -36,7 +36,7 @@ const Period = (props) => {
     );
      // setting key for edit form
      const [id, setId] = useState("123");
-
+     const [id2, setId2] = useState("1234");
     const periodFormData = (e) => {
         setPeriodData({
             ...periodData,
@@ -51,8 +51,8 @@ const Period = (props) => {
     const source = axios.CancelToken.source();
 
     // Create periods
-    const [err, setErr] = useState(false)
-    const createPeriods = () => {
+    const createPeriods = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(periodData);
 
         let config = {
@@ -71,14 +71,8 @@ const Period = (props) => {
         .then(()=>{
             getPeriods()
         })
+        .then(()=> setModalOut(false))
         .catch((error) => {
-            if({...error}.response.status === 401){
-                setErr(true)
-            }else{
-                setErr(false)
-            }
-            console.log({...error}.response.status);
-            console.log(err)
         });
     }
 
@@ -97,7 +91,7 @@ const Period = (props) => {
             setLoading(true)
         })
         .catch((error) => {
-            console.log(error);
+            
         });
     }
 
@@ -138,7 +132,7 @@ const Period = (props) => {
             setLoading(true)
         })
         .catch((error) => {
-        console.log(error);
+        
         });
 
     }
@@ -177,6 +171,7 @@ const Period = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getPeriods())
+        .then(()=> setEditModalOut(false))
         .catch((error) => {
         console.log(error);
         });
@@ -227,12 +222,54 @@ const Period = (props) => {
             }))
     }
 
-    function success() {
-        if(document.getElementById("modInput").value==="" || document.getElementById("modInput2").value==="" || document.getElementById("modInput3").value==="" || err){ 
-               document.querySelector('.warning').style.display = "block"; 
-           } else { 
-                document.querySelector('.warning').style.display = "none"; 
-           }
+    //Get all the inputs...
+    const inputs = document.querySelectorAll('form input, form select');
+    // const textareas = document.querySelectorAll('textarea');
+
+    // Loop through them...
+    for(let input of inputs) {
+    // Just before submit, the invalid event will fire, let's apply our class there.
+    input.addEventListener('invalid', (event) => {
+        input.classList.add('error');    
+    }, false);
+    
+    // Optional: Check validity onblur
+    input.addEventListener('blur', (event) => {
+        input.checkValidity();
+
+        if(input.validity.valid){
+            input.classList.remove('error')
+            input.classList.add('good')
+        }
+    })
+
+    }
+
+    const success = () => {
+        const nameIn = document.querySelector(".nameInput")
+        const warningInput = document.querySelector(".warning")
+        periods.map((period)=> {
+            if(period.course._id === nameIn.value){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
+    }
+
+    const successEdit = () => {
+        const nameIn = document.querySelector(".nameInput2")
+        const warningInput = document.querySelector(".warning2")
+        periods.map((period)=> {
+            if(period.course._id === nameIn.value){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
+    }
+
+    const formSubmit = (e) => {
+        createPeriods(e)
+        success()
     }
 
 
@@ -259,6 +296,7 @@ const Period = (props) => {
                     <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
+                        setId2(Math.random().toString());
                     }}><img src={plus} alt="plus"/>Add new timeslot</button>
                 </div>
                 <div className="table-container">
@@ -310,48 +348,45 @@ const Period = (props) => {
                 }}></div>
 
                 {/* Create form */}
-                <div className={modalOut === true ? "modal modOut" : "modal"}>
+                <div className={modalOut === true ? "modal modOut" : "modal"} key={id2}>
                     <div className="head">
                         <h3>Add new timeslot</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
                     </div>
-                    <div className="input-g">
-                        <div className="warning">Make sure all fields are filled & Room does not already exist </div>
-                    </div>
+                    <form onSubmit={formSubmit}>
                     <div className="input-c">
                         <div className="input-g">
                             <p>Course</p>
-                            <select className="select-css" id="modInput" name="course" onChange={periodFormData}>
+                            <select className="select-css nameInput" name="course" onChange={periodFormData} required>
                                     <option value="" defaultValue>Select a course</option>
                                     {courses.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
                             </select>
+                            <em className="warning">Period already exists </em>
                         </div>
                         <div className="input-g">
                             <p>Start Time</p>
-                            <input name="startTime" id="modInput2" onChange={periodFormData}/>
+                            <input name="startTime" onChange={periodFormData} required/>
                         </div>
                         <div className="input-g">
                             <p>End Time</p>
-                            <input name="endTime" id="modInput3" onChange={periodFormData}/>
+                            <input name="endTime" onChange={periodFormData} required/>
                         </div>
                     </div>
                     <div className="buttons">
                         <button className="red" onClick={()=> setModalOut(!modalOut)}>Cancel</button>
-                        <button className="blue" onClick={
+                        <button className="blue" type="submit" onClick={
                             (e)=> {
-                                e.preventDefault()
                                 periodFormData(e)
-                                createPeriods()
-                                success()
                             }}>
                             Add timeslot
                         </button>
                     </div>
+                    </form>
                 </div>
 
                 {/* Edit form */}
@@ -365,13 +400,14 @@ const Period = (props) => {
                     <div className="input-c">
                         <div className="input-g">
                             <p>Course</p>
-                            <select className="select-css" name="course" defaultValue={labelData.courseLabel} onChange={periodFormData}>
+                            <select className="select-css nameInput2" name="course" defaultValue={labelData.courseLabel} onChange={periodFormData}>
                                     <option value={labelData.courseLabel} disabled>{labelData.courseLabel}</option>
                                     {courses.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
                             </select>
+                            <em className="warning warning2">Period already exists </em>
                         </div>
                         <div className="input-g">
                             <p>Start Time</p>
@@ -390,6 +426,7 @@ const Period = (props) => {
                                 periodFormData(e)
                                 cleanObj()
                                 editPeriod()
+                                successEdit()
                             }}>
                             Edit timeslot
                         </button>

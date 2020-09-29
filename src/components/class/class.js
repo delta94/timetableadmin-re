@@ -30,6 +30,8 @@ const Classes = (props) => {
         }
     )
 
+    const [id2, setId2] = useState("1234");
+
     const [labelData, setLabelData] = useState(
         {
             nameLabel: "",
@@ -57,7 +59,8 @@ const Classes = (props) => {
 
     const [err, setErr] = useState(false)
     // Create Classes
-    const createClass = () => {
+    const createClass = (e) => {
+        e.preventDefault()
         let data = JSON.stringify(classData);
 
         let config = {
@@ -74,14 +77,13 @@ const Classes = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getClasses())
+        .then(()=> setModalOut(false))
         .catch((error) => {
             if({...error}.response.status === 401){
                 setErr(true)
             }else{
                 setErr(false)
             }
-            console.log({...error}.response.status);
-            console.log(err)
         });
     }
 
@@ -116,12 +118,11 @@ const Classes = (props) => {
         axios(config)
         .then((response) => {
             var res = response.data.data
-            console.log(res)
             setCourses(res)
             setLoading(true)
         })
         .catch((error) => {
-            console.log(error);
+           
         });
     }
 
@@ -179,6 +180,7 @@ const Classes = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getClasses())
+        .then(()=> setEditModalOut(false))
         .catch((error) => {
         console.log(error);
         });
@@ -246,18 +248,54 @@ const Classes = (props) => {
             }))
     }
 
-    //Form Validation
-    function success() {
-        if(document.getElementById("modInput").value==="" 
-        || document.getElementById("modInput2").value==="" 
-        || document.getElementById("modInput3").value==="" 
-        || document.getElementById("modInput4").value===""
-        || document.getElementById("modInput5").value===""
-        || err){ 
-               document.querySelector('.warning').style.display = "block"; 
-           } else { 
-                document.querySelector('.warning').style.display = "none"; 
-           }
+    //Get all the inputs...
+    const inputs = document.querySelectorAll('form input, form select');
+    // const textareas = document.querySelectorAll('textarea');
+
+    // Loop through them...
+    for(let input of inputs) {
+    // Just before submit, the invalid event will fire, let's apply our class there.
+    input.addEventListener('invalid', (event) => {
+        input.classList.add('error');    
+    }, false);
+    
+    // Optional: Check validity onblur
+    input.addEventListener('blur', (event) => {
+        input.checkValidity();
+
+        if(input.validity.valid){
+            input.classList.remove('error')
+            input.classList.add('good')
+        }
+    })
+
+    }
+
+    const success = () => {
+        const nameIn = document.querySelector(".nameInput")
+        const warningInput = document.querySelector(".warning")
+        classes.map((clas)=> {
+            if(clas.name === nameIn.value){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
+    }
+
+    const successEdit = () => {
+        const nameIn = document.querySelector(".nameInput2")
+        const warningInput = document.querySelector(".warning2")
+        classes.map((clas)=> {
+            if(clas.name === nameIn.value){
+                warningInput.classList.add("display")
+                nameIn.classList.add("error")
+            }
+        })
+    }
+
+    const formSubmit = (e) => {
+        createClass(e)
+        success()
     }
 
     return (
@@ -285,6 +323,7 @@ const Classes = (props) => {
                     <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
+                        setId2(Math.random().toString());
                     }}><img src={plus} alt="plus"/>Add new class</button>
                 </div>
                 <div className="table-container">
@@ -341,24 +380,23 @@ const Classes = (props) => {
                 }}></div>
 
                 {/* Create class form */}
-                <div className={modalOut === true ? "modal modalClass modOut" : "modal modalClass"}>
+                <div className={modalOut === true ? "modal modalClass modOut" : "modal modalClass"} key={id2}>
                     <div className="head">
                         <h3>Add new class</h3>
                         <img src={cross} alt="cross" onClick={()=>{
                         setModalOut(!modalOut);
                     }}/>
                     </div>
-                    <div className="input-g">
-                        <div className="warning">Make sure all fields are filled & Room does not already exist </div>
-                    </div>
+                    <form onSubmit={formSubmit}>
                     <div className="input-c">
                         <div className="input-g">
                             <p>Name</p>
-                            <input name="name" id="modInput" onChange={classFormData}/>
+                            <input name="name" className="nameInput" onChange={classFormData} required/>
+                            <em className="warning">Class already exists </em>
                         </div>
                         <div className="input-g">
                                 <p>Course</p>
-                                <select className="select-css" id="modInput2" name="Courses" onChange={classFormData}>
+                                <select className="select-css"  name="Courses" onChange={classFormData} required>
                                     <option value="" defaultValue>Select a course</option>
                                     {courses.map(course => {
                                         return(
@@ -369,16 +407,16 @@ const Classes = (props) => {
                         <div className="input-sub-group">
                             <div className="input-g2">
                                 <p>Meeting</p>
-                                <input name="Meeting" id="modInput3" onChange={classFormData}/>
+                                <input name="Meeting" onChange={classFormData} required/>
                             </div>
                             <div className="input-g2">
                                 <p>Population</p>
-                                <input name="Population" id="modInput4" type="number" onChange={classFormData}/>
+                                <input name="Population" type="number" onChange={classFormData} required/>
                             </div>
                         </div>
                         <div className="input-g">
                             <p>Unavailable lecture rooms</p>
-                            <input name="UnavailableRooms" id="modInput5" onChange={classFormData}/>
+                            <input name="UnavailableRooms" onChange={classFormData} required/>
                         </div>
                     </div>
                     <div className="buttons">
@@ -386,12 +424,11 @@ const Classes = (props) => {
                         <button className="blue" onClick={(e)=> {
                             classFormData(e)
                             setEditModalOut(false)
-                            createClass()
-                            success()
                         }}>
                             Add class
                         </button>
                     </div>
+                    </form>
                 </div>
 
                 {/* Edit class form */}
@@ -405,7 +442,8 @@ const Classes = (props) => {
                     <div className="input-c">
                         <div className="input-g">
                             <p>Name</p>
-                            <input name="name" onChange={classFormData} placeholder={labelData.nameLabel}/>
+                            <input name="name" className="nameInput2" onChange={classFormData} placeholder={labelData.nameLabel}/>
+                            <em className="warning warning2">Class already exists </em>
                         </div>
                         <div className="input-g">
                                 <p>Course</p>
@@ -437,8 +475,8 @@ const Classes = (props) => {
                         <button className="blue" onClick={(e)=> {
                             classFormData(e)
                             cleanObj()
-                            setEditModalOut(false)
                             editClass()
+                            successEdit()
                         }}>
                             Edit class
                         </button>
