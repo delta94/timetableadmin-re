@@ -57,7 +57,6 @@ const Classes = (props) => {
     // For cancelling requests
     const source = axios.CancelToken.source();
 
-    const [err, setErr] = useState(false)
     // Create Classes
     const createClass = (e) => {
         e.preventDefault()
@@ -79,11 +78,7 @@ const Classes = (props) => {
         .then(()=> getClasses())
         .then(()=> setModalOut(false))
         .catch((error) => {
-            if({...error}.response.status === 401){
-                setErr(true)
-            }else{
-                setErr(false)
-            }
+            
         });
     }
 
@@ -274,6 +269,7 @@ const Classes = (props) => {
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
+        // eslint-disable-next-line array-callback-return
         classes.map((clas)=> {
             if(clas.name === nameIn.value){
                 warningInput.classList.add("display")
@@ -285,6 +281,7 @@ const Classes = (props) => {
     const successEdit = () => {
         const nameIn = document.querySelector(".nameInput2")
         const warningInput = document.querySelector(".warning2")
+        // eslint-disable-next-line array-callback-return
         classes.map((clas)=> {
             if(clas.name === nameIn.value){
                 warningInput.classList.add("display")

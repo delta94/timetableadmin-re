@@ -497,7 +497,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" type="tel" pattern="^[0]\d{10}$" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" onChange={setFormDataFn}/>
                                 </div>
                                 <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                     cleanObj()
@@ -612,7 +612,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input className="wid-4" type="tel" pattern="^[0]\d{10}$" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
+                                    <input className="wid-4" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" placeholder="+2341235467387" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
                                 </div>
                                 <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                     setFormDataFn(e)

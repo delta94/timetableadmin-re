@@ -216,7 +216,7 @@
 .profile{
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     width: 100%;
     height: auto;
@@ -412,6 +412,7 @@
     border-radius: 50%; 
     width: 150px;
     height: 100%;
+    margin-right: 100px;
 }
 
 .circular img{
@@ -419,6 +420,7 @@
   height:250px;
   object-fit:cover;
   border-radius:50%;
+  margin-right: 100px;
 }
 
 .warning{

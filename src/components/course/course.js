@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React,{useEffect, useState} from "react"
 import {Link} from "react-router-dom"
 import "./course.css"
@@ -30,12 +31,17 @@ const Course = (props) => {
             name: "",
             code: "",
             unit: "",
-            time: "",
             level: "",
             day: "",
             description: ""
         }
     );
+
+    // const [time, timeData] = useState(
+    //     {
+    //         time: ""
+    //     }
+    // )
 
     const [lecturer, lecturerData] = useState(
         {
@@ -67,6 +73,11 @@ const Course = (props) => {
             descLabel: ""
         }
     );
+
+    // const [timeFormData, setTimeFormData] = useState({
+    //     stime: "",
+    //     etime: ""
+    // })
 
     // setting key for edit form
     const [id, setId] = useState("123");
@@ -487,8 +498,12 @@ const Course = (props) => {
                                     <input name="unit" type="number" onChange={courseFormData} required/>
                                 </div>
                                 <div className="input-gi">
-                                    <p>Time</p>
-                                    <input name="time" onChange={courseFormData} required/>
+                                    <p>Start Time</p>
+                                    <input name="stime" id="stime" onChange={courseFormData}  required/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>End Time</p>
+                                    <input name="etime" id="etime" onChange={courseFormData}  required/>
                                 </div>
                             </div>
                             <div className="input-flex">

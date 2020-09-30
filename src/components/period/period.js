@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React,{useState,useEffect} from "react"
 import {Link} from "react-router-dom"
 import "./period.css"
@@ -370,11 +371,11 @@ const Period = (props) => {
                         </div>
                         <div className="input-g">
                             <p>Start Time</p>
-                            <input name="startTime" onChange={periodFormData} required/>
+                            <input name="startTime" type="time" onChange={periodFormData} required/>
                         </div>
                         <div className="input-g">
                             <p>End Time</p>
-                            <input name="endTime" onChange={periodFormData} required/>
+                            <input name="endTime" type="time" onChange={periodFormData} required/>
                         </div>
                     </div>
                     <div className="buttons">
@@ -411,11 +412,11 @@ const Period = (props) => {
                         </div>
                         <div className="input-g">
                             <p>Start Time</p>
-                            <input name="startTime" onChange={periodFormData} placeholder={labelData.sTimeLabel}/>
+                            <input name="startTime" type="time" onChange={periodFormData} placeholder={labelData.sTimeLabel}/>
                         </div>
                         <div className="input-g">
                             <p>End Time</p>
-                            <input name="endTime" onChange={periodFormData} placeholder={labelData.eTimeLabel}/>
+                            <input name="endTime" type="time" onChange={periodFormData} placeholder={labelData.eTimeLabel}/>
                         </div>
                     </div>
                     <div className="buttons">

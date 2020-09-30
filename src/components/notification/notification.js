@@ -17,17 +17,25 @@ const Notif = () =>{
     pusher.connection.bind('connected', function () {
         // attach the socket ID to all outgoing Axios requests
         axios.defaults.headers.common['X-Socket-Id'] = pusher.connection.socket_id;
+            console.log("socket successfully connected")
     });
 
-    // request permission to display notifications, if we don't alreay have it
+    pusher.connection.bind( 'error', function( err ) {
+        if( err.error.data.code === 404 ) {
+          console.log('>>> detected limit error');
+        }
+    });
+
+    // request permission to display notifications, if we don't already have it
     Notification.requestPermission();
+
     pusher.subscribe('notifications')
             .bind('newUser', function (user) {
                 // if we're on the home page, show an "Updated" badge
                 // if (window.location.pathname === "/") {
                 //     document.querySelector('a[href="/posts/' + post._id + '"]').append('<span class="badge badge-primary badge-pill">Updated</span>');
                 // }
-                var notification = new Notification(user.firstname + " was just updated" + user.createdAt);
+                var notification = new Notification(user.firstname + " was just updated");
 
                 console.log(notification)
 
@@ -40,12 +48,13 @@ const Notif = () =>{
                 //     notification.close();
                 // }
     });
+    
 
-    const persist = () => {
-        var obj = {hello: "hi", sup: "yeah"}
-        setNotif([...notif, obj.hello])
-        console.log(notif)
-    }
+    // const persist = () => {
+    //     var obj = {hello: "hi", sup: "yeah"}
+    //     setNotif([...notif, obj.hello])
+    //     console.log(notif)
+    // }
     return (
         <>
             <div className="notification">
@@ -65,9 +74,9 @@ const Notif = () =>{
                         {/* <button onClick={persist}>Persist state</button> */}
                         {notif.map((key,i)=> {
                             return (
-                                <table className="table">
-                                    <tbody className="gfg">
-                                        <tr className="default tr-no-bottom" key={key}>
+                                <table className="table" key={i}>
+                                    <tbody className="gfg" >
+                                        <tr className="default tr-no-bottom">
                                             <td className="notif-tr">{key}</td>
                                         </tr>
                                     </tbody>
