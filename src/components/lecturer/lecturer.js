@@ -5,7 +5,6 @@ import "./lecturer.css"
 import "../../global/global.css"
 import bin from "../../images/bin.png"
 import plus from "../../images/plus.svg"
-import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
@@ -310,7 +309,7 @@ const Lecturer = (props) => {
                   </div>
                   <div className="navMobile"> 
                     <Link to="/app/notification">
-                            <img src={bell} alt="bell"/>
+                        <div className="bell"></div>
                     </Link>
                   </div>
               </header>

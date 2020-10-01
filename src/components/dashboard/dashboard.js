@@ -1,14 +1,8 @@
 import React,{useState, useEffect} from "react"
 import {Link} from "react-router-dom"
-import course from "../../images/course-icon.png"
-import lecturer from "../../images/lecturer-icon.png"
-import room from "../../images/room-icon.png"
 import "./dashboard.css"
-import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
-import pro from "../../images/single-man-profile-picture.png"
 import cross from "../../images/close.png"
-import update from "../../images/refresh.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 
@@ -123,48 +117,43 @@ const Dashboard = (props) => {
                     <p>Dashboard</p>
                   </div>
                   <div className="navMobile">
-                    <img src={update} alt="update" className="update" 
+                    <div className="update" 
                     onClick={()=>{
                         setUpdateOut(!updateOut);
-                    }}/>
+                    }}></div>
                     <Link to="/app/notification">
-                        <img src={bell} alt="bell"/>
+                        <div className="bell"></div>
                     </Link>
                   </div>
               </header>
               {loading === true ?  
                 <div className="card-container">       
                     <Link to="/app/rooms">
-                        <div className="card">
-                            <img src={room} alt="card"/>
+                        <div className="card card-room">
                             <h3>Lecture Rooms</h3>
                             <p>{roomL}</p>
                         </div>
                     </Link>
                     <Link to="/app/courses">
-                        <div className="card">
-                            <img src={course} alt="card"/>
+                        <div className="card card-course">
                             <h3>Courses</h3>
                             <p>{courseL}</p>
                         </div>
                     </Link>
                     <Link to="/app/lecturers">
-                        <div className="card">
-                            <img src={lecturer} alt="card"/>
+                        <div className="card card-lect">
                             <h3>Lecturers</h3>
                             <p>{lectL}</p>
                         </div>
                     </Link>
                     <Link to="/app/classes">
-                        <div className="card">
-                            <img src={room} alt="card"/>
+                        <div className="card card-class">
                             <h3>Classes</h3>
                             <p>{classL}</p>
                         </div>
                     </Link>
                     <Link to='/app/student'>
-                        <div className="card">
-                            <img src={pro} alt="card"/>
+                        <div className="card card-stud">
                             <h3>Students</h3>
                             <p>{studentsL}</p>
                         </div>

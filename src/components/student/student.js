@@ -4,7 +4,6 @@ import {Link} from "react-router-dom"
 import "./student.css"
 import "../../global/global.css"
 import bin from "../../images/bin.png"
-import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
@@ -241,8 +240,8 @@ const Student = (props) => {
                   </div>
                   <div className="navMobile"> 
                     <Link to="/app/notification">
-                            <img src={bell} alt="bell"/>
-                    </Link>
+                        <div className="bell"></div>
+                    </Link>     
                   </div>
               </header>
             <div className="section">

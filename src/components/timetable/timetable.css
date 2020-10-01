@@ -1,10 +1,40 @@
 .default2{
     height: 100px;
-    border: 1px solid #0395ff;
+    border: 1px solid #aaa;
 }
 
 .default2 td{
-    border: 1px solid #0395ff;
+    border: 1px solid #aaa;
+}
+
+.timetable td:hover{
+    color: #0395ff;
+    cursor: pointer;
+}
+
+.timetable td:first-child:hover{
+    color: green;
+    cursor: auto;
+}
+
+.timetable .table .table-head .row1{
+    background-color: #737a91 !important;
+}
+
+.note{
+    height: auto;
+    padding: 20px;
+    width: 200px;
+    background-color: #fff;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    border-radius: .25rem;
+}
+
+.timetable table{
+    width: 80%;
+    margin: 20px;
 }
 
 @media only screen and (max-width: 500px){

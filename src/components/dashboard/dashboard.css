@@ -4,6 +4,8 @@
     height: auto;
     flex-wrap: wrap;
     justify-content: left;
+    padding: 40px;
+    box-sizing: border-box;
 }
 
 .card-container a{
@@ -29,7 +31,7 @@
 .card:hover{
     transform: scale(1.05);
     color: #fff;
-    background-color: #75ae25;
+    background-color: #75ae25 !important;
 }
 
 .card img{
@@ -39,6 +41,92 @@
 
 .card p{
     margin-top: 5px;
+}
+
+.card-room{
+  background: url("../../images/room-icon.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+  background-size: 30px;
+}
+
+.card-room:hover{
+  background: url("../../images/Group 164.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+}
+
+.card-course{
+  background: url("../../images/course-icon.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+  background-size: 30px;
+}
+
+.card-course:hover{
+  background: url("../../images/Group 166.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+}
+
+
+.card-lect{
+  background: url("../../images/lecturer-icon.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+  background-size: 30px;
+}
+
+.card-lect:hover{
+  background: url("../../images/Group 167.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+}
+
+.card-class{
+  background: url("../../images/room-icon.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+  background-size: 30px;
+}
+
+.card-class:hover{
+  background: url("../../images/Group 164.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+}
+
+.card-stud{
+  background: url("../../images/single-man-profile-picture.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+  background-size: 30px;
+}
+
+.card-stud:hover{
+  background: url("../../images/Group 165.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
 }
 
 .timetable-update{
@@ -87,6 +175,19 @@
 
 .update{
   cursor: pointer;
+  background: url("../../images/timetable-icon-selected.png");
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 25px;
+}
+
+.update:hover{
+  background: url("../../images/timetable-icon-unselected.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 25px;
 }
 
 .timetable-stats{
@@ -202,6 +303,7 @@
   @media only screen and (max-width: 500px){
     .card-container{
       justify-content: center;
+      padding: 0px !important;
     }
     .card{
       height: 170px;

@@ -1,7 +1,6 @@
 import React from "react"
 import {Link} from "react-router-dom"
 import "./timetable.css"
-import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 
 
@@ -14,14 +13,20 @@ import logo from "../../images/Logo.png"
                     <p>Timetable</p>
                   </div>
                   <div className="navMobile"> 
-                    <Link to="/app/notification">
-                            <img src={bell} alt="bell"/>
+                  <Link to="/app/notification">
+                        <div className="bell"></div>
                     </Link>
                   </div>
             </header>
 
 
-            <div className="student">
+            <div className="timetable">
+
+                <div className="note">
+                    <p>Lr - Lecture room</p>
+                    <p>Lt - Lecture theatre</p>
+                    <p>Lh - Lecture hall</p>
+                </div>
 
                 <div className="table-container">
                         <table className="table table2">

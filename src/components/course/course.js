@@ -7,7 +7,6 @@ import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
-import bell from "../../images/alarm-bell@3x.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
@@ -394,8 +393,8 @@ const Course = (props) => {
                   </div>
                   <div className="navMobile"> 
                     <Link to="/app/notification">
-                            <img src={bell} alt="bell"/>
-                    </Link>
+                        <div className="bell"></div>
+                    </Link> 
                   </div>
             </header>
             <div className="section">
