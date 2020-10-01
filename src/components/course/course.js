@@ -36,11 +36,18 @@ const Course = (props) => {
         }
     );
 
-    // const [time, timeData] = useState(
-    //     {
-    //         time: ""
-    //     }
-    // )
+    const [time, setTime] = useState(
+        {
+            time: ""
+        }
+    )
+
+    const timeDataFn = () => {
+        setTime({
+            time: `${document.querySelector("#stime").value} - ${document.querySelector("#etime").value}`
+        })
+        console.log(time)
+    }
 
     const [lecturer, lecturerData] = useState(
         {
@@ -56,7 +63,7 @@ const Course = (props) => {
 
     const [id2, setId2] = useState("1234");
 
-    var finalDataObj = {}
+    const [finalDataObj, setFinalDataObj] = useState({})
 
     // Labels
     const [labelData, setLabelData] = useState(
@@ -72,11 +79,6 @@ const Course = (props) => {
             descLabel: ""
         }
     );
-
-    // const [timeFormData, setTimeFormData] = useState({
-    //     stime: "",
-    //     etime: ""
-    // })
 
     // setting key for edit form
     const [id, setId] = useState("123");
@@ -94,7 +96,7 @@ const Course = (props) => {
             // Trimming any whitespace
             [e.target.name]: e.target.value.trim()
           });
-
+        
     }
 
     const venueFormData = (e) => {
@@ -121,16 +123,19 @@ const Course = (props) => {
             }
           });
 
-          finalDataObj = {
+          setFinalDataObj({
             ...formData,
             ...lecturer,
-            ...venue
-        }
+            ...venue,
+            ...time
+        })
     }
 
     const createCourses = (e) => {
         e.preventDefault()
         let data = JSON.stringify(finalDataObj);
+
+        console.log(data)
 
         let config = {
         method: 'post',
@@ -498,14 +503,14 @@ const Course = (props) => {
                                 </div>
                                 <div className="input-gi">
                                     <p>Start Time</p>
-                                    <input name="stime" id="stime" onChange={courseFormData}  required/>
-                                </div>
-                                <div className="input-gi">
-                                    <p>End Time</p>
-                                    <input name="etime" id="etime" onChange={courseFormData}  required/>
+                                    <input name="stime" id="stime" onChange={timeDataFn}  required/>
                                 </div>
                             </div>
                             <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>End Time</p>
+                                    <input name="etime" id="etime" onChange={timeDataFn}  required/>
+                                </div>
                                 <div className="input-gi">
                                     <p>Level</p>
                                     <input list="levels" name="level" type="number" onChange={courseFormData} required/>
@@ -516,37 +521,38 @@ const Course = (props) => {
                                         <option value="400"></option>
                                     </datalist>
                                 </div>
-                                <div className="input-gi">
-                                <p>Venue</p>
-                                <select className="select-css" name="venue" onChange={venueFormData} required>
-                                <option value="" defaultValue>Select a venue</option>
-                                    {venues.map(venue => {
-                                        return(
-                                        <option value={venue._id} label={venue.name} key={venue._id}/>
-                                    )})}
-                                </select>
-                            </div>
-                                
                             </div>
                             <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Venue</p>
+                                    <select className="select-css" name="venue" onChange={venueFormData} required>
+                                    <option value="" defaultValue>Select a venue</option>
+                                        {venues.map(venue => {
+                                            return(
+                                            <option value={venue._id} label={venue.name} key={venue._id}/>
+                                        )})}
+                                    </select>
+                                </div>
                                 <div className="input-gi">
                                     <p>day</p>
                                     <input name="day" placeholder="E.g monday,tuesday" onChange={courseFormData} required/>
                                 </div>
+                            </div>
+                            <div className="input-flex">
                                 <div className="input-gi">
                                     <p>Description</p>
                                     <input name="description" onChange={courseFormData} required/>
                                 </div>
-                            </div>
-                            <div className="input-gi">
-                                    <p>Professor</p>
-                                    <select className="select-css" name="lecturer" onChange={lecturerFormData} required>
-                                        <option value="" defaultValue>Select a lecturer</option>
-                                        {lecturers.map(lect => {
-                                            return(
-                                            <option value={lect._id} label={lect.name} key={lect._id}/>
-                                        )})}
-                                    </select>
+                                <div className="input-gi">
+                                        <p>Professor</p>
+                                        <select className="select-css" name="lecturer" onChange={lecturerFormData} required>
+                                            <option value="" defaultValue>Select a lecturer</option>
+                                            {lecturers.map(lect => {
+                                                return(
+                                                <option value={lect._id} label={lect.name} key={lect._id}/>
+                                            )})}
+                                        </select>
+                                </div>
                             </div>
                         </div>
                         <div className="buttons">
