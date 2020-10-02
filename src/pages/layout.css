@@ -33,7 +33,7 @@
 }
 
 .sidenav a:hover{
-  background-color: #ccc;
+  background-color: #dbdfe2;
 }
 
 .sidenav img{
@@ -53,6 +53,10 @@
 
 .active{
   border-left: 5px solid #0395ff;
+}
+
+.active:hover{
+  background-color: transparent !important;
 }
 
 .sidenavOut{

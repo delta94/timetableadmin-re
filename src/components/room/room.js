@@ -108,12 +108,12 @@ const Room = (props) => {
 
 
     // Delete room
-    const deleteRoom = (data) => {
+    const deleteRoom = () => {
         let config = {
             method: 'delete',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/room/delete',
             headers: { 
-              'id': data
+              'id': deleteId
             }
           };
           
@@ -122,6 +122,7 @@ const Room = (props) => {
             console.log(JSON.stringify(response.data));
           })
           .then(()=> getRooms())
+          .then(()=> setDeleter(false))
           .catch((error) => {
             console.log(error);
           });
@@ -256,6 +257,14 @@ const Room = (props) => {
         createRooms(e)
         success()
     }
+
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+
+    const openDelete = (data) => {
+        setDeleter(!deleter)
+        setDeleteId(data)
+    }
     return (
         <>
             <header>
@@ -314,7 +323,7 @@ const Room = (props) => {
                                         src={bin}
                                         alt="bin"
                                         className="bin"
-                                        onClick={()=>deleteRoom(room._id)}
+                                        onClick={()=> openDelete(room._id)}
                                         />
                                     </td>
                                 </tr>
@@ -325,9 +334,27 @@ const Room = (props) => {
                     </table>
                 </div>
 
+                <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
+                    <p>Are you sure you want to delete this?</p>
+                    <div>
+                        <button onClick={()=> deleteRoom()} className="red2">Yes</button>
+                        <button onClick={()=> setDeleter(false)}>No</button>
+                    </div>
+                </div>
+
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setDeleter(false);
+                }}></div>
+
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setModalOut(!modalOut);
+                }}></div>
+
+                <div className={editModalOut === true  ? "overlay modOut" : "overlay"}
+                    onClick={()=>{
+                    setEditModalOut(!editModalOut);
                 }}></div>
 
 

@@ -131,12 +131,12 @@ const Classes = (props) => {
     },[classes])
 
     // Delete class
-    const deleteClass = (data) => {
+    const deleteClass = () => {
         let config = {
             method: 'delete',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/delete',
             headers: { 
-              '_id': data
+              '_id': deleteId
             }
           };
           
@@ -144,6 +144,7 @@ const Classes = (props) => {
           .then((response) => {
             console.log(JSON.stringify(response.data));
           })
+          .then(()=> setDeleter(false))
           .catch((error) => {
             console.log(error);
           });
@@ -294,6 +295,14 @@ const Classes = (props) => {
         success()
     }
 
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+
+    const openDelete = (data) => {
+        setDeleter(!deleter)
+        setDeleteId(data)
+    }
+
     return (
         <>
             <header>
@@ -358,7 +367,7 @@ const Classes = (props) => {
                                     src={bin}
                                     alt="bin"
                                     className="bin"
-                                    onClick={()=> deleteClass(clas._id)}
+                                    onClick={()=> openDelete(clas._id)}
                                     />
                                 </td>
                                 </tr>
@@ -370,9 +379,27 @@ const Classes = (props) => {
                     </table>
                 </div>
 
+                <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
+                    <p>Are you sure you want to delete this?</p>
+                    <div>
+                        <button onClick={()=> deleteClass()} className="red2">Yes</button>
+                        <button onClick={()=> setDeleter(false)}>No</button>
+                    </div>
+                </div>
+
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setDeleter(false);
+                }}></div>
+
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setModalOut(!modalOut);
+                }}></div>
+                
+                <div className={editModalOut === true  ? "overlay modOut" : "overlay"}
+                    onClick={()=>{
+                    setEditModalOut(!editModalOut);
                 }}></div>
 
                 {/* Create class form */}

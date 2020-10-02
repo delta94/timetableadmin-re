@@ -215,12 +215,12 @@ const Lecturer = (props) => {
     }
 
     // Delete lecturer
-    const deleteLect = (data) => {
+    const deleteLect = () => {
         let config = {
             method: 'delete',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/delete',
             headers: { 
-              '_id': data
+              '_id': deleteId
             }
           };
           
@@ -229,6 +229,7 @@ const Lecturer = (props) => {
             console.log(JSON.stringify(response.data));
           })
           .then(()=> getLecturers())
+          .then(()=>setDeleter(false))
           .catch((error) => {
             console.log(error);
           });
@@ -320,6 +321,14 @@ const Lecturer = (props) => {
 
     }
 
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+
+    const openDelete = (data) => {
+        setDeleter(!deleter)
+        setDeleteId(data)
+    }
+
     return (
         <>
             <header>
@@ -368,7 +377,7 @@ const Lecturer = (props) => {
                                         src={bin}
                                         alt="bin"
                                         className="bin"
-                                        onClick={()=> deleteLect(lect._id)}
+                                        onClick={()=> openDelete(lect._id)}
                                         />
                                     </td>
                                     <td><button className="proBtn" onClick={()=> {
@@ -386,6 +395,19 @@ const Lecturer = (props) => {
                     </table>
                 </div>
                 : null}
+
+                <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
+                    <p>Are you sure you want to delete this?</p>
+                    <div>
+                        <button onClick={()=> deleteLect()} className="red2">Yes</button>
+                        <button onClick={()=> setDeleter(false)}>No</button>
+                    </div>
+                </div>
+
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setDeleter(false);
+                }}></div>
 
                 {pageSwitch === "profile" ?
                 <div className="profile">

@@ -97,13 +97,13 @@ const Period = (props) => {
 
 
     // Delete Periods
-    const deletePeriod = (data) => {
+    const deletePeriod = () => {
         
         let config = {
             method: 'delete',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/period/delete',
             headers: { 
-            '_id': data
+            '_id': deleteId
             }
         };
         
@@ -112,6 +112,7 @@ const Period = (props) => {
             console.log(JSON.stringify(response.data));
         })
         .then(()=> getPeriods())
+        .then(()=> setDeleter(false))
         .catch((error) => {
             console.log(error);
         });
@@ -272,6 +273,14 @@ const Period = (props) => {
         success()
     }
 
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+
+    const openDelete = (data) => {
+        setDeleter(!deleter)
+        setDeleteId(data)
+    }
+
 
     return (
         <>
@@ -331,7 +340,7 @@ const Period = (props) => {
                                         src={bin}
                                         alt="bin"
                                         className="bin"
-                                        onClick={()=> deletePeriod(period._id)}
+                                        onClick={()=> openDelete(period._id)}
                                         />
                                     </td>
                                 </tr>
@@ -342,9 +351,27 @@ const Period = (props) => {
                     </table>
                 </div>
 
+                <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
+                    <p>Are you sure you want to delete this?</p>
+                    <div>
+                        <button onClick={()=> deletePeriod()} className="red2">Yes</button>
+                        <button onClick={()=> setDeleter(false)}>No</button>
+                    </div>
+                </div>
+
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setDeleter(false);
+                }}></div>
+
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setModalOut(!modalOut);
+                }}></div>
+
+                <div className={editModalOut === true  ? "overlay modOut" : "overlay"}
+                    onClick={()=>{
+                    setEditModalOut(!editModalOut);
                 }}></div>
 
                 {/* Create form */}

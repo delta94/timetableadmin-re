@@ -295,12 +295,12 @@ const Course = (props) => {
     )
 
     // Delete request
-    const deleteCourse = (data) => {
+    const deleteCourse = () => {
         let config = {
             method: 'delete',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/course/delete',
             headers: { 
-              '_id': data
+              '_id': deleteId
             }
           };
           
@@ -311,6 +311,7 @@ const Course = (props) => {
           .then(()=> {
               fetchCourses()
           })
+          .then(()=> setDeleter(false))
           .catch((error) => {
             console.log(error);
           });
@@ -395,6 +396,14 @@ const Course = (props) => {
         success()
     }
 
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+
+    const openDelete = (data) => {
+        setDeleter(!deleter)
+        setDeleteId(data)
+    }
+
     return (
         <>
             <header>
@@ -458,7 +467,7 @@ const Course = (props) => {
                                         src={bin}
                                         alt="bin"
                                         className="bin"
-                                        onClick={()=>deleteCourse(course._id)}
+                                        onClick={()=> openDelete(course._id)}
                                         />
                                     </td>
                                 </tr>
@@ -470,11 +479,29 @@ const Course = (props) => {
                 </div>
 
 
+                <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
+                    <p>Are you sure you want to delete this?</p>
+                    <div>
+                        <button onClick={()=> deleteCourse()} className="red2">Yes</button>
+                        <button onClick={()=> setDeleter(false)}>No</button>
+                    </div>
+                </div>
+
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setDeleter(false);
+                }}></div>
+
 
                 {/* Overlay */}
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setModalOut(!modalOut);
+                }}></div>
+
+                <div className={editModalOut === true  ? "overlay modOut" : "overlay"}
+                    onClick={()=>{
+                    setEditModalOut(!editModalOut);
                 }}></div>
 
 
@@ -508,16 +535,6 @@ const Course = (props) => {
                                     <input name="unit" type="number" onChange={courseFormData} required/>
                                 </div>
                                 <div className="input-gi">
-                                    <p>Start Time</p>
-                                    <input name="stime" id="stime" type="time" onChange={timeDataFn}  required/>
-                                </div>
-                            </div>
-                            <div className="input-flex">
-                                <div className="input-gi">
-                                    <p>End Time</p>
-                                    <input name="etime" id="etime" type="time" onChange={timeDataFn}  required/>
-                                </div>
-                                <div className="input-gi">
                                     <p>Level</p>
                                     <input list="levels" name="level" type="number" onChange={courseFormData} required/>
                                     <datalist id="levels">
@@ -526,6 +543,16 @@ const Course = (props) => {
                                         <option value="300"></option>
                                         <option value="400"></option>
                                     </datalist>
+                                </div>
+                            </div>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                    <p>Start Time</p>
+                                    <input name="stime" id="stime" type="time" onChange={timeDataFn}  required/>
+                                </div>
+                                <div className="input-gi">
+                                    <p>End Time</p>
+                                    <input name="etime" id="etime" type="time" onChange={timeDataFn}  required/>
                                 </div>
                             </div>
                             <div className="input-flex">
@@ -600,22 +627,22 @@ const Course = (props) => {
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
-                                    <p>Course unit</p>
-                                    <input name="unit" type="number" placeholder={labelData.unitLabel} onChange={courseFormData}/>
+                                    <p>Level</p>
+                                    <input name="level" type="number" placeholder={labelData.levelL} onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
-                                    <p>Start Time</p>
-                                    <input name="time" id="stimed" type="time" placeholder={labelData.timeLabel} onChange={timeDataFnEd}/>
+                                    <p>Course unit</p>
+                                    <input name="unit" type="number" placeholder={labelData.unitLabel} onChange={courseFormData}/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
-                                    <p>End Time</p>
-                                    <input name="time" id="etimed" type="time" placeholder={labelData.timeLabel} onChange={timeDataFnEd}/>
+                                    <p>Start Time</p>
+                                    <input name="time" id="stimed" type="time" placeholder={labelData.timeLabel} onChange={timeDataFnEd}/>
                                 </div>
                                 <div className="input-gi">
-                                    <p>Level</p>
-                                    <input name="level" type="number" placeholder={labelData.levelL} onChange={courseFormData}/>
+                                    <p>End Time</p>
+                                    <input name="time" id="etimed" type="time" placeholder={labelData.timeLabel} onChange={timeDataFnEd}/>
                                 </div>
                             </div>
                             
