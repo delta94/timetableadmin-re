@@ -49,6 +49,13 @@ const Course = (props) => {
         console.log(time)
     }
 
+    const timeDataFnEd = () => {
+        setTime({
+            time: `${document.querySelector("#stimed").value} - ${document.querySelector("#etimed").value}`
+        })
+        console.log(time)
+    }
+
     const [lecturer, lecturerData] = useState(
         {
             lecturer: ""
@@ -186,7 +193,6 @@ const Course = (props) => {
         console.log(error);
         });
 
-        console.log(data)
     }
 
     // Generating form labels for edit
@@ -503,13 +509,13 @@ const Course = (props) => {
                                 </div>
                                 <div className="input-gi">
                                     <p>Start Time</p>
-                                    <input name="stime" id="stime" onChange={timeDataFn}  required/>
+                                    <input name="stime" id="stime" type="time" onChange={timeDataFn}  required/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
                                     <p>End Time</p>
-                                    <input name="etime" id="etime" onChange={timeDataFn}  required/>
+                                    <input name="etime" id="etime" type="time" onChange={timeDataFn}  required/>
                                 </div>
                                 <div className="input-gi">
                                     <p>Level</p>
@@ -598,46 +604,52 @@ const Course = (props) => {
                                     <input name="unit" type="number" placeholder={labelData.unitLabel} onChange={courseFormData}/>
                                 </div>
                                 <div className="input-gi">
-                                    <p>Time</p>
-                                    <input name="time" placeholder={labelData.timeLabel} onChange={courseFormData}/>
+                                    <p>Start Time</p>
+                                    <input name="time" id="stimed" type="time" placeholder={labelData.timeLabel} onChange={timeDataFnEd}/>
                                 </div>
                             </div>
                             <div className="input-flex">
                                 <div className="input-gi">
-                                    <p>Level</p>
-                                    <input name="level" type="number" placeholder={labelData.levelL} onChange={courseFormData}/>
+                                    <p>End Time</p>
+                                    <input name="time" id="etimed" type="time" placeholder={labelData.timeLabel} onChange={timeDataFnEd}/>
                                 </div>
                                 <div className="input-gi">
-                                    <p>Professor</p>
-                                    <select className="select-css" name="lecturer" defaultValue={labelData.lecturerLabel} onChange={lecturerFormData}>
-                                        <option disabled value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
-                                        {lecturers.map(lect => {
-                                            return(
-                                            <option value={lect._id} label={lect.name} key={lect._id}/>
-                                        )})}
-                                    </select>
+                                    <p>Level</p>
+                                    <input name="level" type="number" placeholder={labelData.levelL} onChange={courseFormData}/>
                                 </div>
                             </div>
                             
                             <div className="input-flex">
                                     <div className="input-gi">
+                                        <p>Professor</p>
+                                        <select className="select-css" name="lecturer" defaultValue={labelData.lecturerLabel} onChange={lecturerFormData}>
+                                            <option disabled value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
+                                            {lecturers.map(lect => {
+                                                return(
+                                                <option value={lect._id} label={lect.name} key={lect._id}/>
+                                            )})}
+                                        </select>
+                                    </div>
+                                    <div className="input-gi">
                                         <p>day</p>
                                         <input name="day" placeholder={labelData.dayLabel} onChange={courseFormData}/>
                                     </div>
-                                    <div className="input-gi">
+                            </div>
+                            <div className="input-flex">
+                                <div className="input-gi">
                                         <p>Description</p>
                                         <input name="description" placeholder={labelData.descLabel} onChange={courseFormData}/>
                                     </div>
-                            </div>
-                            <div className="input-gi">
-                                <p>Venue</p>
-                                <select className="select-css" name="venue" defaultValue={labelData.venueLabel} onChange={venueFormData}>
-                                <option value={labelData.venueLabel} disabled>{labelData.venueLabel}</option>
-                                    {venues.map(venue => {
-                                        return(
-                                        <option value={venue._id} label={venue.name} key={venue._id}/>
-                                    )})}
-                                </select>
+                                <div className="input-gi">
+                                    <p>Venue</p>
+                                    <select className="select-css" name="venue" defaultValue={labelData.venueLabel} onChange={venueFormData}>
+                                    <option value={labelData.venueLabel} disabled>{labelData.venueLabel}</option>
+                                        {venues.map(venue => {
+                                            return(
+                                            <option value={venue._id} label={venue.name} key={venue._id}/>
+                                        )})}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div className="buttons">

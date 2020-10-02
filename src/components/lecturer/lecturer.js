@@ -102,25 +102,45 @@ const Lecturer = (props) => {
     // Create lecturer(post)
     const createLect = (e) => {
         e.preventDefault()
-        let data = JSON.stringify(formData);
+
+        let data = new FormData();
+
+        // Getting values
+        var file = document.getElementById("fileInput").files[0]
+        var name = document.querySelector("#namec").value
+        var edubg = document.querySelector("#edubgc").value
+        var pos = document.querySelector("#posc").value
+        var email = document.querySelector("#emailc").value
+        var phone = document.querySelector("#phonec").value
+        var aos = document.querySelector("#aosc").value
+        var officeno = document.querySelector("#officenoc").value
+        var degree = document.querySelector("#degreec").value
+        data.append('name', name);
+        data.append('email', email);
+        data.append('education_bg', edubg);
+        data.append('phone_no', phone);
+        data.append('office_no', officeno);
+        data.append('ranking', pos);
+        data.append('degree', degree);
+        data.append('areaOfSpec', aos);
+        data.append('image', file);
 
         let config = {
-          method: 'post',
-          url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer',
-          headers: { 
-            'Content-Type': 'application/json'
-          },
-          data : data
+        method: 'post',
+        url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/image',
+        headers: { 
+            'content-type': 'multipart/form-data'
+        },
+        data : data
         };
-        
+
         axios(config)
         .then((response) => {
-          console.log(JSON.stringify(response.data));
+        console.log(JSON.stringify(response.data));
         })
-        .then(()=> getLecturers())
         .then(()=> setPageSwitch("home"))
         .catch((error) => {
-          console.log(error);
+        console.log(error);
         });
     }
 
@@ -552,10 +572,14 @@ const Lecturer = (props) => {
                     <div className="editProfileContainer">
                     <form onSubmit={createLect}>
                         <div className="input-field">
+                            <div className="field">
+                                <p>Edit Picture</p>
+                                <input type="file" className="wid-4" id="fileInput"/>
+                            </div>
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
-                                    <input name="name" onChange={setFormDataFn} className="wid-4" required placeholder="Name"/>
+                                    <input name="name" id="namec" onChange={setFormDataFn} className="wid-4" required placeholder="Name"/>
                                 </div>
                             </div>
                         </div>
@@ -568,11 +592,11 @@ const Lecturer = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Position</p>
-                                        <input name="ranking" onChange={setFormDataFn} required/>
+                                        <input name="ranking" id="posc" onChange={setFormDataFn} required/>
                                     </div>
                                     <div className="field">
                                         <p>Area of specialization</p>
-                                        <textarea name="areaOfSpec" onChange={setFormDataFn} required/>
+                                        <textarea name="areaOfSpec" id="aosc" onChange={setFormDataFn} required/>
                                     </div>
                                 </div>
                             </div>
@@ -581,15 +605,15 @@ const Lecturer = (props) => {
                         <div className="input-field">
                                 <div className="field">
                                     <p>Education Background</p>
-                                    <input className="wid-4" name="education_bg" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="edubgc" name="education_bg" onChange={setFormDataFn} required/>
                                 </div>
                                 <div className="field">
                                     <p>Office No</p>
-                                    <input className="wid-4" name="office_no" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="officenoc" name="office_no" onChange={setFormDataFn} required/>
                                 </div>
                                 <div className="field">
                                     <p>Degree</p>
-                                    <input className="wid-4" name="degree" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="degreec" name="degree" onChange={setFormDataFn} required/>
                                 </div>
                             <div className="field-name">
                                 Email Address
@@ -598,7 +622,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input className="wid-4" name="email" type="email" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="emailc" name="email" type="email" onChange={setFormDataFn} required/>
                                 </div>
                             </div>
                         </div>
@@ -611,7 +635,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input className="wid-4" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" placeholder="+2341235467387" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
+                                    <input className="wid-4" id="phonec" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" placeholder="+2341235467387" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
                                 </div>
                                 <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                     setFormDataFn(e)

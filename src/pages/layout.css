@@ -21,7 +21,19 @@
   flex-direction: column;
   text-decoration: none;
   color: #7079ab;
-  padding: 10px;
+  padding: 12px;
+}
+
+.sidenav a:first-child:hover{
+  background-color: transparent;
+}
+
+.sidenav a:last-child:hover{
+  background-color: transparent;
+}
+
+.sidenav a:hover{
+  background-color: #ccc;
 }
 
 .sidenav img{

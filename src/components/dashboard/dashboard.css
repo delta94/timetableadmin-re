@@ -175,7 +175,7 @@
 
 .update{
   cursor: pointer;
-  background: url("../../images/timetable-icon-selected.png");
+  background: url("../../images/timetable-icon-unselected.png");
   width: 30px;
   height: 30px;
   background-repeat: no-repeat;
@@ -184,7 +184,7 @@
 }
 
 .update:hover{
-  background: url("../../images/timetable-icon-unselected.png");
+  background: url("../../images/timetable-icon-selected.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 25px;
