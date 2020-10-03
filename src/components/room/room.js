@@ -10,7 +10,7 @@ import cross from "../../images/close.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
-
+import check from "../../images/checked.png"
 
 
 const Room = (props) => {
@@ -54,6 +54,8 @@ const Room = (props) => {
 
     }
 
+    const [created, setCreated] = useState(false)
+    
     const createRooms = (e) => {
         e.preventDefault()
         let data = JSON.stringify(roomData);
@@ -72,7 +74,10 @@ const Room = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getRooms())
-        .then(()=> setModalOut(false))
+        .then(()=> {
+            setModalOut(false)
+            setCreated(true)
+        })
         .catch((error) => {
         });
     }
@@ -356,6 +361,14 @@ const Room = (props) => {
                     onClick={()=>{
                     setEditModalOut(!editModalOut);
                 }}></div>
+
+                <div className={created === true ? "successMsg modOut" : "successMsg"}>
+                    <div>
+                        <img src={check} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room created!</p>
+                </div>
 
 
                 {/* Create room form */}
