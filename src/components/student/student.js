@@ -323,7 +323,9 @@ const Student = (props) => {
                 {pageSwitch === "profile" ?
                 <div className="profile-container">
                     <div className="profile">
-                        <img src={profileData.img} className="profile-picture" alt="profile"/>
+                        <div className="circular">
+                            <img src={profileData.img} alt="profile"/>
+                        </div>
                         <div className="name-group">
                             <div className="detail">
                                 <p>First Name:</p>

@@ -26,6 +26,7 @@
     border-radius: 1rem;
     box-shadow: 0px 4px 4px rgba(119, 119, 119, 0.2);
     border-bottom: 3px solid #75ae25;
+    transition: .2s ease-in-out;
 }
 
 .card:hover{

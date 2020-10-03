@@ -24,6 +24,12 @@
   padding: 12px;
 }
 
+/* .sidenav a:last-child{
+  background-color: #dbdfe2;
+  border-radius: 5rem;
+  height: 50px;
+} */
+
 .sidenav a:first-child:hover{
   background-color: transparent;
 }
