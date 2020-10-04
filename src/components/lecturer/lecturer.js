@@ -9,6 +9,9 @@ import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import cross from "../../images/close.png"
+import checkg from "../../images/checkg.png"
+import checkr from "../../images/checkr.png"
+import checkb from "../../images/checkb.png"
 
 const Lecturer = (props) => {
 
@@ -69,6 +72,9 @@ const Lecturer = (props) => {
         Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
     }
 
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     // Edit request(patch)
     const editLect = (e) => {
         e.preventDefault()
@@ -89,7 +95,13 @@ const Lecturer = (props) => {
           console.log(JSON.stringify(response.data));
         })
         .then(()=> getLecturers())
-        .then(()=> setPageSwitch("home"))
+        .then(()=> {
+            setPageSwitch("home")
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        })
         .catch((error) => {
           console.log(error);
         });
@@ -138,7 +150,13 @@ const Lecturer = (props) => {
         .then((response) => {
         console.log(JSON.stringify(response.data));
         })
-        .then(()=> setPageSwitch("home"))
+        .then(()=> {
+            setPageSwitch("home")
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        })
         .catch((error) => {
         console.log(error);
         });
@@ -229,7 +247,13 @@ const Lecturer = (props) => {
             console.log(JSON.stringify(response.data));
           })
           .then(()=> getLecturers())
-          .then(()=>setDeleter(false))
+          .then(()=>{
+              setDeleter(false)
+              setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+          })
           .catch((error) => {
             console.log(error);
           });
@@ -454,6 +478,30 @@ const Lecturer = (props) => {
                     </div>  
                 </div>
                 : null}
+
+                <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
+                    <div>
+                        <img src={checkg} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room created!</p>
+                </div>
+
+                <div className={deleted === true ? "successMsg red3 flexModOut" : "successMsg red2"}>
+                    <div>
+                        <img src={checkr} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room deleted!</p>
+                </div>
+
+                <div className={edited === true ? "successMsg blue flexModOut" : "successMsg blue"}>
+                    <div>
+                        <img src={checkb} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room edited!</p>
+                </div>
 
                 {pageSwitch === "edit" ?
                 <div className="editProfile">

@@ -10,6 +10,9 @@ import cross from "../../images/close.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
+import checkg from "../../images/checkg.png"
+import checkr from "../../images/checkr.png"
+import checkb from "../../images/checkb.png"
 
 
 const Period = (props) => {
@@ -50,6 +53,10 @@ const Period = (props) => {
     // For cancelling requests
     const source = axios.CancelToken.source();
 
+
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     // Create periods
     const createPeriods = (e) => {
         e.preventDefault()
@@ -71,7 +78,13 @@ const Period = (props) => {
         .then(()=>{
             getPeriods()
         })
-        .then(()=> setModalOut(false))
+        .then(()=> {
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        })
         .catch((error) => {
         });
     }
@@ -112,7 +125,13 @@ const Period = (props) => {
             console.log(JSON.stringify(response.data));
         })
         .then(()=> getPeriods())
-        .then(()=> setDeleter(false))
+        .then(()=> {
+            setDeleter(false)
+            setTimeout(() => {
+              setDeleted(true)
+          }, 10);
+          setDeleted(false)
+        })
         .catch((error) => {
             console.log(error);
         });
@@ -172,7 +191,13 @@ const Period = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getPeriods())
-        .then(()=> setEditModalOut(false))
+        .then(()=> {
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        })
         .catch((error) => {
         console.log(error);
         });
@@ -373,6 +398,30 @@ const Period = (props) => {
                     onClick={()=>{
                     setEditModalOut(!editModalOut);
                 }}></div>
+
+                <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
+                    <div>
+                        <img src={checkg} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room created!</p>
+                </div>
+
+                <div className={deleted === true ? "successMsg red3 flexModOut" : "successMsg red2"}>
+                    <div>
+                        <img src={checkr} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room deleted!</p>
+                </div>
+
+                <div className={edited === true ? "successMsg blue flexModOut" : "successMsg blue"}>
+                    <div>
+                        <img src={checkb} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room edited!</p>
+                </div>
 
                 {/* Create form */}
                 <div className={modalOut === true ? "modal modOut" : "modal"} key={id2}>

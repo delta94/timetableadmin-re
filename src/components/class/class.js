@@ -9,6 +9,9 @@ import cross from "../../images/close.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
+import checkg from "../../images/checkg.png"
+import checkr from "../../images/checkr.png"
+import checkb from "../../images/checkb.png"
 
 
 const Classes = (props) => {
@@ -56,6 +59,10 @@ const Classes = (props) => {
     // For cancelling requests
     const source = axios.CancelToken.source();
 
+
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     // Create Classes
     const createClass = (e) => {
         e.preventDefault()
@@ -75,7 +82,13 @@ const Classes = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getClasses())
-        .then(()=> setModalOut(false))
+        .then(()=> {
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        })
         .catch((error) => {
             
         });
@@ -144,7 +157,13 @@ const Classes = (props) => {
           .then((response) => {
             console.log(JSON.stringify(response.data));
           })
-          .then(()=> setDeleter(false))
+          .then(()=> {
+            setDeleter(false)
+            setTimeout(() => {
+              setDeleted(true)
+          }, 10);
+          setDeleted(false)
+        })
           .catch((error) => {
             console.log(error);
           });
@@ -175,7 +194,13 @@ const Classes = (props) => {
         console.log(JSON.stringify(response.data));
         })
         .then(()=> getClasses())
-        .then(()=> setEditModalOut(false))
+        .then(()=> {
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        })
         .catch((error) => {
         console.log(error);
         });
@@ -401,6 +426,30 @@ const Classes = (props) => {
                     onClick={()=>{
                     setEditModalOut(!editModalOut);
                 }}></div>
+
+                <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
+                    <div>
+                        <img src={checkg} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room created!</p>
+                </div>
+
+                <div className={deleted === true ? "successMsg red3 flexModOut" : "successMsg red2"}>
+                    <div>
+                        <img src={checkr} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room deleted!</p>
+                </div>
+
+                <div className={edited === true ? "successMsg blue flexModOut" : "successMsg blue"}>
+                    <div>
+                        <img src={checkb} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room edited!</p>
+                </div>
 
                 {/* Create class form */}
                 <div className={modalOut === true ? "modal modalClass modOut" : "modal modalClass"} key={id2}>

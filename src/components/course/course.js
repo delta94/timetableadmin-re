@@ -10,6 +10,9 @@ import cross from "../../images/close.png"
 import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
+import checkg from "../../images/checkg.png"
+import checkr from "../../images/checkr.png"
+import checkb from "../../images/checkb.png"
 
 
 const Course = (props) => {
@@ -138,6 +141,9 @@ const Course = (props) => {
         })
     }
 
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     const createCourses = (e) => {
         e.preventDefault()
         let data = JSON.stringify(finalDataObj);
@@ -160,7 +166,13 @@ const Course = (props) => {
         .then(()=> {
             fetchCourses()
         })
-        .then(()=> setModalOut(false))
+        .then(()=> {
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        })
         .catch((error) => {
             
         });
@@ -188,7 +200,13 @@ const Course = (props) => {
         .then(()=>{ 
             fetchCourses()
         })
-        .then(()=> setEditModalOut(false))
+        .then(()=> {
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        })
         .catch((error) => {
         console.log(error);
         });
@@ -311,7 +329,13 @@ const Course = (props) => {
           .then(()=> {
               fetchCourses()
           })
-          .then(()=> setDeleter(false))
+          .then(()=> {
+              setDeleter(false)
+              setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+          })
           .catch((error) => {
             console.log(error);
           });
@@ -492,6 +516,29 @@ const Course = (props) => {
                     setDeleter(false);
                 }}></div>
 
+                <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
+                    <div>
+                        <img src={checkg} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room created!</p>
+                </div>
+
+                <div className={deleted === true ? "successMsg red3 flexModOut" : "successMsg red2"}>
+                    <div>
+                        <img src={checkr} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room deleted!</p>
+                </div>
+
+                <div className={edited === true ? "successMsg blue flexModOut" : "successMsg blue"}>
+                    <div>
+                        <img src={checkb} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room edited!</p>
+                </div>
 
                 {/* Overlay */}
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}

@@ -8,6 +8,8 @@ import logo from "../../images/Logo.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import cross from "../../images/close.png"
+import checkr from "../../images/checkr.png"
+import checkb from "../../images/checkb.png"
 
 
 const Student = (props) => {
@@ -70,6 +72,8 @@ const Student = (props) => {
         Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
     }
 
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     // Edit request(patch)
     const editstud = (e) => {
         e.preventDefault()
@@ -90,7 +94,13 @@ const Student = (props) => {
           console.log(JSON.stringify(response.data));
         })
         .then(()=> getStudents())
-        .then(()=> setPageSwitch("home"))
+        .then(()=> {
+            setPageSwitch("home")
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        })
         .catch((error) => {
           console.log(error);
         });
@@ -171,7 +181,13 @@ const Student = (props) => {
             console.log(JSON.stringify(response.data));
           })
           .then(()=> getStudents())
-          .then(()=> setDeleter(false))
+          .then(()=> {
+              setDeleter(false)
+              setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+          })
           .catch((error) => {
             console.log(error);
           });
@@ -319,6 +335,22 @@ const Student = (props) => {
                 onClick={()=>{
                     setDeleter(false);
                 }}></div>
+
+                <div className={deleted === true ? "successMsg red3 flexModOut" : "successMsg red2"}>
+                    <div>
+                        <img src={checkr} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room deleted!</p>
+                </div>
+
+                <div className={edited === true ? "successMsg blue flexModOut" : "successMsg blue"}>
+                    <div>
+                        <img src={checkb} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room edited!</p>
+                </div>
 
                 {pageSwitch === "profile" ?
                 <div className="profile-container">
