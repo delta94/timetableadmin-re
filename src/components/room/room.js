@@ -111,6 +111,7 @@ const Room = (props) => {
     useEffect(() => {
         getRooms()
         filterFn()
+        setDelName()
         return () => {
             source.cancel("Component got unmounted");
         };
@@ -283,6 +284,15 @@ const Room = (props) => {
 
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+
+    const setDelName = () => {
+        rooms.map((room)=> {
+            if(room._id === deleteId){
+                setDeleteName(room.name)
+            }
+        })
+    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
@@ -346,7 +356,9 @@ const Room = (props) => {
                                         src={bin}
                                         alt="bin"
                                         className="bin"
-                                        onClick={()=> openDelete(room._id)}
+                                        onClick={()=> {
+                                            openDelete(room._id)
+                                        }}
                                         />
                                     </td>
                                 </tr>
@@ -358,7 +370,7 @@ const Room = (props) => {
                 </div>
 
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete this?</p>
+                    <p>Are you sure you want to delete Room {deleteName}?</p>
                     <div>
                         <button onClick={()=> deleteRoom()} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>

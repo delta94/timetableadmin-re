@@ -198,6 +198,7 @@ const Student = (props) => {
         getStudents()
         studentLength()
         filterFn()
+        setDelName()
         return () => {
             source.cancel("Component got unmounted");
         };
@@ -249,6 +250,15 @@ const Student = (props) => {
 
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+
+    const setDelName = () => {
+        students.map((stud)=> {
+            if(stud._id === deleteId){
+                setDeleteName(`${stud.firstname} ${stud.lastname}`)
+            }
+        })
+    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
@@ -324,7 +334,7 @@ const Student = (props) => {
                 : null}
 
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete this?</p>
+                    <p>Are you sure you want to delete Student {deleteName}?</p>
                     <div>
                         <button onClick={()=> deleteStud()} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>

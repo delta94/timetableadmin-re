@@ -14,8 +14,8 @@
 .search-container input{
     font-size: 15px;
     font-family: inherit;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 9.5px;
+    padding-bottom: 9.5px;
     padding-left: 90px;
     border: none;
     border-radius: .25rem;
@@ -506,6 +506,12 @@
   bottom: 0;
   right: 0;
   z-index: 5;
+}
+
+@media only screen and (max-width: 600px){
+  .deleteModal{
+    width: 90%;
+  }
 }
 
 .deleteModal button{

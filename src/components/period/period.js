@@ -161,6 +161,7 @@ const Period = (props) => {
         getPeriods()
         fetchCourses()
         filterFn()
+        setDelName()
         return () => {
             source.cancel("Component got unmounted");
         };
@@ -300,6 +301,15 @@ const Period = (props) => {
 
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+
+    const setDelName = () => {
+        periods.map((period)=> {
+            if(period._id === deleteId){
+                setDeleteName(`${period.startTime} - ${period.endTime}`)
+            }
+        })
+    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
@@ -377,7 +387,7 @@ const Period = (props) => {
                 </div>
 
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete this?</p>
+                <p>Are you sure you want to delete Period {deleteName}?</p>
                     <div>
                         <button onClick={()=> deletePeriod()} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>

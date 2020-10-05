@@ -184,7 +184,7 @@ const Lecturer = (props) => {
     useEffect(() => {
         getLecturers()
         filterFn()
-
+        setDelName()
 
         return () => {
             source.cancel("Component got unmounted");
@@ -347,6 +347,15 @@ const Lecturer = (props) => {
 
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+
+    const setDelName = () => {
+        lecturers.map((lect)=> {
+            if(lect._id === deleteId){
+                setDeleteName(lect.name)
+            }
+        })
+    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
@@ -421,7 +430,7 @@ const Lecturer = (props) => {
                 : null}
 
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete this?</p>
+                <p>Are you sure you want to delete Lecturer {deleteName}?</p>
                     <div>
                         <button onClick={()=> deleteLect()} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>

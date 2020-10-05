@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React,{useState,useEffect} from "react"
 import {Link} from "react-router-dom"
 import "./class.css"
@@ -137,6 +138,7 @@ const Classes = (props) => {
         getClasses()
         fetchCourses()
         filterFn()
+        setDelName()
         return () => {
             source.cancel("Component got unmounted");
         };
@@ -322,6 +324,15 @@ const Classes = (props) => {
 
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+
+    const setDelName = () => {
+        classes.map((clas)=> {
+            if(clas._id === deleteId){
+                setDeleteName(clas.name)
+            }
+        })
+    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
@@ -405,7 +416,7 @@ const Classes = (props) => {
                 </div>
 
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete this?</p>
+                <p>Are you sure you want to delete Class {deleteName}?</p>
                     <div>
                         <button onClick={()=> deleteClass()} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>

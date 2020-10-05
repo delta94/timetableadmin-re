@@ -1,55 +1,26 @@
-import React,{useState} from "react";
+import React from "react";
 import "./notification.css"
 import "../../global/global.css";
 import logo from "../../images/Logo.png";
 import search from "../../images/search.png";
-import Pusher from "pusher-js"
-import axios from "axios"
+import io from "socket.io-client"
 
 
 const Notif = () =>{
 
-    const [notif, setNotif] = useState([])
-    
-    var pusher = new Pusher('593804b4319c7294a225', { cluster: 'eu' });
+    // const [notif, setNotif] = useState([])
 
-    // retrieve the socket ID once we're connected
-    pusher.connection.bind('connected', function () {
-        // attach the socket ID to all outgoing Axios requests
-        axios.defaults.headers.common['X-Socket-Id'] = pusher.connection.socket_id;
-            console.log("socket successfully connected")
+    const socket = io("https://the-node-deploy.herokuapp.com");
+
+    socket.on('connect', () => {
+        console.log(socket.connected); // true
     });
 
-    pusher.connection.bind( 'error', function( err ) {
-        if( err.error.data.code === 404 ) {
-          console.log('>>> detected limit error');
-        }
-    });
-
-    // request permission to display notifications, if we don't already have it
-    Notification.requestPermission();
-
-    pusher.subscribe('notifications')
-            .bind('newUser', function (user) {
-                // if we're on the home page, show an "Updated" badge
-                // if (window.location.pathname === "/") {
-                //     document.querySelector('a[href="/posts/' + post._id + '"]').append('<span class="badge badge-primary badge-pill">Updated</span>');
-                // }
-                var notification = new Notification(user.firstname + " was just updated");
-
-                console.log(notification)
-
-                setNotif([...notif, notification.title])
-
-                console.log(notif)
-                // notification.onclick = function (event) {
-                //     window.location.href = '/users/' + user._id;
-                //     event.preventDefault();
-                //     notification.close();
-                // }
+   socket.on('newUser', data => {
+       console.log(data)
     });
     
-
+    
     // const persist = () => {
     //     var obj = {hello: "hi", sup: "yeah"}
     //     setNotif([...notif, obj.hello])
@@ -71,7 +42,7 @@ const Notif = () =>{
                             <input placeholder="Search for messages"/>
                         </div>
 
-                        {/* <button onClick={persist}>Persist state</button> */}
+                        {/* <button onClick={persist}>Persist state</button>
                         {notif.map((key,i)=> {
                             return (
                                 <table className="table" key={i}>
@@ -82,26 +53,7 @@ const Notif = () =>{
                                     </tbody>
                                 </table>
                             );
-                        })}
-
-                        {/* <div className="table-container">
-                                <table className="table">
-                                <tbody className="gfg">
-                                    <tr className="default tr-no-bottom">
-                                    <td className="notif-tr"><span>Dotun Sesan: </span>Tried to login at 8:00AM</td>
-                                    </tr>
-                                    <tr className="default tr-no-bottom">
-                                    <td className="notif-tr2"><span>Dotun Sesan: </span>Tried to login at 8:00AM</td>
-                                    </tr>
-                                    <tr className="default tr-no-bottom">
-                                    <td className="notif-tr"><span>Dotun Sesan: </span>Tried to login at 8:00AM</td>
-                                    </tr>
-                                    <tr className="default tr-no-bottom">
-                                    <td className="notif-tr2"><span>Dotun Sesan: </span>Tried to login at 8:00AM</td>
-                                    </tr>
-                                </tbody>
-                                </table>
-                        </div> */}
+                        })} */}
                 </div>
             </div>
         </>
