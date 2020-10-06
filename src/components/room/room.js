@@ -16,34 +16,45 @@ import checkb from "../../images/checkb.png"
 
 
 const Room = (props) => {
-    //Room states
+
+
+
+    //Local states
     const [rooms,setRooms] = useState([])   
-    const [loading, setLoading] = useState(false) 
-    const [roomData, setRoomData] = useState(
-        {
-            name: "",
-            capacity: ""
-        }
-    );
+    const [loading, setLoading] = useState(false)
     const [editModalOut,setEditModalOut] = useState(false)
     const [editRoomId, setEditRoomId] = useState("")
-    
-    // Labels
+    const [modalOut, setModalOut] = useState(false)
+    const [id, setId] = useState("123");
+    const [id2, setId2] = useState("1234");
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
+    const [target, setTarget] = useState("")
+    const [newArr, setNewArr] = useState([])
+    const [switchState, setSwitchState] = useState("")
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
     const [labelData, setLabelData] = useState(
         {
             nameLabel: "",
             capacityLabel: ""
         }
     );
-    const [modalOut, setModalOut] = useState(false)
-
-     // setting key for edit form
-     const [id, setId] = useState("123");
-     const [id2, setId2] = useState("1234");
+    const [roomData, setRoomData] = useState(
+        {
+            name: "",
+            capacity: ""
+        }
+    );
 
     // For cancelling requests
     const source = axios.CancelToken.source();
 
+    
+
+    //  Http requests  C G E D
     // Create rooms
     const roomFormData = (e) => {
 
@@ -55,10 +66,6 @@ const Room = (props) => {
           });
 
     }
-
-    const [created, setCreated] = useState(false)
-    const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
     const createRooms = (e) => {
         e.preventDefault()
         let data = JSON.stringify(roomData);
@@ -108,46 +115,6 @@ const Room = (props) => {
 
     }
 
-    useEffect(() => {
-        getRooms()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[rooms])
-
-
-    // Delete room
-    const deleteRoom = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room/delete',
-            headers: { 
-              'id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> getRooms())
-          .then(()=> {
-              setDeleter(false)
-              setTimeout(() => {
-                setDeleted(true)
-            }, 10);
-            setDeleted(false)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-
-
     // Edit room
     const editRooms = () => {
         let data = JSON.stringify(roomData);
@@ -178,6 +145,45 @@ const Room = (props) => {
         });
     }
 
+
+    // Delete room
+    const deleteRoom = () => {
+        let config = {
+            method: 'delete',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room/delete',
+            headers: { 
+              'id': deleteId
+            }
+          };
+          
+          axios(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+          })
+          .then(()=> getRooms())
+          .then(()=> {
+              setDeleter(false)
+              setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          
+    }
+
+    useEffect(() => {
+        getRooms()
+        filterFn()
+        setDelName()
+        return () => {
+            source.cancel("Component got unmounted");
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[rooms])
+
     // Generating form labels for edit
     const genFormLabels = (data) => {
         rooms.map(
@@ -197,26 +203,17 @@ const Room = (props) => {
     // Remove empty inputs in edit room form object
     const cleanObj = () => {
         Object.keys(roomData).forEach((key) => (roomData[key] === "") && delete roomData[key]);
-
-        console.log(roomData)
     }
 
-    const [target, setTarget] = useState("")
-
-    // Filtering
     const onChangeHandler = (e) =>{
-        console.log(e.target.value)
         setTarget(e.target.value)
     }
-
-    const [newArr, setNewArr] = useState([])
-
-    const [switchState, setSwitchState] = useState("")
     
     const switchFilter = (e) => {
         setSwitchState(e.target.value)
     }
 
+    // Filtering
     const filterFn = () => {
             setNewArr(rooms
             // eslint-disable-next-line array-callback-return
@@ -231,6 +228,8 @@ const Room = (props) => {
             }))
     }
 
+
+    // Form validation
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
@@ -282,10 +281,7 @@ const Room = (props) => {
         success()
     }
 
-    const [deleter, setDeleter] = useState(false)
-    const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
-
+    // Delete modal
     const setDelName = () => {
         rooms.map((room)=> {
             if(room._id === deleteId){
@@ -369,6 +365,7 @@ const Room = (props) => {
                     </table>
                 </div>
 
+                {/* Delete modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
                     <p>Are you sure you want to delete Room {deleteName}?</p>
                     <div>
@@ -377,6 +374,7 @@ const Room = (props) => {
                     </div>
                 </div>
 
+                {/* Overlay for all modals */}
                 <div className={deleter === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setDeleter(false);
@@ -392,6 +390,8 @@ const Room = (props) => {
                     setEditModalOut(!editModalOut);
                 }}></div>
 
+
+                {/* Success messages */}
                 <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
                     <div>
                         <img src={checkg} style={{"height": "25px"}} alt="good"/>

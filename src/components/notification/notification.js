@@ -10,7 +10,10 @@ const Notif = () =>{
 
     // const [notif, setNotif] = useState([])
 
-    const socket = io("https://the-node-deploy.herokuapp.com");
+    const socket = io("https://tbe-node-deploy.herokuapp.com");
+
+     // request permission to display notifications, if we don't alreay have it
+     Notification.requestPermission();
 
     socket.on('connect', () => {
         console.log(socket.connected); // true

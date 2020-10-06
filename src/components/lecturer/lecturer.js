@@ -19,6 +19,15 @@ const Lecturer = (props) => {
     const [loading, setLoading] = useState(false)
     const [pageSwitch, setPageSwitch] = useState("home")
     const [lectId, setLectId] = useState("")
+    const [target, setTarget] = useState("")
+    const [newArr, setNewArr] = useState([])
+    const [switchState, setSwitchState] = useState("")
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
     const [profileData, setProfileData] = useState(
         {
             name: "",
@@ -32,7 +41,6 @@ const Lecturer = (props) => {
             image:""
         }
     )
-
     const [formData, setFormData] = useState(
         {
             name: "",
@@ -45,7 +53,6 @@ const Lecturer = (props) => {
             degree: ""
         }
     )
-
     const [labelData, setLabelData] = useState(
         {
             nameL: "",
@@ -59,53 +66,8 @@ const Lecturer = (props) => {
         }
     )
 
-    const setFormDataFn = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value.trim()
-        })
-        console.log(formData)
-    }
 
-    // Remove empty inputs in edit form obj
-    const cleanObj = () => {
-        Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
-    }
-
-    const [created, setCreated] = useState(false)
-    const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
-    // Edit request(patch)
-    const editLect = (e) => {
-        e.preventDefault()
-        let data = JSON.stringify(formData);
-
-        let config = {
-          method: 'patch',
-          url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/update',
-          headers: { 
-            '_id': lectId, 
-            'Content-Type': 'application/json'
-          },
-          data : data
-        };
-        
-        axios(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getLecturers())
-        .then(()=> {
-            setPageSwitch("home")
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+    // Http request and relatives C G E D
 
     // For cancelling requests
     const source = axios.CancelToken.source();
@@ -181,6 +143,107 @@ const Lecturer = (props) => {
           });
     }
 
+    const setFormDataFn = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value.trim()
+        })
+        console.log(formData)
+    }
+
+    // Remove empty inputs in edit form obj
+    const cleanObj = () => {
+        Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
+    }
+
+    
+    // Edit request(patch)
+    const editLect = (e) => {
+        e.preventDefault()
+        let data = JSON.stringify(formData);
+
+        let config = {
+          method: 'patch',
+          url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/update',
+          headers: { 
+            '_id': lectId, 
+            'Content-Type': 'application/json'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+        })
+        .then(()=> getLecturers())
+        .then(()=> {
+            setPageSwitch("home")
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    const updateImage = () => {
+        var data = new FormData()
+        var file = document.getElementById("fileInput").files[0]
+
+        data.append("image", file)
+
+        console.log([...data])
+
+        let config = {
+        method: 'patch',
+        url: 'https://tbe-node-deploy.herokuapp.com/image',
+        headers: { 
+            '_id': lectId,
+            'content-type': 'multipart/form-data'
+        },
+        data : data
+        };
+
+        axios(config)
+        .then((response) => {
+        console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+    }
+
+    // Delete lecturer
+    const deleteLect = () => {
+        let config = {
+            method: 'delete',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/delete',
+            headers: { 
+              '_id': deleteId
+            }
+          };
+          
+          axios(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+          })
+          .then(()=> getLecturers())
+          .then(()=>{
+              setDeleter(false)
+              setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          
+    }
+
     useEffect(() => {
         getLecturers()
         filterFn()
@@ -231,46 +294,13 @@ const Lecturer = (props) => {
             }
         })
     }
-
-    // Delete lecturer
-    const deleteLect = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/delete',
-            headers: { 
-              '_id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> getLecturers())
-          .then(()=>{
-              setDeleter(false)
-              setTimeout(() => {
-                setDeleted(true)
-            }, 10);
-            setDeleted(false)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-    
-    const [target, setTarget] = useState("")
+  
 
     // Filtering
     const onChangeHandler = (e) =>{
         console.log(e.target.value)
         setTarget(e.target.value)
     }
-
-    const [newArr, setNewArr] = useState([])
-
-    const [switchState, setSwitchState] = useState("")
     
     const switchFilter = (e) => {
         setSwitchState(e.target.value)
@@ -289,33 +319,6 @@ const Lecturer = (props) => {
             }))
     }
 
-    const updateImage = () => {
-        var data = new FormData()
-        var file = document.getElementById("fileInput").files[0]
-
-        data.append("image", file)
-
-        console.log([...data])
-
-        let config = {
-        method: 'patch',
-        url: 'https://tbe-node-deploy.herokuapp.com/image',
-        headers: { 
-            '_id': lectId,
-            'content-type': 'multipart/form-data'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-    }
-
     const editSub = (e) => {
         editLect(e) || updateImage()
     }
@@ -323,7 +326,6 @@ const Lecturer = (props) => {
     
     //Get all the inputs...
     const inputs = document.querySelectorAll('.editProfileContainer input, textarea');
-    // const textareas = document.querySelectorAll('textarea');
 
     // Loop through them...
     for(let input of inputs) {
@@ -345,10 +347,9 @@ const Lecturer = (props) => {
 
     }
 
-    const [deleter, setDeleter] = useState(false)
-    const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
+    
 
+    // Delete Modal
     const setDelName = () => {
         lecturers.map((lect)=> {
             if(lect._id === deleteId){
@@ -429,6 +430,7 @@ const Lecturer = (props) => {
                 </div>
                 : null}
 
+                {/* Delete Modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
                 <p>Are you sure you want to delete Lecturer {deleteName}?</p>
                     <div>
@@ -437,6 +439,7 @@ const Lecturer = (props) => {
                     </div>
                 </div>
 
+                {/* Overlay */}
                 <div className={deleter === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setDeleter(false);
@@ -488,6 +491,8 @@ const Lecturer = (props) => {
                 </div>
                 : null}
 
+
+                {/* Success messages */}
                 <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
                     <div>
                         <img src={checkg} style={{"height": "25px"}} alt="good"/>
@@ -548,12 +553,6 @@ const Lecturer = (props) => {
                                         <textarea placeholder={labelData.areaOfSpecL} name="areaOfSpec" onChange={setFormDataFn}/>
                                     </div>
                                 </div>
-                                {/* <div className="field-details">
-                                    <div className="field">
-                                        <p>Courses</p>
-                                        <input className="wid-4"/>
-                                    </div>
-                                </div> */}
                             </div>
                         </div>
 

@@ -28,6 +28,12 @@ const Course = (props) => {
     const [newArr, setNewArr] = useState([])
     const [switchState, setSwitchState] = useState("")  
     const [target, setTarget] = useState("")
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
     const [formData, updateFormData] = useState(
         {
             name: "",
@@ -38,27 +44,6 @@ const Course = (props) => {
             description: ""
         }
     );
-
-    const [time, setTime] = useState(
-        {
-            time: ""
-        }
-    )
-
-    const timeDataFn = () => {
-        setTime({
-            time: `${document.querySelector("#stime").value} - ${document.querySelector("#etime").value}`
-        })
-        console.log(time)
-    }
-
-    const timeDataFnEd = () => {
-        setTime({
-            time: `${document.querySelector("#stimed").value} - ${document.querySelector("#etimed").value}`
-        })
-        console.log(time)
-    }
-
     const [lecturer, lecturerData] = useState(
         {
             lecturer: ""
@@ -70,12 +55,8 @@ const Course = (props) => {
             venue: ""
         }
     )
-
     const [id2, setId2] = useState("1234");
-
     const [finalDataObj, setFinalDataObj] = useState({})
-
-    // Labels
     const [labelData, setLabelData] = useState(
         {
             nameLabel: "",
@@ -89,14 +70,24 @@ const Course = (props) => {
             descLabel: ""
         }
     );
-
-    // setting key for edit form
+    const [time, setTime] = useState(
+        {
+            time: ""
+        }
+    )
     const [id, setId] = useState("123");
 
 
-    // Http requests and relatives
+    
+
+
+
+    // Http requests C G E D and relatives
+
+
     // For cancelling requests
     const source = axios.CancelToken.source();
+
     // Post Request
     const courseFormData = (e) => {
 
@@ -141,9 +132,21 @@ const Course = (props) => {
         })
     }
 
-    const [created, setCreated] = useState(false)
-    const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
+    const timeDataFn = () => {
+        setTime({
+            time: `${document.querySelector("#stime").value} - ${document.querySelector("#etime").value}`
+        })
+        console.log(time)
+    }
+
+    const timeDataFnEd = () => {
+        setTime({
+            time: `${document.querySelector("#stimed").value} - ${document.querySelector("#etimed").value}`
+        })
+        console.log(time)
+    }
+
+    
     const createCourses = (e) => {
         e.preventDefault()
         let data = JSON.stringify(finalDataObj);
@@ -177,6 +180,62 @@ const Course = (props) => {
             
         });
 
+    }
+
+    // Get request
+    const fetchCourses = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
+            headers: { },
+            cancelToken: source.token
+        };
+        
+        axios(config)
+        .then((response) => {
+            var res = response.data.data
+            setCourses(res)
+            setLoading(true)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+    // Getting lecturers
+    const getLect = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
+            headers: { },
+            cancelToken: source.token
+        };
+        
+        axios(config)
+        .then((response) => {
+                setLecturers(response.data.data)
+        })
+        .catch((error) => {
+            
+        });
+    }
+
+    const getVenue = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
+            headers: { },
+            cancelToken: source.token
+        };
+        
+        axios(config)
+        .then((response) => {
+            setVenues(response.data.data)
+        })
+        .catch((error) => {
+        
+        });
+        
     }
 
     // Patch request
@@ -213,107 +272,8 @@ const Course = (props) => {
 
     }
 
-    // Generating form labels for edit
-    const genFormLabels = (data) => {
-        // eslint-disable-next-line array-callback-return
-        courses.map((course) => {
-                if(course._id === data){
-                    setLabelData({
-                        ...labelData,
-                        nameLabel: course.name,
-                        codeLabel: course.code,
-                        unitLabel: course.unit,
-                        timeLabel: course.time,
-                        lecturerLabel: course.lecturer.name,
-                        venueLabel: course.venue.name,
-                        levelL: course.level,
-                        dayLabel: course.day.join(),
-                        descLabel: course.description
-                    })
-                }
-            })
-    }
-
-    // Remove empty inputs in edit form obj
-    const cleanObj = () => {
-        Object.keys(finalDataObj).forEach((key) => (finalDataObj[key] === "") && delete finalDataObj[key]);
-    }
-
-
-
-    // Get request
-    const fetchCourses = () => {
-            let config = {
-                method: 'get',
-                url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-                headers: { },
-                cancelToken: source.token
-            };
-            
-            axios(config)
-            .then((response) => {
-                var res = response.data.data
-                setCourses(res)
-                setLoading(true)
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
-
-    // Getting lecturers
-    const getLect = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
-            headers: { },
-            cancelToken: source.token
-          };
-          
-          axios(config)
-          .then((response) => {
-                setLecturers(response.data.data)
-          })
-          .catch((error) => {
-            
-          });
-    }
-
-    const getVenue = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
-            headers: { },
-            cancelToken: source.token
-          };
-          
-          axios(config)
-          .then((response) => {
-            setVenues(response.data.data)
-          })
-          .catch((error) => {
-           
-          });
-          
-    }
-
-
-
-    useEffect( () => {
-            fetchCourses()
-            getLect()
-            getVenue()
-            filterFn()
-            setDelName()
-            return () => {
-                source.cancel("Component got unmounted");
-            };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        },[courses]
-    )
-
-    // Delete request
-    const deleteCourse = () => {
+     // Delete request
+     const deleteCourse = () => {
         let config = {
             method: 'delete',
             url: 'https://tbe-node-deploy.herokuapp.com/Admin/course/delete',
@@ -343,6 +303,48 @@ const Course = (props) => {
         console.log("deleted")
     }
 
+    
+    useEffect( () => {
+            fetchCourses()
+            getLect()
+            getVenue()
+            filterFn()
+            setDelName()
+            return () => {
+                source.cancel("Component got unmounted");
+            };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        },[courses]
+    )
+
+    // Generating form labels for edit
+    const genFormLabels = (data) => {
+        // eslint-disable-next-line array-callback-return
+        courses.map((course) => {
+                if(course._id === data){
+                    setLabelData({
+                        ...labelData,
+                        nameLabel: course.name,
+                        codeLabel: course.code,
+                        unitLabel: course.unit,
+                        timeLabel: course.time,
+                        lecturerLabel: course.lecturer.name,
+                        venueLabel: course.venue.name,
+                        levelL: course.level,
+                        dayLabel: course.day.join(),
+                        descLabel: course.description
+                    })
+                }
+            })
+    }
+
+    // Remove empty inputs in edit form obj
+    const cleanObj = () => {
+        Object.keys(finalDataObj).forEach((key) => (finalDataObj[key] === "") && delete finalDataObj[key]);
+    }
+
+   
+
     // Filtering
     const onChangeHandler = (e) =>{
         console.log(e.target.value)
@@ -370,6 +372,7 @@ const Course = (props) => {
             }))
     }
 
+    // Form validation
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
@@ -420,9 +423,7 @@ const Course = (props) => {
         success()
     }
 
-    const [deleter, setDeleter] = useState(false)
-    const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
+    
 
     const setDelName = () => {
         courses.map((course)=> {
@@ -512,6 +513,7 @@ const Course = (props) => {
                 </div>
 
 
+                {/* Delete Modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
                 <p>Are you sure you want to delete Course {deleteName}?</p>
                     <div>
@@ -520,11 +522,8 @@ const Course = (props) => {
                     </div>
                 </div>
 
-                <div className={deleter === true ? "overlay modOut" : "overlay"}
-                onClick={()=>{
-                    setDeleter(false);
-                }}></div>
-
+                
+                {/* Success messages */}
                 <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
                     <div>
                         <img src={checkg} style={{"height": "25px"}} alt="good"/>
@@ -549,15 +548,20 @@ const Course = (props) => {
                     <p>Room edited!</p>
                 </div>
 
-                {/* Overlay */}
+                {/* Overlays */}
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
-                onClick={()=>{
-                    setModalOut(!modalOut);
+                    onClick={()=>{
+                        setModalOut(!modalOut);
                 }}></div>
 
                 <div className={editModalOut === true  ? "overlay modOut" : "overlay"}
                     onClick={()=>{
                     setEditModalOut(!editModalOut);
+                }}></div>
+
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                    onClick={()=>{
+                        setDeleter(false);
                 }}></div>
 
 

@@ -23,6 +23,17 @@ const Period = (props) => {
     const [courses, setCourses] = useState([])
     const [editModalOut,setEditModalOut] = useState(false)
     const [editCourseId,setEditCourseId] = useState("")
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
+    const [id, setId] = useState("123");
+    const [id2, setId2] = useState("1234");
+    const [newArr, setNewArr] = useState([])
+    const [target, setTarget] = useState("")
+    const [switchState, setSwitchState] = useState("")
     const [periodData, setPeriodData] = useState(
         {
             startTime: "",
@@ -37,9 +48,7 @@ const Period = (props) => {
             eTimeLabel: ""
         }
     );
-     // setting key for edit form
-     const [id, setId] = useState("123");
-     const [id2, setId2] = useState("1234");
+
     const periodFormData = (e) => {
         setPeriodData({
             ...periodData,
@@ -50,13 +59,13 @@ const Period = (props) => {
           console.log(periodData)
     }
 
+    
+    // Http request C G E D
     // For cancelling requests
     const source = axios.CancelToken.source();
 
 
-    const [created, setCreated] = useState(false)
-    const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
+    
     // Create periods
     const createPeriods = (e) => {
         e.preventDefault()
@@ -89,54 +98,6 @@ const Period = (props) => {
         });
     }
 
-    const fetchCourses = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-            var res = response.data.data
-            setCourses(res)
-            setLoading(true)
-        })
-        .catch((error) => {
-            
-        });
-    }
-
-
-    // Delete Periods
-    const deletePeriod = () => {
-        
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/period/delete',
-            headers: { 
-            '_id': deleteId
-            }
-        };
-        
-        axios(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getPeriods())
-        .then(()=> {
-            setDeleter(false)
-            setTimeout(() => {
-              setDeleted(true)
-          }, 10);
-          setDeleted(false)
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    }
-
     // Get periods
     const getPeriods = () => {
         let config = {
@@ -157,21 +118,23 @@ const Period = (props) => {
 
     }
 
-    useEffect(() => {
-        getPeriods()
-        fetchCourses()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
+    const fetchCourses = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
+            headers: { },
+            cancelToken: source.token
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[periods])
-
-    // Edit Patch request
-    // Remove empty inputs in edit form obj
-    const cleanObj = () => {
-        Object.keys(periodData).forEach((key) => (periodData[key] === "") && delete periodData[key]);
+        
+        axios(config)
+        .then((response) => {
+            var res = response.data.data
+            setCourses(res)
+            setLoading(true)
+        })
+        .catch((error) => {
+            
+        });
     }
 
     const editPeriod = () => {
@@ -204,6 +167,12 @@ const Period = (props) => {
         });
     }
 
+    // Remove empty inputs in edit form obj
+    const cleanObj = () => {
+        Object.keys(periodData).forEach((key) => (periodData[key] === "") && delete periodData[key]);
+    }
+
+    
     // Generating form labels for edit
     const genFormLabels = (data) => {
         // eslint-disable-next-line array-callback-return
@@ -219,7 +188,51 @@ const Period = (props) => {
             })
     }
 
-    const [target, setTarget] = useState("")
+
+
+    // Delete Periods
+    const deletePeriod = () => {
+        
+        let config = {
+            method: 'delete',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/period/delete',
+            headers: { 
+            '_id': deleteId
+            }
+        };
+        
+        axios(config)
+        .then((response) => {
+            console.log(JSON.stringify(response.data));
+        })
+        .then(()=> getPeriods())
+        .then(()=> {
+            setDeleter(false)
+            setTimeout(() => {
+              setDeleted(true)
+          }, 10);
+          setDeleted(false)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
+
+    
+
+    useEffect(() => {
+        getPeriods()
+        fetchCourses()
+        filterFn()
+        setDelName()
+        return () => {
+            source.cancel("Component got unmounted");
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[periods])
+
+    
+    
 
     // Filtering
     const onChangeHandler = (e) =>{
@@ -227,9 +240,7 @@ const Period = (props) => {
         setTarget(e.target.value)
     }
 
-    const [newArr, setNewArr] = useState([])
-
-    const [switchState, setSwitchState] = useState("")
+    
     
     const switchFilter = (e) => {
         setSwitchState(e.target.value)
@@ -272,6 +283,7 @@ const Period = (props) => {
 
     }
 
+    // Form validation
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
@@ -298,10 +310,6 @@ const Period = (props) => {
         createPeriods(e)
         success()
     }
-
-    const [deleter, setDeleter] = useState(false)
-    const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
 
     const setDelName = () => {
         periods.map((period)=> {
@@ -386,6 +394,7 @@ const Period = (props) => {
                     </table>
                 </div>
 
+                {/* Delete modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
                 <p>Are you sure you want to delete Period {deleteName}?</p>
                     <div>
@@ -394,6 +403,8 @@ const Period = (props) => {
                     </div>
                 </div>
 
+
+                {/* Overlays */}
                 <div className={deleter === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setDeleter(false);
@@ -409,6 +420,7 @@ const Period = (props) => {
                     setEditModalOut(!editModalOut);
                 }}></div>
 
+                {/* Success messages */}
                 <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
                     <div>
                         <img src={checkg} style={{"height": "25px"}} alt="good"/>

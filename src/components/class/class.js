@@ -23,6 +23,12 @@ const Classes = (props) => {
     const [courses, setCourses] = useState([])
     const [editModalOut,setEditModalOut] = useState(false)
     const [editCourseId,setEditCourseId] = useState("")
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+    const [created, setCreated] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     const [classData, setClassData] = useState(
         {
             name: "",
@@ -32,9 +38,7 @@ const Classes = (props) => {
             UnavailableRooms: ""
         }
     )
-
     const [id2, setId2] = useState("1234");
-
     const [labelData, setLabelData] = useState(
         {
             nameLabel: "",
@@ -44,10 +48,14 @@ const Classes = (props) => {
             uarLabel: ""
         }
     );
-
     // setting key for edit form
     const [id, setId] = useState("123");
+    const [target, setTarget] = useState("")
+    const [newArr, setNewArr] = useState([])
+    const [switchState, setSwitchState] = useState("")
+    
 
+    // Http requests and relatives
     const classFormData = (e) => {
         setClassData({
             ...classData,
@@ -60,10 +68,6 @@ const Classes = (props) => {
     // For cancelling requests
     const source = axios.CancelToken.source();
 
-
-    const [created, setCreated] = useState(false)
-    const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
     // Create Classes
     const createClass = (e) => {
         e.preventDefault()
@@ -134,49 +138,6 @@ const Classes = (props) => {
         });
     }
 
-    useEffect(() => {
-        getClasses()
-        fetchCourses()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[classes])
-
-    // Delete class
-    const deleteClass = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/delete',
-            headers: { 
-              '_id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> {
-            setDeleter(false)
-            setTimeout(() => {
-              setDeleted(true)
-          }, 10);
-          setDeleted(false)
-        })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-
-    // Remove empty inputs in edit form obj
-    const cleanObj = () => {
-        Object.keys(classData).forEach((key) => (classData[key] === "") && delete classData[key]);
-    }
-
     // Edit class
     const editClass = () => {
         let data = JSON.stringify(classData);
@@ -209,6 +170,50 @@ const Classes = (props) => {
 
     }
 
+    // Delete class
+    const deleteClass = () => {
+        let config = {
+            method: 'delete',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/delete',
+            headers: { 
+              '_id': deleteId
+            }
+          };
+          
+          axios(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+          })
+          .then(()=> {
+            setDeleter(false)
+            setTimeout(() => {
+              setDeleted(true)
+          }, 10);
+          setDeleted(false)
+        })
+          .catch((error) => {
+            console.log(error);
+          });
+          
+    }
+
+    useEffect(() => {
+        getClasses()
+        fetchCourses()
+        filterFn()
+        setDelName()
+        return () => {
+            source.cancel("Component got unmounted");
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[classes])
+
+
+    // Remove empty inputs in edit form obj
+    const cleanObj = () => {
+        Object.keys(classData).forEach((key) => (classData[key] === "") && delete classData[key]);
+    }
+
     // Generating form labels for edit
     const genFormLabels = (data) => {
         // eslint-disable-next-line array-callback-return
@@ -226,18 +231,12 @@ const Classes = (props) => {
             })
     }
 
-    const [target, setTarget] = useState("")
-
     // Filtering
     const onChangeHandler = (e) =>{
         console.log(e.target.value)
         setTarget(e.target.value)
     }
 
-    const [newArr, setNewArr] = useState([])
-
-    const [switchState, setSwitchState] = useState("")
-    
     const switchFilter = (e) => {
         setSwitchState(e.target.value)
     }
@@ -293,6 +292,7 @@ const Classes = (props) => {
 
     }
 
+    // Form validation
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
@@ -322,10 +322,9 @@ const Classes = (props) => {
         success()
     }
 
-    const [deleter, setDeleter] = useState(false)
-    const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
+    
 
+    // Delete modal
     const setDelName = () => {
         classes.map((clas)=> {
             if(clas._id === deleteId){
@@ -415,6 +414,7 @@ const Classes = (props) => {
                     </table>
                 </div>
 
+                {/* Delete modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
                 <p>Are you sure you want to delete Class {deleteName}?</p>
                     <div>
@@ -423,11 +423,13 @@ const Classes = (props) => {
                     </div>
                 </div>
 
+                {/* Delete overlay */}
                 <div className={deleter === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setDeleter(false);
                 }}></div>
 
+                {/* Modals */}
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
                     setModalOut(!modalOut);
@@ -438,6 +440,7 @@ const Classes = (props) => {
                     setEditModalOut(!editModalOut);
                 }}></div>
 
+                {/* success messages */}
                 <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
                     <div>
                         <img src={checkg} style={{"height": "25px"}} alt="good"/>
@@ -503,10 +506,11 @@ const Classes = (props) => {
                         </div>
                     </div>
                     <div className="buttons">
-                        <button className="red" onClick={()=> setEditModalOut(false)}>Cancel</button>
-                        <button className="blue" onClick={(e)=> {
+                        <button className="red" onClick={()=> {
+                            setModalOut(false)
+                        }}>Cancel</button>
+                        <button className="blue" type="submit" onClick={(e)=> {
                             classFormData(e)
-                            setEditModalOut(false)
                         }}>
                             Add class
                         </button>

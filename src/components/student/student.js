@@ -14,10 +14,14 @@ import checkb from "../../images/checkb.png"
 
 const Student = (props) => {
 
+
+    // Student states
     const [students,setStudents] = useState([])   
     const [loading, setLoading] = useState(false)
     const [pageSwitch, setPageSwitch] = useState("home")
     const [studId, setstudId] = useState("")
+    const [deleted, setDeleted] = useState(false)
+    const [edited, setEdited] = useState(false)
     const [profileData, setProfileData] = useState(
         {
             firstname: "",
@@ -30,7 +34,6 @@ const Student = (props) => {
             img: ""
         }
     )
-
     const [formData, setFormData] = useState(
         {
             firstname: "",
@@ -42,7 +45,6 @@ const Student = (props) => {
             role: ""
         }
     )
-
     const [labelData, setLabelData] = useState(
         {
             firstname: "",
@@ -54,10 +56,21 @@ const Student = (props) => {
             role: ""
         }
     )
-
     const [coursesHandled, coursesHandler] = useState([])
-
     const [studL,setStudL] = useState("")
+    const [target, setTarget] = useState("")
+    const [newArr, setNewArr] = useState([])
+    const [switchState, setSwitchState] = useState("")
+    const [deleter, setDeleter] = useState(false)
+    const [deleteId, setDeleteId] = useState("")
+    const [deleteName, setDeleteName] = useState("")
+
+    
+
+    // Http requests G E D
+
+    // For cancelling requests
+    const source = axios.CancelToken.source();
 
     const setFormDataFn = (e) => {
         setFormData({
@@ -72,8 +85,25 @@ const Student = (props) => {
         Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
     }
 
-    const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
+    // Get request
+    const getStudents = () => {
+        let config = {
+            method: 'get',
+            url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/all',
+            headers: { },
+            cancelToken: source.token
+          };
+          
+          axios(config)
+          .then((response) => {
+            setStudents(response.data.data)
+            setLoading(true)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    }
+
     // Edit request(patch)
     const editstud = (e) => {
         e.preventDefault()
@@ -104,66 +134,6 @@ const Student = (props) => {
         .catch((error) => {
           console.log(error);
         });
-    }
-
-    // For cancelling requests
-    const source = axios.CancelToken.source();
-
-    // Get request
-    const getStudents = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/all',
-            headers: { },
-            cancelToken: source.token
-          };
-          
-          axios(config)
-          .then((response) => {
-            setStudents(response.data.data)
-            setLoading(true)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    }
-
-
-    // Generate profile data
-    const genProfileData = (data) => {
-        students.map((stud) => {
-            if(stud._id === data){
-                setProfileData({
-                    ...profileData,
-                    firstname: stud.firstname,
-                    lastname: stud.lastname,
-                    email: stud.email,
-                    dob: stud.dob,
-                    matric: stud.matric,
-                    level: stud.level,
-                    role: stud.role,
-                    img: stud.image
-                })
-            }
-        })
-    }
-
-    // Generate label for edit form
-    const genLabelData = (data) => {
-        students.map((stud) => {
-            if(stud._id === data){
-                setLabelData({
-                    ...labelData,
-                    firstnameL: stud.firstname,
-                    lastnameL: stud.lastname,
-                    emailL: stud.email,
-                    dobL: stud.dob,
-                    matricL: stud.matric,
-                    levelL: stud.level,
-                    roleL: stud.role
-                })
-            }
-        })
     }
 
     // Delete Student
@@ -219,7 +189,44 @@ const Student = (props) => {
         setStudL(students.length)
     }
 
-    const [target, setTarget] = useState("")
+    // Generate profile data
+    const genProfileData = (data) => {
+        students.map((stud) => {
+            if(stud._id === data){
+                setProfileData({
+                    ...profileData,
+                    firstname: stud.firstname,
+                    lastname: stud.lastname,
+                    email: stud.email,
+                    dob: stud.dob,
+                    matric: stud.matric,
+                    level: stud.level,
+                    role: stud.role,
+                    img: stud.image
+                })
+            }
+        })
+    }
+
+    // Generate label for edit form
+    const genLabelData = (data) => {
+        students.map((stud) => {
+            if(stud._id === data){
+                setLabelData({
+                    ...labelData,
+                    firstnameL: stud.firstname,
+                    lastnameL: stud.lastname,
+                    emailL: stud.email,
+                    dobL: stud.dob,
+                    matricL: stud.matric,
+                    levelL: stud.level,
+                    roleL: stud.role
+                })
+            }
+        })
+    }
+
+    
 
     // Filtering
     const onChangeHandler = (e) =>{
@@ -227,9 +234,6 @@ const Student = (props) => {
         setTarget(e.target.value)
     }
 
-    const [newArr, setNewArr] = useState([])
-
-    const [switchState, setSwitchState] = useState("")
     
     const switchFilter = (e) => {
         setSwitchState(e.target.value)
@@ -248,10 +252,7 @@ const Student = (props) => {
         }))
     }
 
-    const [deleter, setDeleter] = useState(false)
-    const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
-
+    // Delete Modal
     const setDelName = () => {
         students.map((stud)=> {
             if(stud._id === deleteId){
@@ -333,6 +334,8 @@ const Student = (props) => {
                 </div>
                 : null}
 
+
+                {/* Delete Modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
                     <p>Are you sure you want to delete Student {deleteName}?</p>
                     <div>
@@ -341,11 +344,7 @@ const Student = (props) => {
                     </div>
                 </div>
 
-                <div className={deleter === true ? "overlay modOut" : "overlay"}
-                onClick={()=>{
-                    setDeleter(false);
-                }}></div>
-
+                {/* Success messages */}
                 <div className={deleted === true ? "successMsg red3 flexModOut" : "successMsg red2"}>
                     <div>
                         <img src={checkr} style={{"height": "25px"}} alt="good"/>
@@ -361,6 +360,12 @@ const Student = (props) => {
                     </div>
                     <p>Room edited!</p>
                 </div>
+
+                {/* Overlay */}
+                <div className={deleter === true ? "overlay modOut" : "overlay"}
+                onClick={()=>{
+                    setDeleter(false);
+                }}></div>
 
                 {pageSwitch === "profile" ?
                 <div className="profile-container">

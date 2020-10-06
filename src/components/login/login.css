@@ -35,8 +35,9 @@
 .input-group input{
     width: 100%;
     padding: 10px;
-    border: 1px solid #eee;
+    border: 1px solid #0395ff;
     font-family: inherit;
+    outline: none;
 }
 
 .input-group p{
@@ -59,6 +60,15 @@
 
 .login em{
     font-size: 13px;
+}
+
+.login button{
+    padding: 10px;
+    border: none;
+    border-radius: .25rem;
+    color: #fff;
+    background-color: #0395ff;
+    font-family: inherit;
 }
 
 em span{
