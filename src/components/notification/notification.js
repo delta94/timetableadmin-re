@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import "./notification.css"
 import "../../global/global.css";
 import logo from "../../images/Logo.png";
@@ -8,7 +8,7 @@ import io from "socket.io-client"
 
 const Notif = () =>{
 
-    // const [notif, setNotif] = useState([])
+    const [notif, setNotif] = useState([])
 
     const socket = io("https://tbe-node-deploy.herokuapp.com");
 
@@ -21,6 +21,7 @@ const Notif = () =>{
 
    socket.on('newUser', data => {
        console.log(data)
+       setNotif([...notif, data.firstname])
     });
     
     
@@ -45,18 +46,17 @@ const Notif = () =>{
                             <input placeholder="Search for messages"/>
                         </div>
 
-                        {/* <button onClick={persist}>Persist state</button>
                         {notif.map((key,i)=> {
                             return (
                                 <table className="table" key={i}>
                                     <tbody className="gfg" >
                                         <tr className="default tr-no-bottom">
-                                            <td className="notif-tr">{key}</td>
+                                            <td className="notif-tr">{key} was created</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             );
-                        })} */}
+                        })}
                 </div>
             </div>
         </>

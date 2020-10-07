@@ -11,6 +11,7 @@ import {
 import Layout from "./pages/layout"
 import logo from "./images/Logo.png"
 import "./components/login/login.css"
+import axios from "axios"
 
 
 const App = () => {
@@ -28,7 +29,51 @@ const App = () => {
 
     const Login = (props) => {
 
-        
+        const [loginData, setLoginData] = useState(
+            {
+                adminNumber: "",
+                password: ""
+            }
+        );
+
+        const loginFormFn = (e) => {
+
+            setLoginData({
+                ...loginData,
+          
+                // Trimming any whitespace
+                [e.target.name]: e.target.value.trim()
+              });
+    
+        }
+
+        const checkLog = () => {
+            
+            let config = {
+                method: 'post',
+                url: 'https://tbe-node-deploy.herokuapp.com/admin/login',
+                headers: { 
+                'Content-Type': 'application/json'
+                },
+                data : loginData
+            };
+            
+            axios(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+                if({...error}.response.status === 404){
+                    setAuth(false)
+                }else{
+                    setAuth(true)
+                }
+                console.log({...error});
+            });
+  
+        }
+
+        // Form validation
         const checkInput = () => {
          //Get all the inputs...
         const inputs = document.querySelectorAll('input');
@@ -58,7 +103,6 @@ const App = () => {
 
         useEffect(() => {
             checkInput()
-            console.log("fired")
         }, [document.querySelector(".id"), document.querySelector(".pword")])
 
         const handleLogin = (event) => {
@@ -66,6 +110,10 @@ const App = () => {
             event.preventDefault()
             
             props.history.push("/app/dashboard")
+
+            console.log(loginData)
+
+            checkLog() 
         }
 
         return (
@@ -81,11 +129,11 @@ const App = () => {
                     <div className="input-container">
                         <div className="input-group">
                             <p className="grey">Admin Number</p>
-                            <input placeholder="13CK015497" className="id" required/>
+                            <input name="adminNumber" onChange={loginFormFn} placeholder="13CK015497" className="id" required/>
                         </div>
                         <div className="input-group mb">
                             <p className="grey">Password</p>
-                            <input placeholder="Password" className="pword" type="password" required/>
+                            <input name="password" onChange={loginFormFn} placeholder="Password" className="pword" type="password" required/>
                         </div>
                     </div>
 

@@ -508,6 +508,51 @@
   z-index: 5;
 }
 
+.slide-enter {
+  transform: translateX(-100vw);
+  opacity: 0;
+  
+}
+
+/* Declare transition properties */
+.slide-enter.slide-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: all 500ms ease-in;
+}
+
+/* EXIT TRANSITION */
+.slide-exit {
+  transform: translateX(0);
+  opacity: 1;
+  
+}
+
+.slide-exit.slide-exit-active {
+  transform: translateX(100vw);
+  opacity: 0;
+  transition: all 500ms ease-in
+}
+
+
+/* 2nd slide */
+.slide2-enter {
+  display: none;
+}
+
+.slide2-enter.slide2-enter-active {
+  display: block;
+}
+
+/* EXIT TRANSITION */
+.slide2-exit {
+  display: block;
+}
+
+.slide2-exit.slide2-exit-active {
+  display: none;
+}
+
 @media only screen and (max-width: 600px){
   .deleteModal{
     width: 90%;
