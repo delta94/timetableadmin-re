@@ -508,50 +508,72 @@
   z-index: 5;
 }
 
+.logErr{
+  color: red;
+  display: none;
+}
+
+
+/* 1st slide */
 .slide-enter {
-  transform: translateX(-100vw);
   opacity: 0;
   
 }
 
 /* Declare transition properties */
 .slide-enter.slide-enter-active {
-  transform: translateX(0);
   opacity: 1;
-  transition: all 500ms ease-in;
+  transition: all 300ms ease-in;
 }
 
 /* EXIT TRANSITION */
 .slide-exit {
-  transform: translateX(0);
   opacity: 1;
   
 }
 
 .slide-exit.slide-exit-active {
-  transform: translateX(100vw);
   opacity: 0;
-  transition: all 500ms ease-in
+  transition: all 300ms ease-in
 }
 
 
 /* 2nd slide */
-.slide2-enter {
+.slide2-enter  .slide2-appear{
   display: none;
 }
 
-.slide2-enter.slide2-enter-active {
+.slide2-appear-done .slide2-enter-done {
   display: block;
+}
+
+.slide2-exit{
+  display: none;
+}
+
+.slide2-exit .slide2-exit-active {
+  display: block;
+}
+
+/* 3rd slide */
+
+.slide3-enter {
+  display: block;
+}
+
+.slide3-enter.slide3-enter-active {
+  display: none;
 }
 
 /* EXIT TRANSITION */
-.slide2-exit {
+.slide3-exit {
   display: block;
 }
 
-.slide2-exit.slide2-exit-active {
+.slide3-exit.slide3-exit-active {
   display: none;
 }
+
 
 @media only screen and (max-width: 600px){
   .deleteModal{

@@ -22,6 +22,7 @@
   text-decoration: none;
   color: #7079ab;
   padding: 12px;
+  transition: all 200ms ease-in-out;
 }
 
 /* .sidenav a:last-child{

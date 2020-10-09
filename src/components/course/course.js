@@ -2,6 +2,7 @@
 import React,{useEffect, useState} from "react"
 import {Link} from "react-router-dom"
 import "./course.css"
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
 import bin from "../../images/bin.png"
@@ -477,9 +478,17 @@ const Course = (props) => {
                         <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody className="gfg">
+                    <TransitionGroup component="tbody" className="gfg">
                        {loading === true ? newArr.map(course => {
                             return(
+                                <CSSTransition
+                                timeout={900}
+                                classNames="slide"
+                                in={true}
+                                appear={true}
+                                key={course._id}
+                                onExited={()=> console.log("exited")}
+                              >
                                 <tr className="default" key={course._id}>
                                     <td>{course.code}</td>
                                     <td>{course.name}</td>
@@ -505,10 +514,30 @@ const Course = (props) => {
                                         />
                                     </td>
                                 </tr>
-                            )}) : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
+                                </CSSTransition>
+                            )}) : <CSSTransition
+                                        timeout={900}
+                                        classNames="slide3"
+                                        in={true}
+                                        appear={true}
+                                        key="1"
+                                        onExited={()=> console.log("exited")} 
+                                    >
+                                    <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
+                                </CSSTransition>
                         }
-                        {newArr.length === 0 && loading === true ? <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr> : null}
-                    </tbody>
+                        {newArr.length === 0 && loading === true ? 
+                                <CSSTransition
+                                    timeout={900}
+                                    classNames="slide2"
+                                    in={true}
+                                    appear={true}
+                                    key="2"
+                                    onExited={()=> console.log("exited")} 
+                                >
+                                    <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr>
+                                </CSSTransition> : null}
+                    </TransitionGroup>
                     </table>
                 </div>
 

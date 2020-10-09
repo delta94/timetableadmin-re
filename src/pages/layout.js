@@ -88,6 +88,7 @@ class SidebarExample extends Component{
           this.setState({sideBarOut: false})
         }
 
+
         render(){
 
         return (
@@ -98,7 +99,10 @@ class SidebarExample extends Component{
                 </Swipeable>
                 <aside className={this.state.sideBarOut === true ? "sidenav sidenavOut" : "sidenav"}>
                       <ul>
-                          <Link to="/" onClick={()=> this.setState({sideBarOut: false})}>
+                          <Link to="/" onClick={()=> {
+                            this.setState({sideBarOut: false})
+                            localStorage.clear()
+                          }}>
                           <img alt="Profile" className="profile-image" src={profileImg}/>
                               Admin</Link> 
           
@@ -138,13 +142,20 @@ class SidebarExample extends Component{
           
                           <NavLink 
                           to="/app/student" 
-                          onClick={()=> this.setState({sideBarOut: false})} activeClassName="active">
+                          onClick={()=> {
+                            this.setState({sideBarOut: false})
+                            console.log(this.context.auth)
+                            console.log(localStorage.getItem("loggedIn"))
+                          }} activeClassName="active">
                           <img alt="sidenav" src={acct}/>
                           Student</NavLink>  
               
                           <Link 
                           to="/" 
-                          onClick={()=> this.setState({sideBarOut: false})} className="logout-image">
+                          onClick={()=> {
+                              this.setState({sideBarOut: false})
+                              localStorage.clear()
+                          }} className="logout-image">
                           <img alt="sidenav" src={logout}/> 
                           Logout</Link>
                       </ul>

@@ -295,6 +295,7 @@ const Room = (props) => {
         setDeleter(!deleter)
         setDeleteId(data)
     }
+
     return (
         <>
             <header>
@@ -335,13 +336,13 @@ const Room = (props) => {
                         .map(room => {
                             return(
                                 <CSSTransition
-                                timeout={900}
-                                classNames="slide"
-                                in={true}
-                                appear={true}
-                                key={room._id}
-                                onExited={()=> console.log("exited")}
-                              >
+                                    timeout={900}
+                                    classNames="slide"
+                                    in={true}
+                                    appear={true}
+                                    key={room._id}
+                                    onExited={()=> console.log("exited")}
+                                >
                                 <tr className="default" key={room._id}>
                                     <td>{room.name}</td>
                                     <td>{room.capacity}</td>
@@ -372,7 +373,7 @@ const Room = (props) => {
                         }) : 
                         <CSSTransition
                             timeout={900}
-                            classNames="slide2"
+                            classNames="slide3"
                             in={true}
                             appear={true}
                             key="1"
@@ -383,7 +384,7 @@ const Room = (props) => {
                         }
                         {newArr.length === 0 && loading === true ? 
                         <CSSTransition
-                        timeout={900}
+                        timeout={10}
                         classNames="slide2"
                         in={true}
                         appear={true}

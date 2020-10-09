@@ -1,4 +1,5 @@
-import React,{useState} from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React,{useState,useEffect} from "react";
 import "./notification.css"
 import "../../global/global.css";
 import logo from "../../images/Logo.png";
@@ -15,14 +16,16 @@ const Notif = () =>{
      // request permission to display notifications, if we don't alreay have it
      Notification.requestPermission();
 
-    socket.on('connect', () => {
-        console.log(socket.connected); // true
-    });
-
-   socket.on('newUser', data => {
-       console.log(data)
-       setNotif([...notif, data.firstname])
-    });
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log(socket.connected); // true
+        });
+    
+       socket.on('newUser', data => {
+           console.log(data)
+           setNotif([...notif, data.firstname])
+        });
+    }, [])
     
     
     // const persist = () => {
@@ -45,6 +48,10 @@ const Notif = () =>{
                             <img src={search} className="search" alt="search"/>
                             <input placeholder="Search for messages"/>
                         </div>
+
+                        {/* <button onClick={persist}>
+                            Persist
+                        </button> */}
 
                         {notif.map((key,i)=> {
                             return (
