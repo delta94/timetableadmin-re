@@ -17,6 +17,7 @@ import Lecturer from "../components/lecturer/lecturer"
 import Notification from "../components/notification/notification"
 import Student from "../components/student/student"
 import Timetable from "../components/timetable/timetable";
+import Events from "../components/events/events"
 import "./layout.css"
 
 // Images
@@ -71,6 +72,10 @@ const routes = [
   {
     path: "timetable",
     main: Timetable
+  },
+  {
+    path: "events",
+    main: Events
   }
 ];
 
@@ -144,11 +149,17 @@ class SidebarExample extends Component{
                           to="/app/student" 
                           onClick={()=> {
                             this.setState({sideBarOut: false})
-                            console.log(this.context.auth)
-                            console.log(localStorage.getItem("loggedIn"))
                           }} activeClassName="active">
                           <img alt="sidenav" src={acct}/>
-                          Student</NavLink>  
+                          Student</NavLink>
+
+                          <NavLink 
+                          to="/app/events" 
+                          onClick={()=> {
+                            this.setState({sideBarOut: false})
+                          }} activeClassName="active">
+                          <img alt="sidenav" src={acct}/>
+                          Events</NavLink>  
               
                           <Link 
                           to="/" 

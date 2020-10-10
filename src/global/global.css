@@ -72,6 +72,11 @@
     width: 90%;
     margin: 30px auto;
   }
+
+  .table2{
+    border-collapse: collapse;
+    width: auto;
+  }
   
   .table-head {
     color: white;
@@ -98,6 +103,10 @@
   .table .default {
     background: #e8f1f9;
   }
+
+  .table2 .default {
+    background: #e8f1f9;
+  }
   
   .default{
       border-bottom: 20px solid #e6eaee;
@@ -106,8 +115,16 @@
   .table{
     height: 20px;
   }
+
+  .table2{
+    height: 20px;
+  }
   
   .table .table-head .row1 {
+    background: #0395ff;
+  }
+
+  .table2 .table-head .row1 {
     background: #0395ff;
   }
   
@@ -574,6 +591,25 @@
   display: none;
 }
 
+/* Event Calendar */
+.calendar{
+  font-family: inherit !important;
+  font-size: 16px !important;
+}
+
+.calendar button{
+  font-family: inherit !important;
+  font-size: 16px !important;
+}
+
+.tableXcal{
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap-reverse;
+  align-items: flex-end;
+  height: auto;
+  margin-top: 30px;
+}
 
 @media only screen and (max-width: 600px){
   .deleteModal{
