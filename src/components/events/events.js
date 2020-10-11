@@ -130,8 +130,6 @@ const Events = (props) => {
         createEve()
     }
 
-    // new Date().toISOString().substring(0,10)
-
     return (
         <>
             <header>
@@ -148,11 +146,9 @@ const Events = (props) => {
             <div className="section">
                 <div className="search-container">
                     <select className="select-css2" name="switch">
-                        <option>All</option>
                         <option>Name</option>
-                        <option>Capacity</option>
                     </select>
-                    <input placeholder="Enter keyword to search"/>
+                    <input placeholder="Filter by name"/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                         setId2(Math.random().toString());
@@ -196,6 +192,9 @@ const Events = (props) => {
                             })
                              : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         }   
+                        {loading === true && events.length === 0 ? (
+                            <tr><td colSpan="3" style={{color: "#0395ff"}}>No events for this day</td></tr>
+                        ) : null}
                         </tbody>
                         </table>
                     </div>
