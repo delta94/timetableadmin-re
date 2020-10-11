@@ -1,10 +1,13 @@
 import React,{useState, useEffect} from "react"
 import {Link} from "react-router-dom"
 import "./dashboard.css"
+import "../../global/global.css"
 import logo from "../../images/Logo.png"
 import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
+import { CSSTransition} from "react-transition-group";
+
 
 
 const Dashboard = (props) => {
@@ -128,36 +131,91 @@ const Dashboard = (props) => {
               </header>
               {loading === true ?  
                 <div className="card-container">       
-                    <Link to="/app/rooms">
-                        <div className="card card-room">
-                            <h3>Lecture Rooms</h3>
-                            <p>{roomL}</p>
-                        </div>
-                    </Link>
-                    <Link to="/app/courses">
-                        <div className="card card-course">
-                            <h3>Courses</h3>
-                            <p>{courseL}</p>
-                        </div>
-                    </Link>
-                    <Link to="/app/lecturers">
-                        <div className="card card-lect">
-                            <h3>Lecturers</h3>
-                            <p>{lectL}</p>
-                        </div>
-                    </Link>
-                    <Link to="/app/classes">
-                        <div className="card card-class">
-                            <h3>Classes</h3>
-                            <p>{classL}</p>
-                        </div>
-                    </Link>
-                    <Link to='/app/student'>
-                        <div className="card card-stud">
-                            <h3>Students</h3>
-                            <p>{studentsL}</p>
-                        </div>
-                    </Link>
+                    <CSSTransition
+                            timeout={10}
+                            className="cardani"
+                            in={true}
+                            appear={true}
+                            key="e"
+                            onEntered={()=> {
+                                console.log("entered")
+                                document.querySelector(".cardani").classList.add("cardani2")
+                                }}>
+                            <Link to="/app/rooms">
+                                <div className="card card-room">
+                                    <h3>Lecture Rooms</h3>
+                                    <p>{roomL}</p>
+                                </div>
+                            </Link>
+                    </CSSTransition>
+                    <CSSTransition
+                            timeout={10}
+                            className="cardania"
+                            in={true}
+                            appear={true}
+                            key="a"
+                            onEntered={()=> {
+                                console.log("entered")
+                                document.querySelector(".cardania").classList.add("cardania2")
+                                }}>
+                            <Link to="/app/courses">
+                                <div className="card card-course">
+                                    <h3>Courses</h3>
+                                    <p>{courseL}</p>
+                                </div>
+                            </Link>
+                    </CSSTransition>
+                    <CSSTransition
+                            timeout={10}
+                            className="cardanib"
+                            in={true}
+                            appear={true}
+                            key="b"
+                            onEntered={()=> {
+                                console.log("entered")
+                                document.querySelector(".cardanib").classList.add("cardanib2")
+                                }}>
+                            <Link to="/app/lecturers">
+                                <div className="card card-lect">
+                                    <h3>Lecturers</h3>
+                                    <p>{lectL}</p>
+                                </div>
+                            </Link>
+                    </CSSTransition>
+                    <CSSTransition
+                            timeout={10}
+                            className="cardanic"
+                            in={true}
+                            appear={true}
+                            key="c"
+                            onEntered={()=> {
+                                console.log("entered")
+                                document.querySelector(".cardanic").classList.add("cardanic2")
+                                }}>
+                            <Link to="/app/classes">
+                                <div className="card card-class">
+                                    <h3>Classes</h3>
+                                    <p>{classL}</p>
+                                </div>
+                            </Link>
+                    </CSSTransition>
+                    <CSSTransition
+                            timeout={10}
+                            className="cardanid"
+                            in={true}
+                            appear={true}
+                            key="d"
+                            onEntered={()=> {
+                                console.log("entered")
+                                document.querySelector(".cardanid").classList.add("cardanid2")
+                                }}>
+                            <Link to='/app/student'>
+                                <div className="card card-stud">
+                                    <h3>Students</h3>
+                                    <p>{studentsL}</p>
+                                </div>
+                            </Link>
+                    </CSSTransition>
             </div>
             : <div className="spinnerContainer"><img src={spinner} alt="loading.."/></div>}
 

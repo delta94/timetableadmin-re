@@ -523,6 +523,7 @@
   bottom: 0;
   right: 0;
   z-index: 5;
+  padding: 0px 20px;
 }
 
 .logErr{
@@ -542,6 +543,8 @@
   opacity: 1;
   transition: all 300ms ease-in;
 }
+
+/* 1st slide */
 
 /* EXIT TRANSITION */
 .slide-exit {
@@ -589,6 +592,57 @@
 
 .slide3-exit.slide3-exit-active {
   display: none;
+}
+
+.cardani{
+  opacity: 0;
+  transition: all ease-in-out 300ms;
+}
+
+.cardani2{
+  opacity: 1 !important;
+}
+
+.cardania{
+  opacity: 0;
+  transition: all ease-in-out 300ms;
+}
+
+.cardania2{
+  opacity: 1 !important;
+}
+
+.cardanib{
+  opacity: 0;
+  transition: all ease-in-out 300ms;
+}
+
+.cardanib2{
+  opacity: 1 !important;
+}
+
+.cardanic{
+  opacity: 0;
+  transition: all ease-in-out 300ms;
+}
+
+.cardanic2{
+  opacity: 1 !important;
+}
+
+.cardanid{
+  opacity: 0;
+  transition: all ease-in-out 300ms;
+}
+
+.cardanid2{
+  opacity: 1 !important;
+}
+
+.studReg{
+  margin: 20px auto;
+  width: fit-content;
+  color: #0395ff;
 }
 
 /* Event Calendar */

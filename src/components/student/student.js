@@ -11,6 +11,8 @@ import spinner from "../../images/spinner.gif"
 import cross from "../../images/close.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
+import checkg from "../../images/checkg.png"
+import plus from "../../images/plus.svg"
 
 
 const Student = (props) => {
@@ -43,9 +45,11 @@ const Student = (props) => {
             dob: "",
             matric: "",
             level: "",
-            role: ""
+            role: "",
+            password: ""
         }
     )
+    
     const [labelData, setLabelData] = useState(
         {
             firstname: "",
@@ -65,6 +69,7 @@ const Student = (props) => {
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
     const [deleteName, setDeleteName] = useState("")
+    const [created, setCreated] = useState(false)
 
     
 
@@ -78,7 +83,6 @@ const Student = (props) => {
             ...formData,
             [e.target.name]: e.target.value.trim()
         })
-        console.log(formData)
     }
 
     // Remove empty inputs in edit form obj
@@ -106,8 +110,7 @@ const Student = (props) => {
     }
 
     // Edit request(patch)
-    const editstud = (e) => {
-        e.preventDefault()
+    const editstud = () => {
         let data = JSON.stringify(formData);
 
         let config = {
@@ -131,6 +134,55 @@ const Student = (props) => {
                 setEdited(true)
             }, 10);
             setEdited(false)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    // Create request(patch)
+    const createstud = () => {
+        let data = new FormData();
+
+        var file = document.getElementById("fileInput").files[0]
+        var firstname = document.querySelector("#firstname").value
+        var lastname = document.querySelector("#lastname").value
+        var dob = document.querySelector("#dob").value
+        var email = document.querySelector("#email").value
+        var matric = document.querySelector("#matric").value
+        var role = document.querySelector("#role").value
+        var level = document.querySelector("#level").value
+
+        data.append('firstname', firstname);
+        data.append('lastname', lastname);
+        data.append('email', email);
+        data.append('dob', dob);
+        data.append('matric', matric);
+        data.append('role', role);
+        data.append('image', file);
+        data.append('level', level)
+
+        console.log(...data)
+
+        let config = {
+          method: 'post',
+          url: 'https://tbe-node-deploy.herokuapp.com/signup',
+          headers: { 
+            'content-type': 'multipart/form-data'
+        },
+          data : data
+        };
+        
+        axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+        })
+        .then(()=> {
+            setPageSwitch("home")
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
         })
         .catch((error) => {
           console.log(error);
@@ -253,6 +305,30 @@ const Student = (props) => {
         }))
     }
 
+    //Get all the inputs...
+    const inputs = document.querySelectorAll('.editProfileContainer input, textarea');
+
+    // Loop through them...
+    for(let input of inputs) {
+    // Just before submit, the invalid event will fire, let's apply our class there.
+    input.addEventListener('invalid', (event) => {
+        input.classList.add('error');    
+    }, false);
+    
+    // Optional: Check validity onblur
+    input.addEventListener('blur', (event) => {
+        input.checkValidity();
+
+        if(input.validity.valid){
+            console.log("valid")
+            input.classList.remove('error')
+            input.classList.add('good')
+        }
+    })
+
+    }
+
+
     // Delete Modal
     const setDelName = () => {
         students.map((stud)=> {
@@ -267,6 +343,43 @@ const Student = (props) => {
         setDeleteId(data)
     }
 
+    // Form validation
+    const success = () => {
+        const matric = document.querySelector("#matric")
+        const warningInput = document.querySelector(".warning")
+        // eslint-disable-next-line array-callback-return
+        students.map((stud)=> {
+            if(stud.matric === matric.value){
+                warningInput.classList.add("display")
+                matric.classList.add("error")
+            }
+        })
+    }
+
+    const successE = () => {
+        const matric = document.querySelector("#matricE")
+        const warningInput = document.querySelector(".warning2")
+        // eslint-disable-next-line array-callback-return
+        students.map((stud)=> {
+            if(stud.matric === matric.value){
+                warningInput.classList.add("display")
+                matric.classList.add("error")
+            }
+        })
+    }
+
+    const formSub = (e) => {
+        e.preventDefault()
+        createstud()
+        success()
+    }
+
+    const formSubE = (e) => {
+        e.preventDefault()
+        editstud()
+        successE()
+    }
+
     return (
         <>
             <header>
@@ -277,19 +390,20 @@ const Student = (props) => {
                   <div className="navMobile"> 
                     <Link to="/app/notification">
                         <div className="bell"></div>
-                    </Link>     
+                    </Link>  
                   </div>
               </header>
             <div className="section">
                 <div className="search-container">
-                <select className="select-css2" name="switch" onChange={switchFilter}>
+                    <select className="select-css2" name="switch" onChange={switchFilter}>
                         <option>All</option>
                         <option>First Name</option>
                         <option>Email</option>
                     </select>
                     <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
-                    <p style={{marginLeft: "30px"}}>Students registered : {studL}</p>
+                    <button onClick={()=>setPageSwitch("create")}><img src={plus} alt="plus"/>Add new student</button>
                 </div>
+                <p className="studReg">Students registered : {studL}</p>
                 {pageSwitch === "home" ? 
                 <div className="table-container">
                     <table className="table">
@@ -390,6 +504,14 @@ const Student = (props) => {
                     <p>Room edited!</p>
                 </div>
 
+                <div className={created === true ? "successMsg flexModOut" : "successMsg"}>
+                    <div>
+                        <img src={checkg} style={{"height": "25px"}} alt="good"/>
+                        <h3>Success</h3>
+                    </div>
+                    <p>Room created!</p>
+                </div>
+
                 {/* Overlay */}
                 <div className={deleter === true ? "overlay modOut" : "overlay"}
                 onClick={()=>{
@@ -472,7 +594,7 @@ const Student = (props) => {
                         <h3>Edit your profile</h3>
                         <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
                     </div>
-                    <form onSubmit={editstud}>
+                    <form onSubmit={formSubE}>
                     <div className="editProfileContainer">
                     <div className="input-field field-details-flex2">
                             <div className="field-name">
@@ -500,7 +622,8 @@ const Student = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Matric/No</p>
-                                        <input placeholder={labelData.matricL} name="matric" onChange={setFormDataFn}/>
+                                        <input placeholder={labelData.matricL} id="matricE" name="matric" onChange={setFormDataFn}/>
+                                        <em className="warning warning2">Matric no already exists </em>
                                     </div>
                                     <div className="field">
                                         <p>Level</p>
@@ -535,6 +658,105 @@ const Student = (props) => {
                                 setFormDataFn(e)
                             }}>
                                 Update Profile
+                            </button>
+                        </div>
+                    </div>
+                    </form>
+                </div> : null}
+
+                {pageSwitch === "create" ?
+                <div className="editProfile">
+                    <div className="editHeading">
+                        <h3>Create your profile</h3>
+                        <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
+                    </div>
+                    <form onSubmit={formSub}>
+                    <div className="editProfileContainer">
+                    <div className="input-field">
+                            <div className="field-details">
+                                <div className="field">
+                                    <p>Add image</p>
+                                    <input className="wid-4" type="file" id="fileInput" name="image" required/>
+                                </div>
+                            </div>
+                    </div>
+                    <div className="input-field field-details-flex2">
+                            <div className="field-name">
+                                Full Name
+                            </div>
+                            <div>
+                                <div className="field-details field-details-flex">
+                                    <div className="field pr">
+                                        <p>First name</p>
+                                        <input name="firstname" id="firstname" required/>
+                                    </div>
+                                    <div className="field">
+                                        <p>Last name</p>
+                                        <input name="lastname" id="lastname" required/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="input-field field-details-flex2">
+                            <div className="field-name">
+                                About
+                            </div>
+                            <div>
+                                <div className="field-details field-details-flex">
+                                    <div className="field pr">
+                                        <p>Matric/No</p>
+                                        <input name="matric" id="matric" required/>
+                                        <em className="warning">Matric no already exists </em>
+                                    </div>
+                                    <div className="field">
+                                        <p>Level</p>
+                                        <input type="number" list="levels" name="level" id="level" required/>
+                                        <datalist id="levels">
+                                            <option value="100"></option>
+                                            <option value="200"></option>
+                                            <option value="300"></option>
+                                            <option value="400"></option>
+                                        </datalist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="input-field field-details-flex2">
+                            <div>
+                                <div className="field-details field-details-flex">
+                                    <div className="field pr">
+                                        <p>Date of birth</p>
+                                        <input name="dob" id="dob" required/>
+                                    </div>
+                                    <div className="field">
+                                        <p>Role</p>
+                                        <input id="role" name="role" required/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="input-field">
+                            <div className="field-name">
+                                Email Address
+                                <p className="notbold">We send saving notifications and other account updates to your confirmed email address</p>
+                            </div>
+                            <div className="field-details">
+                                <div className="field">
+                                    <p>Email Address</p>
+                                    <input className="wid-4" id="email" name="email" type="email" required/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="input-field">
+                            <button className="updateProfileBtn" type="submit" onClick={(e)=> {
+                                cleanObj()
+                                setFormDataFn(e)
+                            }}>
+                                Create Profile
                             </button>
                         </div>
                     </div>

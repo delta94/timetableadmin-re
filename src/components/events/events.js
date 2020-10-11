@@ -10,6 +10,9 @@ import bin from "../../images/bin.png"
 import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import axios from "axios"
+import spinner from "../../images/spinner.gif"
+
+
 const source = axios.CancelToken.source();
 
 
@@ -19,6 +22,7 @@ const Events = (props) => {
     const [id2, setId2] = useState("1234");
     const [date, setDate] = useState(new Date())
     const [events, setEvents] = useState([])
+    const [loading, setLoading] = useState(false)
     const [eventData, setEventData] = useState(
         {
             name: "",
@@ -31,6 +35,7 @@ const Events = (props) => {
         }
     )
     const [finalObj, setFinalObj] = useState({})
+    const [getDate, setGetDate] = useState("")
 
     const timeDataFn = () => {
         setTime({
@@ -75,12 +80,14 @@ const Events = (props) => {
     }
 
     const getEve = () => {
+
+        // setLoading(false)
+
         let config = {
             method: 'get',
             url: 'https://tbe-node-deploy.herokuapp.com/user/events/day',
-            cancelToken: source.token,
             headers: { 
-              'date1': date.toISOString().substring(0,10)
+              'date1': getDate
             }
           };
           
@@ -88,6 +95,7 @@ const Events = (props) => {
           .then((response) => {
             console.log(JSON.stringify(response.data));
             setEvents(response.data.data)
+            setLoading(true)
           })
           .catch((error) => {
             console.log(error);
@@ -96,14 +104,19 @@ const Events = (props) => {
 
     useEffect(() => {
         getEve()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[events])
 
     const onDateChange = (date) => {
+        var day  = date.getDate().toString().padStart(2, '0');
+        var month  = (date.getMonth()+1).toString().padStart(2, '0');
+        var year  = date.getFullYear();
+
         setDate(date)
+        setGetDate(`${year}-${month}-${day}`)
+
+        getEve()
+        console.log("date changed")
     }
 
     // Remove empty inputs in edit room form object
@@ -159,24 +172,30 @@ const Events = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="default">
-                                <td>Hello</td>
-                                <td>Hello</td>
-                                <td>
-                                    <img
-                                    src={pen}
-                                    alt="pencil"
-                                    className="pencil"
-                                    onClick={()=>{}}
-                                    />
-                                    <img
-                                    src={bin}
-                                    alt="bin"
-                                    className="bin"
-                                    onClick={()=> {}}
-                                    />
-                                </td>
-                            </tr>
+                            { loading === true ? events.map((eve)=>{
+                                return(
+                                    <tr className="default" key={eve._id}>
+                                        <td>{eve.name}</td>
+                                        <td>{eve.time}</td>
+                                        <td>
+                                            <img
+                                            src={pen}
+                                            alt="pencil"
+                                            className="pencil"
+                                            onClick={()=>{}}
+                                            />
+                                            <img
+                                            src={bin}
+                                            alt="bin"
+                                            className="bin"
+                                            onClick={()=> {}}
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                             : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
+                        }   
                         </tbody>
                         </table>
                     </div>

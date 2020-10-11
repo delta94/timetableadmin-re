@@ -99,6 +99,8 @@ const Lecturer = (props) => {
         data.append('degree', degree);
         data.append('areaOfSpec', aos);
         data.append('image', file);
+        
+        console.log(...data)
 
         let config = {
         method: 'post',

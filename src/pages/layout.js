@@ -22,7 +22,7 @@ import "./layout.css"
 
 // Images
 import profileImg from "../images/profile-image.png"
-import dashboard from "../images/dashboard-icon-unclicked.png"
+import dashboard from "../images/dashboard.png"
 import room from "../images/room-icon.png"
 import course from "../images/course-icon.png"
 import lecturer from "../images/lecturer-icon.png"
