@@ -649,11 +649,24 @@
 .calendar{
   font-family: inherit !important;
   font-size: 16px !important;
+  border: none !important;
+  background-color: #e8f1f9 !important;
 }
 
 .calendar button{
   font-family: inherit !important;
   font-size: 16px !important;
+}
+
+.calendar .react-calendar__navigation button {
+  background-color: #0395ff !important;
+  color: #fff !important;
+}
+
+.calendar .react-calendar__navigation button:enabled:hover,
+.calendar .react-calendar__navigation button:enabled:focus {
+  background-color: #e8f1f9 !important;
+  color: #000 !important;
 }
 
 .tableXcal{
