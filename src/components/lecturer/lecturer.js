@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useState,useEffect} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import "./lecturer.css"
 import "../../global/global.css"
@@ -13,22 +13,187 @@ import checkg from "../../images/checkg.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { useMutation, queryCache, useQuery} from "react-query"
+import ReactPaginate from "react-paginate"
+
+
+
+    const deleteLect = (deleteId) => {
+            
+        return axios.delete('https://tbe-node-deploy.herokuapp.com/Admin/lecturer/delete', {
+            headers: { 
+                '_id': deleteId
+            }
+        })
+        .then((response) => {
+            return response
+        })      
+    }
+
+    const editLect = (args) => {
+        let data = JSON.stringify(args.formData);
+
+        return axios.patch("https://tbe-node-deploy.herokuapp.com/Admin/lecturer/update", data, {
+            headers: { 
+                'Content-Type': 'application/json',
+                '_id': args.lectId
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+    }
+
+    const updateImage = (lectId) => {
+        var data = new FormData()
+        
+        var file = document.getElementById("fileInput").files[0]
+
+        data.append("image", file)
+
+        return axios.patch("https://tbe-node-deploy.herokuapp.com/image", data, {
+            headers: { 
+                'Content-Type': 'multipart/form-data',
+                '_id': lectId
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+    }
+
+    const getLect = (page, {pageNo, search}) => {
+
+        return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getlecturer', {
+            headers: {},
+            params: {perPage: 5, page: pageNo, searchQuery: search}
+        })
+        .then((response) => {
+            var lect = response.data?.data.docs
+            var pages = response.data?.data.totalPages
+            return {lect, pages}
+        })
+    }
+
+    const createLect = () => {
+        let data = new FormData();
+
+        // Getting values
+        var file = document.getElementById("fileInput").files[0]
+        var name = document.querySelector("#namec").value
+        var edubg = document.querySelector("#edubgc").value
+        var pos = document.querySelector("#posc").value
+        var email = document.querySelector("#emailc").value
+        var phone = document.querySelector("#phonec").value
+        var aos = document.querySelector("#aosc").value
+        var officeno = document.querySelector("#officenoc").value
+        var degree = document.querySelector("#degreec").value
+        data.append('name', name);
+        data.append('email', email);
+        data.append('education_bg', edubg);
+        data.append('phone_no', phone);
+        data.append('office_no', officeno);
+        data.append('ranking', pos);
+        data.append('degree', degree);
+        data.append('areaOfSpec', aos);
+        data.append('image', file);
+    
+
+        return axios.post('https://tbe-node-deploy.herokuapp.com/Admin/lecturer/image', data, {
+            headers: { 
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+    }
 
 const Lecturer = (props) => {
+    const [pageNo,setPageNo] = useState(null)
 
-    const [lecturers,setLecturers] = useState([])   
-    const [loading, setLoading] = useState(false)
+    const [search, setSearch] = useState("")
+
+    const {isLoading, data} = useQuery(['lecturers', {pageNo, search}], getLect, {
+        refetchOnWindowFocus: false
+    })
+
+    const [deleteFn] = useMutation(deleteLect, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('lecturers')
+            setDeleter(false)
+            setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [editFn] = useMutation(editLect, {
+        onSuccess: () => {
+            console.log("edited")
+            queryCache.refetchQueries('lecturers')
+            setPageSwitch("home")
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [editImgFn] = useMutation(updateImage, {
+        onSuccess: () => {
+            console.log("image edited")
+            queryCache.refetchQueries('lecturers')
+            setPageSwitch("home")
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [createFn] = useMutation(createLect, {
+        onSuccess: () => {
+            console.log("created")
+            queryCache.refetchQueries('lecturers')
+            setPageSwitch("home")
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
     const [pageSwitch, setPageSwitch] = useState("home")
     const [lectId, setLectId] = useState("")
-    const [target, setTarget] = useState("")
-    const [newArr, setNewArr] = useState([])
-    const [switchState, setSwitchState] = useState("")
     const [created, setCreated] = useState(false)
     const [deleted, setDeleted] = useState(false)
     const [edited, setEdited] = useState(false)
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
     const [profileData, setProfileData] = useState(
         {
             name: "",
@@ -67,89 +232,10 @@ const Lecturer = (props) => {
         }
     )
 
-
-    // Http request and relatives C G E D
-
-    // For cancelling requests
-    const source = axios.CancelToken.source();
-
-
-    // Create lecturer(post)
-    const createLect = (e) => {
-        e.preventDefault()
-
-        let data = new FormData();
-
-        // Getting values
-        var file = document.getElementById("fileInput").files[0]
-        var name = document.querySelector("#namec").value
-        var edubg = document.querySelector("#edubgc").value
-        var pos = document.querySelector("#posc").value
-        var email = document.querySelector("#emailc").value
-        var phone = document.querySelector("#phonec").value
-        var aos = document.querySelector("#aosc").value
-        var officeno = document.querySelector("#officenoc").value
-        var degree = document.querySelector("#degreec").value
-        data.append('name', name);
-        data.append('email', email);
-        data.append('education_bg', edubg);
-        data.append('phone_no', phone);
-        data.append('office_no', officeno);
-        data.append('ranking', pos);
-        data.append('degree', degree);
-        data.append('areaOfSpec', aos);
-        data.append('image', file);
-        
-        console.log(...data)
-
-        let config = {
-        method: 'post',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/image',
-        headers: { 
-            'content-type': 'multipart/form-data'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> {
-            setPageSwitch("home")
-            setTimeout(() => {
-                setCreated(true)
-            }, 10);
-            setCreated(false)
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-    }
-
-    // Get request
-    const getLecturers = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
-            headers: { },
-            cancelToken: source.token
-          };
-          
-          axios(config)
-          .then((response) => {
-            setLecturers(response.data.data)
-            setLoading(true)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    }
-
     const setFormDataFn = (e) => {
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value.trim()
+            [e.target.name]: e.target.value
         })
         console.log(formData)
     }
@@ -159,171 +245,55 @@ const Lecturer = (props) => {
         Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
     }
 
-    
-    // Edit request(patch)
-    const editLect = (e) => {
-        e.preventDefault()
-        let data = JSON.stringify(formData);
-
-        let config = {
-          method: 'patch',
-          url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/update',
-          headers: { 
-            '_id': lectId, 
-            'Content-Type': 'application/json'
-          },
-          data : data
-        };
-        
-        axios(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getLecturers())
-        .then(()=> {
-            setPageSwitch("home")
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-
-    const updateImage = () => {
-        var data = new FormData()
-        var file = document.getElementById("fileInput").files[0]
-
-        data.append("image", file)
-
-        console.log([...data])
-
-        let config = {
-        method: 'patch',
-        url: 'https://tbe-node-deploy.herokuapp.com/image',
-        headers: { 
-            '_id': lectId,
-            'content-type': 'multipart/form-data'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-    }
-
-    // Delete lecturer
-    const deleteLect = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/lecturer/delete',
-            headers: { 
-              '_id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> getLecturers())
-          .then(()=>{
-              setDeleter(false)
-              setTimeout(() => {
-                setDeleted(true)
-            }, 10);
-            setDeleted(false)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-
-    useEffect(() => {
-        getLecturers()
-        filterFn()
-        setDelName()
-
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[lecturers])
-
-
     // Generate profile data
-    const genProfileData = (data) => {
-        lecturers.map((lect) => {
-            if(lect._id === data){
+    const genProfileData = (datum) => {
+        data.lect.map((lec) => {
+            if(lec._id === datum){
                 setProfileData({
                     ...profileData,
-                    name: lect.name,
-                    email: lect.email,
-                    phoneNo: lect.phone_no,
-                    officeNo: lect.office_no,
-                    degree: lect.degree,
-                    areaOfSpec: lect.areaOfSpec,
-                    ranking: lect.ranking,
-                    educationBg: lect.education_bg,
-                    image: lect.image
+                    name: lec.name,
+                    email: lec.email,
+                    phoneNo: lec.phone_no,
+                    officeNo: lec.office_no,
+                    degree: lec.degree,
+                    areaOfSpec: lec.areaOfSpec,
+                    ranking: lec.ranking,
+                    educationBg: lec.education_bg,
+                    image: lec.image
                 })
             }
         })
     }
 
     // Generate label for edit form
-    const genLabelData = (data) => {
-        lecturers.map((lect) => {
-            if(lect._id === data){
+    const genLabelData = (datum) => {
+        data.lect.map((lec) => {
+            if(lec._id === datum){
                 setLabelData({
                     ...labelData,
-                    nameL: lect.name,
-                    emailL: lect.email,
-                    phoneNoL: lect.phone_no,
-                    officeNoL: lect.office_no,
-                    degreeL: lect.degree,
-                    areaOfSpecL: lect.areaOfSpec,
-                    rankingL: lect.ranking,
-                    educationBgL: lect.education_bg
+                    nameL: lec.name,
+                    emailL: lec.email,
+                    phoneNoL: lec.phone_no,
+                    officeNoL: lec.office_no,
+                    degreeL: lec.degree,
+                    areaOfSpecL: lec.areaOfSpec,
+                    rankingL: lec.ranking,
+                    educationBgL: lec.education_bg
                 })
             }
         })
     }
   
 
-    // Filtering
-    const onChangeHandler = (e) =>{
-        console.log(e.target.value)
-        setTarget(e.target.value)
-    }
-    
-    const switchFilter = (e) => {
-        setSwitchState(e.target.value)
-    }
-
-    const filterFn = () => {
-            setNewArr(lecturers
-            .filter(d=> {
-                if(switchState === "Name"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "" || switchState === "All"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || d.email.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Email"){
-                    return d.email.toLowerCase().includes(target.toLowerCase()) === true
-                }
-            }))
-    }
-
     const editSub = (e) => {
-        editLect(e) || updateImage()
+        e.preventDefault()
+        editFn({lectId, formData}) && editImgFn(lectId)
+    }
+
+    const formSub = (e) => {
+        e.preventDefault()
+        setFormDataFn(e)
+        createFn()
     }
 
     
@@ -350,20 +320,19 @@ const Lecturer = (props) => {
 
     }
 
-    
-
-    // Delete Modal
-    const setDelName = () => {
-        lecturers.map((lect)=> {
-            if(lect._id === deleteId){
-                setDeleteName(lect.name)
-            }
-        })
-    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
         setDeleteId(data)
+    }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
+    }
+
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
     }
 
     return (
@@ -381,12 +350,12 @@ const Lecturer = (props) => {
               </header>
             <div className="section">
                 <div className="search-container">
-                    <select className="select-css2" name="switch" onChange={switchFilter}>
-                        <option>All</option>
+                    <select className="select-css2" name="switch">
                         <option>Name</option>
-                        <option>Email</option>
+                        {/* <option>Name</option>
+                        <option>Email</option> */}
                     </select>
-                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
+                    <input placeholder="Search by name" onChange={onChangeHandler} />
                     <button onClick={()=>setPageSwitch("create")}><img src={plus} alt="plus"/>Add new lecturer</button>
                 </div>
                 {pageSwitch === "home" ? 
@@ -402,7 +371,7 @@ const Lecturer = (props) => {
                         </tr>
                     </thead>
                     <TransitionGroup component="tbody" className="gfg">
-                        {loading === true ? newArr
+                        {isLoading === false ? data?.lect
                         .map((lect) => {
                             return (
                                 <CSSTransition
@@ -447,7 +416,7 @@ const Lecturer = (props) => {
                         <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         </CSSTransition>
                         }
-                        {newArr.length === 0 && loading === true ? 
+                        {data?.lect.length === 0 && isLoading === false ? 
                         <CSSTransition
                         timeout={10}
                         classNames="slide2"
@@ -462,11 +431,30 @@ const Lecturer = (props) => {
                 </div>
                 : null}
 
+                {pageSwitch === "home" ? <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    /> : null}
+
                 {/* Delete Modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                <p>Are you sure you want to delete Lecturer {deleteName}?</p>
+                <p>Are you sure you want to delete Lecturer {
+                    data?.lect.map((lec)=> {
+                        if(lec._id === deleteId){
+                            return(
+                                <em key={deleteId} className="deleteName">{lec.name}</em>
+                            )
+                        }
+                    })}?</p>
                     <div>
-                        <button onClick={()=> deleteLect()} className="red2">Yes</button>
+                        <button onClick={()=> deleteFn(deleteId)} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>
                     </div>
                 </div>
@@ -680,7 +668,7 @@ const Lecturer = (props) => {
                         <img src={cross} alt="close" onClick={()=> setPageSwitch("home")}/>
                     </div>
                     <div className="editProfileContainer">
-                    <form onSubmit={createLect}>
+                    <form onSubmit={formSub}>
                         <div className="input-field">
                             <div className="field">
                                 <p>Edit Picture</p>
@@ -747,9 +735,7 @@ const Lecturer = (props) => {
                                     <p>Phone Number</p>
                                     <input className="wid-4" id="phonec" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" placeholder="+2341235467387" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
                                 </div>
-                                <button className="updateProfileBtn" type="submit" onClick={(e)=> {
-                                    setFormDataFn(e)
-                                }}>
+                                <button className="updateProfileBtn" type="submit">
                                     Create lecturer
                                 </button>
                             </div>

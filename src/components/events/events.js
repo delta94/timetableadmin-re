@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useState, useEffect} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import "../../global/global.css"
 import plus from "../../images/plus.svg"
@@ -11,18 +11,40 @@ import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
+import { useQuery } from "react-query"
+import {format} from "date-fns"
 
 
-const source = axios.CancelToken.source();
+
+const getEvents = (events, {date}) => {
+
+    var formattedDate = format(new Date(date), "yyyy-MM-dd")   
+
+      return axios.get('https://tbe-node-deploy.herokuapp.com/user/events/day', {
+        headers: { 
+          'date1': date ? formattedDate : ""
+        }})
+      .then((response) => {
+        return response.data?.data
+      })
+
+}
 
 
 const Events = (props) => {
 
+    const [date, setDate] = useState(null)
+
+
+    const {data, isLoading} = useQuery(['events', {date}], getEvents, {
+        refetchOnWindowFocus: false
+    })
+
+    console.log(isLoading, data?.length)
+
+
     const [modalOut, setModalOut] = useState(false)
     const [id2, setId2] = useState("1234");
-    const [date, setDate] = useState(new Date())
-    const [events, setEvents] = useState([])
-    const [loading, setLoading] = useState(false)
     const [eventData, setEventData] = useState(
         {
             name: "",
@@ -35,7 +57,7 @@ const Events = (props) => {
         }
     )
     const [finalObj, setFinalObj] = useState({})
-    const [getDate, setGetDate] = useState("")
+   
 
     const timeDataFn = () => {
         setTime({
@@ -59,66 +81,53 @@ const Events = (props) => {
 
     }
 
-    const createEve = () => {
-        let config = {
-          method: 'post',
-          url: 'https://tbe-node-deploy.herokuapp.com/user/event',
-          cancelToken: source.token,
-          headers: { 
-            'Content-Type': 'application/json'
-          },
-          data : finalObj
-        };
+    // const createEve = () => {
+    //     let config = {
+    //       method: 'post',
+    //       url: 'https://tbe-node-deploy.herokuapp.com/user/event',
+    //       cancelToken: source.token,
+    //       headers: { 
+    //         'Content-Type': 'application/json'
+    //       },
+    //       data : finalObj
+    //     };
         
-        axios(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+    //     axios(config)
+    //     .then((response) => {
+    //       console.log(JSON.stringify(response.data));
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // }
 
-    const getEve = () => {
+    // const getEve = () => {
 
-        // setLoading(false)
-
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/user/events/day',
-            headers: { 
-              'date1': getDate
-            }
-          };
+    //     let config = {
+    //         method: 'get',
+    //         url: 'https://tbe-node-deploy.herokuapp.com/user/events/day',
+    //         headers: { 
+    //           'date1': getDate
+    //         }
+    //       };
           
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-            setEvents(response.data.data)
-            setLoading(true)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    }
+    //       axios(config)
+    //       .then((response) => {
+    //         console.log(JSON.stringify(response.data));
+    //         setEvents(response.data.data)
+    //         setLoading(true)
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    // }
 
-    useEffect(() => {
-        getEve()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[events])
+    // useEffect(() => {
+    //     getEve()
+    // // eslint-disable-next-line react-hooks/exhaustive-deps
+    // },[events])
 
-    const onDateChange = (date) => {
-        var day  = date.getDate().toString().padStart(2, '0');
-        var month  = (date.getMonth()+1).toString().padStart(2, '0');
-        var year  = date.getFullYear();
-
-        setDate(date)
-        setGetDate(`${year}-${month}-${day}`)
-
-        getEve()
-        console.log("date changed")
-    }
-
+    
     // Remove empty inputs in edit room form object
     const cleanObj = () => {
         Object.keys(eventData).forEach((key) => (eventData[key] === "" || eventData === "") && delete eventData[key]);
@@ -127,7 +136,7 @@ const Events = (props) => {
     const formSubmit = (e) => {
         e.preventDefault()
         console.log(finalObj)
-        createEve()
+        // createEve()
     }
 
     return (
@@ -156,7 +165,7 @@ const Events = (props) => {
                 </div>
                 <div className="tableXcal">
                     <div className="calendar-container">
-                        <Calendar onChange={onDateChange} className={["calendar"]} value={date} />
+                        <Calendar onChange={setDate}  className={["calendar"]} value={date} />
                     </div>
                     <div className="table-container">
                         <table className="table2">
@@ -168,7 +177,7 @@ const Events = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            { loading === true ? events.map((eve)=>{
+                            { isLoading === false ? data.map((eve)=>{
                                 return(
                                     <tr className="default" key={eve._id}>
                                         <td>{eve.name}</td>
@@ -192,7 +201,7 @@ const Events = (props) => {
                             })
                              : <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         }   
-                        {loading === true && events.length === 0 ? (
+                        {isLoading === false && data?.length === 0 ? (
                             <tr><td colSpan="3" style={{color: "#0395ff"}}>No events for this day</td></tr>
                         ) : null}
                         </tbody>

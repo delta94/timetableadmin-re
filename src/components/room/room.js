@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useEffect, useState} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./room.css"
@@ -14,15 +14,123 @@ import spinner from "../../images/spinner.gif"
 import checkg from "../../images/checkg.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
+import ReactPaginate from "react-paginate"
+import { useQuery, useMutation , queryCache } from "react-query"
+
+const getRooms = (page, {pageNo, search}) => {
+
+        return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
+            headers: {},
+            params: {perPage: 5, page: pageNo, searchQuery: search}
+        })
+        .then((response) => {
+            var rooms = response.data?.data.docs
+            var pages = response.data?.data.totalPages
+            return {rooms, pages}
+        })
+ }
+
+ const deleteRoom = (deleteId) => {
+          
+        return axios.delete('https://tbe-node-deploy.herokuapp.com/Admin/room/delete', {
+            headers: { 
+                'id': deleteId
+            }
+        })
+        .then((response) => {
+            return response
+        })      
+}
+
+const createRoom = (roomData) => {
+        let data = JSON.stringify(roomData);
+
+        return axios.post('https://tbe-node-deploy.herokuapp.com/Admin/room', data, {
+            headers: { 
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+}
+
+const editRoom = (args) => {
+        let data = JSON.stringify(args.roomData);
+
+        return axios.patch(`https://tbe-node-deploy.herokuapp.com/Admin/room/${args.editRoomId}`, data, {
+            headers: { 
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+}
 
 
 const Room = (props) => {
 
+    const [pageNo,setPageNo] = useState(null) 
 
+    const [search, setSearch] = useState("")
+    
+    const {isLoading, data} = useQuery(['rooms', {pageNo, search}], getRooms, {
+        refetchOnWindowFocus: false
+    })
+
+    const [deleteFn] = useMutation(deleteRoom, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('rooms')
+            setDeleter(false)
+            setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [createFn] = useMutation(createRoom, {
+        onSuccess: () => {
+            console.log("created")
+            queryCache.refetchQueries('rooms')
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+    const [editFn] = useMutation(editRoom, {
+        onSuccess: () => {
+            console.log("edited")
+            queryCache.refetchQueries('rooms')
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
 
     //Local states
-    const [rooms,setRooms] = useState([])   
-    const [loading, setLoading] = useState(false)
     const [editModalOut,setEditModalOut] = useState(false)
     const [editRoomId, setEditRoomId] = useState("")
     const [modalOut, setModalOut] = useState(false)
@@ -30,13 +138,9 @@ const Room = (props) => {
     const [id2, setId2] = useState("1234");
     const [created, setCreated] = useState(false)
     const [deleted, setDeleted] = useState(false)
-    const [edited, setEdited] = useState(false)
-    const [target, setTarget] = useState("")
-    const [newArr, setNewArr] = useState([])
-    const [switchState, setSwitchState] = useState("")
+    const [edited, setEdited] = useState(false)    
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
     const [labelData, setLabelData] = useState(
         {
             nameLabel: "",
@@ -50,12 +154,7 @@ const Room = (props) => {
         }
     );
 
-    // For cancelling requests
-    const source = axios.CancelToken.source();
 
-    
-
-    //  Http requests  C G E D
     // Create rooms
     const roomFormData = (e) => {
 
@@ -67,130 +166,17 @@ const Room = (props) => {
           });
 
     }
-    const createRooms = (e) => {
-        e.preventDefault()
-        let data = JSON.stringify(roomData);
 
-        let config = {
-        method: 'post',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getRooms())
-        .then(()=> {
-            setModalOut(false)
-            setTimeout(() => {
-                setCreated(true)
-            }, 10);
-            setCreated(false)
-        })
-        .catch((error) => {
-        });
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
     }
-
-    // Get rooms
-    const getRooms = () => {
-        let config = {
-        method: 'get',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
-        headers: { },
-        cancelToken: source.token
-        };
-
-        axios(config)
-        .then((response) => {
-            setRooms(response.data.data)
-            setLoading(true)
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-
-    }
-
-    // Edit room
-    const editRooms = () => {
-        let data = JSON.stringify(roomData);
-
-        let config = {
-        method: 'patch',
-        url: `https://tbe-node-deploy.herokuapp.com/Admin/room/${editRoomId}`,
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getRooms())
-        .then(()=> {
-            setEditModalOut(false)
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-        console.log(error.response.status);
-        });
-    }
-
-
-    // Delete room
-    const deleteRoom = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room/delete',
-            headers: { 
-              'id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> getRooms())
-          .then(()=> {
-              setDeleter(false)
-              setTimeout(() => {
-                setDeleted(true)
-            }, 10);
-            setDeleted(false)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-
-    useEffect(() => {
-        getRooms()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[rooms])
-
+ 
     // Generating form labels for edit
-    const genFormLabels = (data) => {
-        rooms.map(
+    const genFormLabels = (datum) => {
+        data.rooms.map(
             // eslint-disable-next-line array-callback-return
             (room) => {
-                if(room._id === data){
+                if(room._id === datum){
                     setLabelData({
                         ...labelData,
                         nameLabel: room.name,
@@ -206,35 +192,13 @@ const Room = (props) => {
         Object.keys(roomData).forEach((key) => (roomData[key] === "") && delete roomData[key]);
     }
 
-    const onChangeHandler = (e) =>{
-        setTarget(e.target.value)
-    }
-    
-    const switchFilter = (e) => {
-        setSwitchState(e.target.value)
-    }
-
-    // Filtering
-    const filterFn = () => {
-            setNewArr(rooms
-            // eslint-disable-next-line array-callback-return
-            .filter(d=> {
-                if(switchState === "Name"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "" || switchState === "All"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || d.capacity.toString().toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Capacity"){
-                    return d.capacity.toString().toLowerCase().includes(target.toLowerCase()) === true
-                }
-            }))
-    }
 
 
     // Form validation
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
-        rooms.map((room)=> {
+        data.rooms.map((room)=> {
             if(room.name === nameIn.value){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -245,12 +209,11 @@ const Room = (props) => {
     const successEdit = () => {
         const nameIn = document.querySelector(".nameInputEdit")
         const warningInput = document.querySelector(".warning2")
-        rooms.map((room)=> {
+        data.rooms.map((room)=> {
             if(room.name.toString() === nameIn.value.toString()){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
             }
-            console.log(room.name)
         })
     }
 
@@ -278,22 +241,28 @@ const Room = (props) => {
     }
 
     const formSubmit = (e) => {
-        createRooms(e)
+        e.preventDefault()
+
+        createFn(roomData)
         success()
     }
 
-    // Delete modal
-    const setDelName = () => {
-        rooms.map((room)=> {
-            if(room._id === deleteId){
-                setDeleteName(room.name)
-            }
-        })
+    const formSubmitE = (e) => {
+        e.preventDefault()
+        
+        editFn({editRoomId, roomData})
+        successEdit()
     }
+
 
     const openDelete = (data) => {
         setDeleter(!deleter)
         setDeleteId(data)
+    }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
     }
 
     return (
@@ -311,12 +280,12 @@ const Room = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <select className="select-css2" name="switch" onChange={switchFilter}>
-                        <option>All</option>
+                    <select className="select-css2" name="switch">
                         <option>Name</option>
-                        <option>Capacity</option>
+                        {/* <option>Name</option>
+                        <option>Capacity</option> */}
                     </select>
-                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
+                    <input placeholder="Search by name" onChange={onChangeHandler}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                         setId2(Math.random().toString());
@@ -332,7 +301,7 @@ const Room = (props) => {
                         </tr>
                     </thead>
                     <TransitionGroup component="tbody" className="gfg">
-                        {loading === true ? newArr
+                        {isLoading === false && data ? data.rooms
                         .map(room => {
                             return(
                                 <CSSTransition
@@ -380,9 +349,8 @@ const Room = (props) => {
                             onExited={()=> console.log("exited")} 
                         >
                         <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
-                        </CSSTransition>
-                        }
-                        {newArr.length === 0 && loading === true ? 
+                        </CSSTransition>}
+                        {data?.rooms.length === 0 && isLoading === false ? 
                         <CSSTransition
                         timeout={10}
                         classNames="slide2"
@@ -392,15 +360,36 @@ const Room = (props) => {
                         >
                             <tr><td colSpan="5" style={{color:  "#0395ff", fontSize: "18px"}}><p>No search results ... </p></td></tr>
                         </CSSTransition> : null}
-                    </TransitionGroup> 
+                    </TransitionGroup>
                     </table>
                 </div>
 
+                <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    />
+
                 {/* Delete modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete Room {deleteName}?</p>
+                    <p>Are you sure you want to delete Room {
+                    data?.rooms.map((room)=> {
+                        if(room._id === deleteId){
+                            return(
+                                <em key={deleteId} className="deleteName">{room.name}</em>
+                            )
+                        }
+                    })}?</p>
                     <div>
-                        <button onClick={()=> deleteRoom()} className="red2">Yes</button>
+                        <button onClick={()=> {
+                            deleteFn(deleteId)
+                        }} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>
                     </div>
                 </div>
@@ -475,6 +464,7 @@ const Room = (props) => {
                         <button className="blue" type="submit" onClick={
                             (e)=> {
                                 roomFormData(e)
+                                cleanObj()
                             }
                         }>
                             Add room
@@ -509,10 +499,10 @@ const Room = (props) => {
                             }}>Cancel</button>
                         <button className="blue" onClick={
                             (e)=> {
+                                e.preventDefault()
                                 roomFormData(e)
                                 cleanObj()
-                                editRooms()
-                                successEdit()
+                                formSubmitE(e)
                             }
                         }>
                             Edit room

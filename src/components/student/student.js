@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useState,useEffect} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./student.css"
@@ -13,14 +13,144 @@ import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
 import checkg from "../../images/checkg.png"
 import plus from "../../images/plus.svg"
+import ReactPaginate from "react-paginate"
+import { useQuery, useMutation , queryCache } from "react-query"
+
+const getStud = (page, {pageNo, search}) => {
+
+        return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
+            headers: {},
+            params: {perPage: 2, page: pageNo, searchQuery: search}
+        })
+        .then((response) => {
+            var students = response.data?.data.docs
+            var pages = response.data?.data.totalPages
+            return {students, pages}
+        })
+ }
+
+ const deleteStud = (deleteId) => {
+          
+        return axios.delete('https://tbe-node-deploy.herokuapp.com/Admin/students/delete', {
+            headers: { 
+                '_id': deleteId
+            }
+        })
+        .then((response) => {
+            return response
+        })      
+}
+
+const createStud = () => {
+        let data = new FormData();
+
+        var file = document.getElementById("fileInput").files[0]
+        var firstname = document.querySelector("#firstname").value
+        var lastname = document.querySelector("#lastname").value
+        var dob = document.querySelector("#dob").value
+        var email = document.querySelector("#email").value
+        var matric = document.querySelector("#matric").value
+        var role = document.querySelector("#role").value
+        var level = document.querySelector("#level").value
+
+        data.append('firstname', firstname);
+        data.append('lastname', lastname);
+        data.append('email', email);
+        data.append('dob', dob);
+        data.append('matric', matric);
+        data.append('role', role);
+        data.append('image', file);
+        data.append('level', level)
+
+        return axios.post('https://tbe-node-deploy.herokuapp.com/signup', data, {
+            headers: { 
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+}
+
+const editStud = (args) => {
+        let data = JSON.stringify(args.formData);
+
+        return axios.patch('https://tbe-node-deploy.herokuapp.com/Admin/students/update', data, {
+            headers: { 
+                'Content-Type': 'application/json',
+                '_id': args.studId
+            }
+        })
+        .then((response) => {
+            return response;
+        })
+        .then((error)=> {
+            return error
+        })
+}
 
 
 const Student = (props) => {
 
+    const [pageNo,setPageNo] = useState(null) 
+
+    const [search, setSearch] = useState("")
+    
+    const {isLoading, data} = useQuery(['students', {pageNo, search}], getStud, {
+        refetchOnWindowFocus: false
+    })
+
+    const [deleteFn] = useMutation(deleteStud, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('students')
+            setDeleter(false)
+            setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [createFn] = useMutation(createStud, {
+        onSuccess: () => {
+            console.log("created")
+            queryCache.refetchQueries('students')
+            setPageSwitch("home")
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+    const [editFn] = useMutation(editStud, {
+        onSuccess: () => {
+            console.log("edited")
+            queryCache.refetchQueries('students')
+            setPageSwitch("home")
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+
 
     // Student states
-    const [students,setStudents] = useState([])   
-    const [loading, setLoading] = useState(false)
     const [pageSwitch, setPageSwitch] = useState("home")
     const [studId, setstudId] = useState("")
     const [deleted, setDeleted] = useState(false)
@@ -62,21 +192,12 @@ const Student = (props) => {
         }
     )
     const [coursesHandled, coursesHandler] = useState([])
-    const [studL,setStudL] = useState("")
-    const [target, setTarget] = useState("")
-    const [newArr, setNewArr] = useState([])
-    const [switchState, setSwitchState] = useState("")
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
     const [created, setCreated] = useState(false)
 
     
 
-    // Http requests G E D
-
-    // For cancelling requests
-    const source = axios.CancelToken.source();
 
     const setFormDataFn = (e) => {
         setFormData({
@@ -90,162 +211,19 @@ const Student = (props) => {
         Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
     }
 
-    // Get request
-    const getStudents = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/all',
-            headers: { },
-            cancelToken: source.token
-          };
-          
-          axios(config)
-          .then((response) => {
-            setStudents(response.data.data)
-            setLoading(true)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    }
-
-    // Edit request(patch)
-    const editstud = () => {
-        let data = JSON.stringify(formData);
-
-        let config = {
-          method: 'patch',
-          url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/update',
-          headers: { 
-            '_id': studId, 
-            'Content-Type': 'application/json'
-          },
-          data : data
-        };
-        
-        axios(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getStudents())
-        .then(()=> {
-            setPageSwitch("home")
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-
-    // Create request(patch)
-    const createstud = () => {
-        let data = new FormData();
-
-        var file = document.getElementById("fileInput").files[0]
-        var firstname = document.querySelector("#firstname").value
-        var lastname = document.querySelector("#lastname").value
-        var dob = document.querySelector("#dob").value
-        var email = document.querySelector("#email").value
-        var matric = document.querySelector("#matric").value
-        var role = document.querySelector("#role").value
-        var level = document.querySelector("#level").value
-
-        data.append('firstname', firstname);
-        data.append('lastname', lastname);
-        data.append('email', email);
-        data.append('dob', dob);
-        data.append('matric', matric);
-        data.append('role', role);
-        data.append('image', file);
-        data.append('level', level)
-
-        console.log(...data)
-
-        let config = {
-          method: 'post',
-          url: 'https://tbe-node-deploy.herokuapp.com/signup',
-          headers: { 
-            'content-type': 'multipart/form-data'
-        },
-          data : data
-        };
-        
-        axios(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .then(()=> {
-            setPageSwitch("home")
-            setTimeout(() => {
-                setCreated(true)
-            }, 10);
-            setCreated(false)
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-
-    // Delete Student
-    const deleteStud = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/delete',
-            headers: { 
-              '_id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> getStudents())
-          .then(()=> {
-              setDeleter(false)
-              setTimeout(() => {
-                setDeleted(true)
-            }, 10);
-            setDeleted(false)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-
-    useEffect(() => {
-        getStudents()
-        studentLength()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[students])
-
     // Generating courses handled
-    const setCoursesHandled = (data) => {
-        students.map(stud => {
-            if(stud._id === data){
+    const setCoursesHandled = (datum) => {
+        data.students.map(stud => {
+            if(stud._id === datum){
                 coursesHandler(stud.courses)
             }
         }) 
     }
 
-    // Generating no of students registered
-    const studentLength = () => {
-        setStudL(students.length)
-    }
-
     // Generate profile data
-    const genProfileData = (data) => {
-        students.map((stud) => {
-            if(stud._id === data){
+    const genProfileData = (datum) => {
+        data.students.map((stud) => {
+            if(stud._id === datum){
                 setProfileData({
                     ...profileData,
                     firstname: stud.firstname,
@@ -262,9 +240,9 @@ const Student = (props) => {
     }
 
     // Generate label for edit form
-    const genLabelData = (data) => {
-        students.map((stud) => {
-            if(stud._id === data){
+    const genLabelData = (datum) => {
+        data.students.map((stud) => {
+            if(stud._id === datum){
                 setLabelData({
                     ...labelData,
                     firstnameL: stud.firstname,
@@ -279,31 +257,6 @@ const Student = (props) => {
         })
     }
 
-    
-
-    // Filtering
-    const onChangeHandler = (e) =>{
-        console.log(e.target.value)
-        setTarget(e.target.value)
-    }
-
-    
-    const switchFilter = (e) => {
-        setSwitchState(e.target.value)
-    }
-
-    const filterFn = () => {
-        setNewArr(students
-        .filter(d=> {
-            if(switchState === "First Name"){
-                return d.firstname.toLowerCase().includes(target.toLowerCase()) === true
-            }else if(switchState === "" || switchState === "All"){
-                return d.firstname.toLowerCase().includes(target.toLowerCase()) === true || d.email.toLowerCase().includes(target.toLowerCase()) === true
-            }else if(switchState === "Email"){
-                return d.email.toLowerCase().includes(target.toLowerCase()) === true
-            }
-        }))
-    }
 
     //Get all the inputs...
     const inputs = document.querySelectorAll('.editProfileContainer input, textarea');
@@ -328,16 +281,6 @@ const Student = (props) => {
 
     }
 
-
-    // Delete Modal
-    const setDelName = () => {
-        students.map((stud)=> {
-            if(stud._id === deleteId){
-                setDeleteName(`${stud.firstname} ${stud.lastname}`)
-            }
-        })
-    }
-
     const openDelete = (data) => {
         setDeleter(!deleter)
         setDeleteId(data)
@@ -348,7 +291,7 @@ const Student = (props) => {
         const matric = document.querySelector("#matric")
         const warningInput = document.querySelector(".warning")
         // eslint-disable-next-line array-callback-return
-        students.map((stud)=> {
+        data.students.map((stud)=> {
             if(stud.matric === matric.value){
                 warningInput.classList.add("display")
                 matric.classList.add("error")
@@ -360,7 +303,7 @@ const Student = (props) => {
         const matric = document.querySelector("#matricE")
         const warningInput = document.querySelector(".warning2")
         // eslint-disable-next-line array-callback-return
-        students.map((stud)=> {
+        data.students.map((stud)=> {
             if(stud.matric === matric.value){
                 warningInput.classList.add("display")
                 matric.classList.add("error")
@@ -370,14 +313,23 @@ const Student = (props) => {
 
     const formSub = (e) => {
         e.preventDefault()
-        createstud()
+        createFn()
         success()
     }
 
     const formSubE = (e) => {
         e.preventDefault()
-        editstud()
+        editFn({studId, formData})
         successE()
+    }
+
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
+    }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
     }
 
     return (
@@ -395,15 +347,16 @@ const Student = (props) => {
               </header>
             <div className="section">
                 <div className="search-container">
-                    <select className="select-css2" name="switch" onChange={switchFilter}>
-                        <option>All</option>
-                        <option>First Name</option>
-                        <option>Email</option>
+                    <select className="select-css2" name="switch">
+                        <option>Name</option>
+                        {/* <option>First Name</option>
+                        <option>Email</option> */}
                     </select>
-                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
+                    <input placeholder="Search by first name" onChange={onChangeHandler} />
                     <button onClick={()=>setPageSwitch("create")}><img src={plus} alt="plus"/>Add new student</button>
                 </div>
-                <p className="studReg">Students registered : {studL}</p>
+
+                <p className="studReg">Students registered : {data?.students.length}</p>
                 {pageSwitch === "home" ? 
                 <div className="table-container">
                     <table className="table">
@@ -417,7 +370,7 @@ const Student = (props) => {
                         </tr>
                     </thead>
                     <TransitionGroup component="tbody" className="gfg">
-                        {loading === true ? newArr
+                        {isLoading === false ? data?.students
                         .map((stud) => {
                             return (
                                 <CSSTransition
@@ -462,7 +415,7 @@ const Student = (props) => {
                         >
                         <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         </CSSTransition>}
-                        {newArr.length === 0 && loading === true ? 
+                        {data?.students.length === 0 && isLoading === false ? 
                         <CSSTransition
                         timeout={10}
                         classNames="slide2"
@@ -477,12 +430,31 @@ const Student = (props) => {
                 </div>
                 : null}
 
+                    {pageSwitch === 'home' ? <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    /> : null}
+
 
                 {/* Delete Modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                    <p>Are you sure you want to delete Student {deleteName}?</p>
+                    <p>Are you sure you want to delete Student {
+                    data?.students.map((stud)=> {
+                        if(stud._id === deleteId){
+                            return(
+                                <em key={deleteId} className="deleteName">{stud.firstname}</em>
+                            )
+                        }
+                    })}?</p>
                     <div>
-                        <button onClick={()=> deleteStud()} className="red2">Yes</button>
+                        <button onClick={()=> deleteFn(deleteId)} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>
                     </div>
                 </div>
@@ -732,7 +704,7 @@ const Student = (props) => {
                                     </div>
                                     <div className="field">
                                         <p>Role</p>
-                                        <input id="role" name="role" required/>
+                                        <input id="role" name="role" disabled value="basic" placeholder="basic" required/>
                                     </div>
                                 </div>
                             </div>

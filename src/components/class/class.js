@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useState,useEffect} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import "./class.css"
 import "../../global/global.css"
@@ -14,18 +14,144 @@ import checkg from "../../images/checkg.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import ReactPaginate from "react-paginate"
+import { useQuery, useMutation , queryCache } from "react-query"
+
+
+const getClasses = (page, {pageNo, search}) => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/class/all', {
+        headers: {},
+        params: {perPage: 5, page: pageNo, searchQuery: search}
+    })
+    .then((response) => {
+        var classes = response.data?.data.docs
+        var pages = response.data?.data.totalPages
+        return {classes, pages}
+    })
+}
+
+const getCourses = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
+        headers: {},
+        params: {page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data?.data.docs
+    })
+}
+
+const deleteClass = (deleteId) => {
+          
+    return axios.delete('https://tbe-node-deploy.herokuapp.com/Admin/class/delete', {
+        headers: { 
+            '_id': deleteId
+        }
+    })
+    .then((response) => {
+        return response
+    })      
+}
+
+const createClass = (classData) => {
+    let data = JSON.stringify(classData);
+
+    return axios.post('https://tbe-node-deploy.herokuapp.com/Admin/class/create', data, {
+        headers: { 
+            'Content-Type': 'application/json'
+        }
+    })
+    .then((response) => {
+        return response;
+    })
+    .then((error)=> {
+        return error
+    })
+}
+
+const editClass = (args) => {
+    let data = JSON.stringify(args.classData);
+
+    return axios.patch('https://tbe-node-deploy.herokuapp.com/Admin/class/update', data, {
+        headers: { 
+            'Content-Type': 'application/json',
+            '_id': args.editClassId,
+        }
+    })
+    .then((response) => {
+        return response;
+    })
+    .then((error)=> {
+        return error
+    })
+}
 
 const Classes = (props) => {
 
+    const [pageNo,setPageNo] = useState(null) 
+
+    const [search, setSearch] = useState("")
+
+    const {isLoading, data} = useQuery(['classes', {pageNo, search}], getClasses, {
+        refetchOnWindowFocus: false
+    })
+
+    const courses = useQuery('classes', getCourses, {
+        refetchOnWindowFocus: false
+    })
+
+    const [deleteFn] = useMutation(deleteClass, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('classes')
+            setDeleter(false)
+            setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [createFn] = useMutation(createClass, {
+        onSuccess: () => {
+            console.log("created")
+            queryCache.refetchQueries('classes')
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+    const [editFn] = useMutation(editClass, {
+        onSuccess: () => {
+            console.log("edited")
+            queryCache.refetchQueries('classes')
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+
     const [modalOut, setModalOut] = useState(false)
-    const [classes,setClasses] = useState([])   
-    const [loading, setLoading] = useState(false)
-    const [courses, setCourses] = useState([])
     const [editModalOut,setEditModalOut] = useState(false)
-    const [editCourseId,setEditCourseId] = useState("")
+    const [editClassId,setEditClassId] = useState("")
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
     const [created, setCreated] = useState(false)
     const [deleted, setDeleted] = useState(false)
     const [edited, setEdited] = useState(false)
@@ -50,9 +176,6 @@ const Classes = (props) => {
     );
     // setting key for edit form
     const [id, setId] = useState("123");
-    const [target, setTarget] = useState("")
-    const [newArr, setNewArr] = useState([])
-    const [switchState, setSwitchState] = useState("")
     
 
     // Http requests and relatives
@@ -64,161 +187,16 @@ const Classes = (props) => {
         console.log(classData)
     }
 
-
-    // For cancelling requests
-    const source = axios.CancelToken.source();
-
-    // Create Classes
-    const createClass = (e) => {
-        e.preventDefault()
-        let data = JSON.stringify(classData);
-
-        let config = {
-        method: 'post',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/create',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getClasses())
-        .then(()=> {
-            setModalOut(false)
-            setTimeout(() => {
-                setCreated(true)
-            }, 10);
-            setCreated(false)
-        })
-        .catch((error) => {
-            
-        });
-    }
-
-    // Get classes
-    const getClasses = () => {
-        let config = {
-        method: 'get',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/all',
-        headers: { },
-        cancelToken: source.token
-        };
-
-        axios(config)
-        .then((response) => {
-            setClasses(response.data.data)
-            setLoading(true)
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-
-    }
-
-    const fetchCourses = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-            var res = response.data.data
-            setCourses(res)
-            setLoading(true)
-        })
-        .catch((error) => {
-           
-        });
-    }
-
-    // Edit class
-    const editClass = () => {
-        let data = JSON.stringify(classData);
-
-        let config = {
-        method: 'patch',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/update',
-        headers: { 
-            '_id': editCourseId, 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getClasses())
-        .then(()=> {
-            setEditModalOut(false)
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-
-    }
-
-    // Delete class
-    const deleteClass = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/delete',
-            headers: { 
-              '_id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> {
-            setDeleter(false)
-            setTimeout(() => {
-              setDeleted(true)
-          }, 10);
-          setDeleted(false)
-        })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-    }
-
-    useEffect(() => {
-        getClasses()
-        fetchCourses()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[classes])
-
-
     // Remove empty inputs in edit form obj
     const cleanObj = () => {
         Object.keys(classData).forEach((key) => (classData[key] === "") && delete classData[key]);
     }
 
     // Generating form labels for edit
-    const genFormLabels = (data) => {
+    const genFormLabels = (datum) => {
         // eslint-disable-next-line array-callback-return
-        classes.map((clas) => {
-                if(clas._id === data){
+        data.classes.map((clas) => {
+                if(clas._id === datum){
                     setLabelData({
                         ...labelData,
                         nameLabel: clas.name,
@@ -230,45 +208,6 @@ const Classes = (props) => {
                 }
             })
     }
-
-    // Filtering
-    const onChangeHandler = (e) =>{
-        console.log(e.target.value)
-        setTarget(e.target.value)
-    }
-
-    const switchFilter = (e) => {
-        setSwitchState(e.target.value)
-    }
-
-    const filterFn = () => {
-            setNewArr(classes
-            // eslint-disable-next-line array-callback-return
-            .filter(d=> {
-                if(switchState === "Name"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "" || switchState === "All"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || 
-                    d.Courses[0].name.toLowerCase().includes(target.toLowerCase()) === true ||
-                    d.UnavailableRooms.toString().toLowerCase().includes(target.toLowerCase()) === true 
-                    || 
-                    d.Population.toString().toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Course"){
-
-                    return d.Courses[0].name.toLowerCase().includes(target.toLowerCase()) === true
-
-                }else if(switchState === "Un-Rooms"){
-
-                    return d.UnavailableRooms.toString().toLowerCase().includes(target.toLowerCase()) === true
-
-                }else if(switchState === "Size"){
-
-                    return d.Population.toString().toLowerCase().includes(target.toLowerCase()) === true
-
-                }
-            }))
-    }
-
     //Get all the inputs...
     const inputs = document.querySelectorAll('form input, form select');
     // const textareas = document.querySelectorAll('textarea');
@@ -297,7 +236,7 @@ const Classes = (props) => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
         // eslint-disable-next-line array-callback-return
-        classes.map((clas)=> {
+        data.classes.map((clas)=> {
             if(clas.name === nameIn.value){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -309,7 +248,7 @@ const Classes = (props) => {
         const nameIn = document.querySelector(".nameInput2")
         const warningInput = document.querySelector(".warning2")
         // eslint-disable-next-line array-callback-return
-        classes.map((clas)=> {
+        data.classes.map((clas)=> {
             if(clas.name === nameIn.value){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -318,25 +257,26 @@ const Classes = (props) => {
     }
 
     const formSubmit = (e) => {
-        createClass(e)
+        e.preventDefault()
+        createFn(classData)
         success()
     }
 
-    
-
-    // Delete modal
-    const setDelName = () => {
-        classes.map((clas)=> {
-            if(clas._id === deleteId){
-                setDeleteName(clas.name)
-            }
-        })
-    }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
         setDeleteId(data)
     }
+
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
+    }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
+    }
+
 
     return (
         <>
@@ -353,14 +293,14 @@ const Classes = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <select className="select-css2" name="switch" onChange={switchFilter}>
-                        <option>All</option>
+                    <select className="select-css2" name="switch">
                         <option>Name</option>
+                        {/* <option>Name</option>
                         <option>Size</option>
                         <option>Course</option>
-                        <option>Un-Rooms</option>
+                        <option>Un-Rooms</option> */}
                     </select>
-                    <input placeholder="Enter keyword to search" onChange={onChangeHandler} />
+                    <input placeholder="Search by name" onChange={onChangeHandler}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                         setId2(Math.random().toString());
@@ -378,7 +318,7 @@ const Classes = (props) => {
                         </tr>
                     </thead>
                     <TransitionGroup component="tbody" className="gfg">
-                       {loading === true ? newArr
+                       {isLoading === false ? data?.classes
                        .map((clas) => {
                                return (
                                 <CSSTransition
@@ -401,7 +341,7 @@ const Classes = (props) => {
                                     className="pencil"
                                     onClick={() => {
                                         setEditModalOut(true)
-                                        setEditCourseId(clas._id)
+                                        setEditClassId(clas._id)
                                         genFormLabels(clas._id)
                                         setId(Math.random().toString())
                                     }}
@@ -429,7 +369,7 @@ const Classes = (props) => {
                        <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                        </CSSTransition>
                        }
-                       {newArr.length === 0 && loading === true ? 
+                       {data?.classes.length === 0 && isLoading === false ? 
                        <CSSTransition
                        timeout={10}
                        classNames="slide2"
@@ -443,11 +383,30 @@ const Classes = (props) => {
                     </table>
                 </div>
 
+                <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    />
+
                 {/* Delete modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                <p>Are you sure you want to delete Class {deleteName}?</p>
+                <p>Are you sure you want to delete Class {
+                    data?.classes.map((clas)=> {
+                        if(clas._id === deleteId){
+                            return(
+                                <em key={deleteId} className="deleteName">{clas.name}</em>
+                            )
+                        }
+                    })}?</p>
                     <div>
-                        <button onClick={()=> deleteClass()} className="red2">Yes</button>
+                        <button onClick={()=> deleteFn(deleteId)} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>
                     </div>
                 </div>
@@ -513,7 +472,7 @@ const Classes = (props) => {
                                 <p>Course</p>
                                 <select className="select-css"  name="Courses" onChange={classFormData} required>
                                     <option value="" defaultValue>Select a course</option>
-                                    {courses.map(course => {
+                                    {courses.data?.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
@@ -565,7 +524,7 @@ const Classes = (props) => {
                                 <p>Course</p>
                                 <select className="select-css" name="Courses" defaultValue={labelData.courseLabel} onChange={classFormData}>
                                     <option value={labelData.courseLabel} disabled>{labelData.courseLabel}</option>
-                                    {courses.map(course => {
+                                    {courses.data?.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
@@ -591,7 +550,7 @@ const Classes = (props) => {
                         <button className="blue" onClick={(e)=> {
                             classFormData(e)
                             cleanObj()
-                            editClass()
+                            editFn({editClassId, classData})
                             successEdit()
                         }}>
                             Edit class

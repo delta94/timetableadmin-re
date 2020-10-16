@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useState,useEffect} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import "./period.css"
 import "../../global/global.css"
@@ -14,27 +14,151 @@ import spinner from "../../images/spinner.gif"
 import checkg from "../../images/checkg.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
+import ReactPaginate from "react-paginate"
+import { useQuery, useMutation , queryCache } from "react-query"
+
+
+    const getPeriods = (page, {pageNo, search}) => {
+
+        return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getPeriod', {
+            headers: {},
+            params: {perPage: 5, page: pageNo, searchQuery: search}
+        })
+        .then((response) => {
+            var periods = response.data?.data.docs
+            var pages = response.data?.data.totalPages
+            return {periods, pages}
+        })
+    }
+
+    const getCourses = () => {
+
+        return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
+            headers: {},
+            params: {page: 1, searchQuery: ""}
+        })
+        .then((response) => {
+            return response.data?.data.docs
+        })
+    }
+
+    const deletePeriod = (deleteId) => {
+          
+        return axios.delete('https://tbe-node-deploy.herokuapp.com/Admin/period/delete', {
+            headers: { 
+                '_id': deleteId
+            }
+        })
+        .then((response) => {
+            return response
+        })      
+    }
+
+    const createPeriod = (periodData) => {
+            let data = JSON.stringify(periodData);
+
+            return axios.post('https://tbe-node-deploy.herokuapp.com/Admin/period', data, {
+                headers: { 
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((response) => {
+                return response;
+            })
+            .then((error)=> {
+                return error
+            })
+    }
+
+    const editPeriod = (args) => {
+            let data = JSON.stringify(args.periodData);
+
+            return axios.patch("https://tbe-node-deploy.herokuapp.com/Admin/period/update", data, {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    "_id": args.editCourseId
+
+                }
+            })
+            .then((response) => {
+                return response;
+            })
+            .then((error)=> {
+                return error
+            })
+    }
 
 
 const Period = (props) => {
 
+    const [pageNo,setPageNo] = useState(null) 
+
+    const [search, setSearch] = useState("")
+    
+    const {isLoading, data} = useQuery(['periods', {pageNo, search}], getPeriods, {
+        refetchOnWindowFocus: false
+    })
+
+    const courses = useQuery('courses', getCourses, {
+        refetchOnWindowFocus: false
+    })
+
+    const [deleteFn] = useMutation(deletePeriod, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('periods')
+            setDeleter(false)
+            setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [createFn] = useMutation(createPeriod, {
+        onSuccess: () => {
+            console.log("created")
+            queryCache.refetchQueries('periods')
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+    const [editFn] = useMutation(editPeriod, {
+        onSuccess: () => {
+            console.log("edited")
+            queryCache.refetchQueries('periods')
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+
     const [modalOut, setModalOut] = useState(false)
-    const [periods,setPeriods] = useState([])   
-    const [loading, setLoading] = useState(false)
-    const [courses, setCourses] = useState([])
     const [editModalOut,setEditModalOut] = useState(false)
     const [editCourseId,setEditCourseId] = useState("")
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
     const [created, setCreated] = useState(false)
     const [deleted, setDeleted] = useState(false)
     const [edited, setEdited] = useState(false)
     const [id, setId] = useState("123");
     const [id2, setId2] = useState("1234");
-    const [newArr, setNewArr] = useState([])
-    const [target, setTarget] = useState("")
-    const [switchState, setSwitchState] = useState("")
     const [periodData, setPeriodData] = useState(
         {
             startTime: "",
@@ -60,113 +184,6 @@ const Period = (props) => {
           console.log(periodData)
     }
 
-    
-    // Http request C G E D
-    // For cancelling requests
-    const source = axios.CancelToken.source();
-
-
-    
-    // Create periods
-    const createPeriods = (e) => {
-        e.preventDefault()
-        let data = JSON.stringify(periodData);
-
-        let config = {
-        method: 'post',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/period',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=>{
-            getPeriods()
-        })
-        .then(()=> {
-            setModalOut(false)
-            setTimeout(() => {
-                setCreated(true)
-            }, 10);
-            setCreated(false)
-        })
-        .catch((error) => {
-        });
-    }
-
-    // Get periods
-    const getPeriods = () => {
-        let config = {
-        method: 'get',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/getPeriod',
-        headers: { },
-        cancelToken: source.token
-        };
-
-        axios(config)
-        .then((response) => {
-            setPeriods(response.data.data)
-            setLoading(true)
-        })
-        .catch((error) => {
-        
-        });
-
-    }
-
-    const fetchCourses = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-            var res = response.data.data
-            setCourses(res)
-            setLoading(true)
-        })
-        .catch((error) => {
-            
-        });
-    }
-
-    const editPeriod = () => {
-        let data = JSON.stringify(periodData);
-
-        let config = {
-        method: 'patch',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/period/update',
-        headers: { 
-            '_id': editCourseId, 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getPeriods())
-        .then(()=> {
-            setEditModalOut(false)
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-    }
 
     // Remove empty inputs in edit form obj
     const cleanObj = () => {
@@ -175,10 +192,10 @@ const Period = (props) => {
 
     
     // Generating form labels for edit
-    const genFormLabels = (data) => {
+    const genFormLabels = (datum) => {
         // eslint-disable-next-line array-callback-return
-        periods.map((period) => {
-                if(period._id === data){
+        data.periods.map((period) => {
+                if(period._id === datum){
                     setLabelData({
                         ...labelData,
                         courseLabel: period.course.name,
@@ -190,80 +207,8 @@ const Period = (props) => {
     }
 
 
-
-    // Delete Periods
-    const deletePeriod = () => {
-        
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/period/delete',
-            headers: { 
-            '_id': deleteId
-            }
-        };
-        
-        axios(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .then(()=> getPeriods())
-        .then(()=> {
-            setDeleter(false)
-            setTimeout(() => {
-              setDeleted(true)
-          }, 10);
-          setDeleted(false)
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    }
-
-    
-
-    useEffect(() => {
-        getPeriods()
-        fetchCourses()
-        filterFn()
-        setDelName()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[periods])
-
-    
-    
-
-    // Filtering
-    const onChangeHandler = (e) =>{
-        console.log(e.target.value)
-        setTarget(e.target.value)
-    }
-
-    
-    
-    const switchFilter = (e) => {
-        setSwitchState(e.target.value)
-    }
-
-    const filterFn = () => {
-            setNewArr(periods
-            // eslint-disable-next-line array-callback-return
-            .filter(d=> {
-                if(switchState === "Name"){
-                    return d.course.name.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "" || switchState === "All"){
-                    return d.course.name.toLowerCase().includes(target.toLowerCase()) === true || d.startTime.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Time"){
-                    return d.startTime.toLowerCase().includes(target.toLowerCase()) === true
-                }
-            }))
-    }
-
     //Get all the inputs...
     const inputs = document.querySelectorAll('form input, form select');
-    // const textareas = document.querySelectorAll('textarea');
 
     // Loop through them...
     for(let input of inputs) {
@@ -288,7 +233,7 @@ const Period = (props) => {
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
-        periods.map((period)=> {
+        data.periods.map((period)=> {
             if(period.course._id === nameIn.value){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -299,7 +244,7 @@ const Period = (props) => {
     const successEdit = () => {
         const nameIn = document.querySelector(".nameInput2")
         const warningInput = document.querySelector(".warning2")
-        periods.map((period)=> {
+        data.periods.map((period)=> {
             if(period.course._id === nameIn.value){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -308,21 +253,24 @@ const Period = (props) => {
     }
 
     const formSubmit = (e) => {
-        createPeriods(e)
+        e.preventDefault()
+        createFn(periodData)
         success()
     }
 
-    const setDelName = () => {
-        periods.map((period)=> {
-            if(period._id === deleteId){
-                setDeleteName(`${period.startTime} - ${period.endTime}`)
-            }
-        })
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
     }
+
 
     const openDelete = (data) => {
         setDeleter(!deleter)
         setDeleteId(data)
+    }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
     }
 
 
@@ -341,7 +289,7 @@ const Period = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                <select className="select-css2" name="switch" onChange={switchFilter}>
+                <select className="select-css2" name="switch">
                         <option>All</option>
                         <option>Name</option>
                         <option>Time</option>
@@ -362,7 +310,7 @@ const Period = (props) => {
                         </tr>
                     </thead>
                     <TransitionGroup component="tbody" className="gfg">
-                        {loading === true ? newArr
+                        {isLoading === false ? data?.periods
                         .map(period => {
                             return (
                                 <CSSTransition
@@ -410,7 +358,7 @@ const Period = (props) => {
                         <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         </CSSTransition>
                         }
-                        {newArr.length === 0 && loading === true ? 
+                        {data?.periods.length === 0 && isLoading === true ? 
                         <CSSTransition
                         timeout={10}
                         classNames="slide2"
@@ -424,11 +372,30 @@ const Period = (props) => {
                     </table>
                 </div>
 
+                <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    />
+
                 {/* Delete modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                <p>Are you sure you want to delete Period {deleteName}?</p>
+                <p>Are you sure you want to delete Period {
+                    data?.periods.map((period)=> {
+                        if(period._id === deleteId){
+                            return(
+                                <em key={deleteId} className="deleteName">{period.startTime} - {period.endTime}</em>
+                            )
+                        }
+                    })}?</p>
                     <div>
-                        <button onClick={()=> deletePeriod()} className="red2">Yes</button>
+                        <button onClick={()=> deleteFn(deleteId)} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>
                     </div>
                 </div>
@@ -489,7 +456,7 @@ const Period = (props) => {
                             <p>Course</p>
                             <select className="select-css nameInput" name="course" onChange={periodFormData} required>
                                     <option value="" defaultValue>Select a course</option>
-                                    {courses.map(course => {
+                                    {courses.data?.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
@@ -530,7 +497,7 @@ const Period = (props) => {
                             <p>Course</p>
                             <select className="select-css nameInput2" name="course" defaultValue={labelData.courseLabel} onChange={periodFormData}>
                                     <option value={labelData.courseLabel} disabled>{labelData.courseLabel}</option>
-                                    {courses.map(course => {
+                                    {courses.data?.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
@@ -553,7 +520,7 @@ const Period = (props) => {
                                 e.preventDefault()
                                 periodFormData(e)
                                 cleanObj()
-                                editPeriod()
+                                editFn({editCourseId, periodData})
                                 successEdit()
                             }}>
                             Edit timeslot

@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React,{useEffect, useState} from "react"
+import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import "./course.css"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -14,27 +14,167 @@ import spinner from "../../images/spinner.gif"
 import checkg from "../../images/checkg.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
+import {useMutation, queryCache, useQuery} from "react-query"
+import ReactPaginate from "react-paginate"
+
+
+const deleteCourse = (deleteId) => {
+          
+    return axios.delete('https://tbe-node-deploy.herokuapp.com/Admin/course/delete', {
+        headers: { 
+            '_id': deleteId
+        }
+    })
+    .then((response) => {
+        return response
+    })      
+}
+
+const editCourse = (args) => {
+    Object.keys(args.finalDataObj1).forEach((key) => (args.finalDataObj1[key] === "") && delete args.finalDataObj1[key]);
+
+    let data = JSON.stringify(args.finalDataObj1);
+
+    return axios.patch(`https://tbe-node-deploy.herokuapp.com/Admin/course/update`, data, {
+        headers: { 
+            '_id': args.editCourseId,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then((response) => {
+        return response;
+    })
+    .then((error)=> {
+        return error
+    })
+}
+
+const createCourse = (finalDataObj) => {
+
+    let data = JSON.stringify(finalDataObj);
+
+    return axios.post('https://tbe-node-deploy.herokuapp.com/Admin/course', data, {
+        headers: { 
+            'Content-Type': 'application/json'
+        }
+    })
+    .then((response) => {
+        return response;
+    })
+    .then((error)=> {
+        return error
+    })
+}
+
+const getCourses = (page, {pageNo, search}) => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
+        headers: {},
+        params: {perPage: 5, page: pageNo, searchQuery: search}
+    })
+    .then((response) => {
+        var courses = response.data?.data.docs
+        var pages = response.data?.data.totalPages
+        return {courses, pages}
+    })
+}
+
+const getVenues = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
+const getLecturers = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getlecturer', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
 
 
 const Course = (props) => {
 
+    const [pageNo,setPageNo] = useState(null) 
+
+    const [search, setSearch] = useState("")
+
+    const {isLoading, data} = useQuery(['courses', {pageNo, search}], getCourses, {
+        refetchOnWindowFocus: false
+    })
+
+    const venues = useQuery('venues', getVenues, {
+        refetchOnWindowFocus: false
+    })
+
+    const lecturers = useQuery('lecturers', getLecturers, {
+        refetchOnWindowFocus: false
+    })
+
+    const [createFn] = useMutation(createCourse, {
+        onSuccess: () => {
+            console.log("created")
+            queryCache.refetchQueries('courses')
+            setModalOut(false)
+            setTimeout(() => {
+                setCreated(true)
+            }, 10);
+            setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+    const [deleteFn] = useMutation(deleteCourse, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('courses')
+            setDeleter(false)
+            setTimeout(() => {
+                setDeleted(true)
+            }, 10);
+            setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
+    const [editFn] = useMutation(editCourse, {
+        onSuccess: () => {
+            console.log("edited")
+            queryCache.refetchQueries('courses')
+            setEditModalOut(false)
+            setTimeout(() => {
+                setEdited(true)
+            }, 10);
+            setEdited(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
+
     // Course app state
     const [modalOut, setModalOut] = useState(false)
     const [editModalOut, setEditModalOut] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [courses, setCourses] = useState([])
-    const [lecturers, setLecturers] = useState([])
-    const [venues, setVenues] = useState([])
     const [editCourseId, setEditCourseId] = useState("")
-    const [newArr, setNewArr] = useState([])
-    const [switchState, setSwitchState] = useState("")  
-    const [target, setTarget] = useState("")
     const [created, setCreated] = useState(false)
     const [deleted, setDeleted] = useState(false)
     const [edited, setEdited] = useState(false)
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
-    const [deleteName, setDeleteName] = useState("")
     const [formData, updateFormData] = useState(
         {
             name: "",
@@ -79,22 +219,11 @@ const Course = (props) => {
     const [id, setId] = useState("123");
 
 
-    
-
-
-
-    // Http requests C G E D and relatives
-
-
-    // For cancelling requests
-    const source = axios.CancelToken.source();
-
     // Post Request
     const courseFormData = (e) => {
 
         updateFormData({
             ...formData,
-      
             // Trimming any whitespace
             [e.target.name]: e.target.value.trim()
           });
@@ -105,7 +234,6 @@ const Course = (props) => {
 
         venueData({
             ...venue,
-      
             // Trimming any whitespace
             [e.target.name]: {
                 _id: e.target.value.trim()
@@ -114,23 +242,32 @@ const Course = (props) => {
 
     }
 
+    var finalDataObj1 = {}
+
     const lecturerFormData = (e) => {
 
         lecturerData({
             ...lecturer,
-      
             // Trimming any whitespace
             [e.target.name]: {
                 _id: e.target.value.trim()
             }
           });
 
-          setFinalDataObj({
+          finalDataObj1 = {
+            ...formData,
+            ...lecturer,
+            ...venue,
+            ...time
+        }
+
+        setFinalDataObj({
             ...formData,
             ...lecturer,
             ...venue,
             ...time
         })
+
     }
 
     const timeDataFn = () => {
@@ -147,182 +284,11 @@ const Course = (props) => {
         console.log(time)
     }
 
-    
-    const createCourses = (e) => {
-        e.preventDefault()
-        let data = JSON.stringify(finalDataObj);
-
-        console.log(data)
-
-        let config = {
-        method: 'post',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/course',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-        
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=> {
-            fetchCourses()
-        })
-        .then(()=> {
-            setModalOut(false)
-            setTimeout(() => {
-                setCreated(true)
-            }, 10);
-            setCreated(false)
-        })
-        .catch((error) => {
-            
-        });
-
-    }
-
-    // Get request
-    const fetchCourses = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-            var res = response.data.data
-            setCourses(res)
-            setLoading(true)
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-}
-
-    // Getting lecturers
-    const getLect = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-                setLecturers(response.data.data)
-        })
-        .catch((error) => {
-            
-        });
-    }
-
-    const getVenue = () => {
-        let config = {
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
-            headers: { },
-            cancelToken: source.token
-        };
-        
-        axios(config)
-        .then((response) => {
-            setVenues(response.data.data)
-        })
-        .catch((error) => {
-        
-        });
-        
-    }
-
-    // Patch request
-    const editCourses = () => {
-        let data = JSON.stringify(finalDataObj);
-
-        let config = {
-        method: 'patch',
-        url: 'https://tbe-node-deploy.herokuapp.com/Admin/course/update',
-        headers: { 
-            '_id': editCourseId, 
-            'Content-Type': 'application/json'
-        },
-        data : data
-        };
-
-        axios(config)
-        .then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .then(()=>{ 
-            fetchCourses()
-        })
-        .then(()=> {
-            setEditModalOut(false)
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-
-    }
-
-     // Delete request
-     const deleteCourse = () => {
-        let config = {
-            method: 'delete',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/course/delete',
-            headers: { 
-              '_id': deleteId
-            }
-          };
-          
-          axios(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-          })
-          .then(()=> {
-              fetchCourses()
-          })
-          .then(()=> {
-              setDeleter(false)
-              setTimeout(() => {
-                setDeleted(true)
-            }, 10);
-            setDeleted(false)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-          
-        console.log("deleted")
-    }
-
-    
-    useEffect( () => {
-            fetchCourses()
-            getLect()
-            getVenue()
-            filterFn()
-            setDelName()
-            return () => {
-                source.cancel("Component got unmounted");
-            };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        },[courses]
-    )
-
     // Generating form labels for edit
-    const genFormLabels = (data) => {
+    const genFormLabels = (datum) => {
         // eslint-disable-next-line array-callback-return
-        courses.map((course) => {
-                if(course._id === data){
+        data.courses.map((course) => {
+                if(course._id === datum){
                     setLabelData({
                         ...labelData,
                         nameLabel: course.name,
@@ -339,45 +305,11 @@ const Course = (props) => {
             })
     }
 
-    // Remove empty inputs in edit form obj
-    const cleanObj = () => {
-        Object.keys(finalDataObj).forEach((key) => (finalDataObj[key] === "") && delete finalDataObj[key]);
-    }
-
-   
-
-    // Filtering
-    const onChangeHandler = (e) =>{
-        console.log(e.target.value)
-        setTarget(e.target.value)
-    }
-    const switchFilter = (e) => {
-        setSwitchState(e.target.value)
-    }
-
-    const filterFn = () => {
-            setNewArr(courses
-            // eslint-disable-next-line array-callback-return
-            .filter(d=> {
-                if(switchState === "Name"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "" || switchState === "All"){
-                    return d.name.toLowerCase().includes(target.toLowerCase()) === true || d.code.toString().toLowerCase().includes(target.toLowerCase()) === true || d.unit.toString().toLowerCase().includes(target.toLowerCase()) === true || d.lecturer.name.toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Code"){
-                    return d.code.toString().toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Unit"){
-                    return d.unit.toString().toLowerCase().includes(target.toLowerCase()) === true
-                }else if(switchState === "Lecturer"){
-                    return d.lecturer.name.toLowerCase().includes(target.toLowerCase()) === true
-                }
-            }))
-    }
-
     // Form validation
     const success = () => {
         const nameIn = document.querySelector(".nameInput")
         const warningInput = document.querySelector(".warning")
-        courses.map((course)=> {
+        data.courses.map((course)=> {
             if(course.name === nameIn.value){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -408,10 +340,14 @@ const Course = (props) => {
 
     }
 
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
+    }
+
     const successEdit = () => {
         const nameIn = document.querySelector(".nameInput2")
         const warningInput = document.querySelector(".warning2")
-        courses.map((course)=> {
+        data.courses.map((course)=> {
             if(course.name.toString() === nameIn.value.toString()){
                 warningInput.classList.add("display")
                 nameIn.classList.add("error")
@@ -420,24 +356,22 @@ const Course = (props) => {
     }
     
     const formSubmit = (e) => {
-        createCourses(e)
+        e.preventDefault()
+
+        createFn(finalDataObj)
         success()
-    }
-
-    
-
-    const setDelName = () => {
-        courses.map((course)=> {
-            if(course._id === deleteId){
-                setDeleteName(course.name)
-            }
-        })
     }
 
     const openDelete = (data) => {
         setDeleter(!deleter)
         setDeleteId(data)
     }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
+    }
+
 
     return (
         <>
@@ -454,14 +388,14 @@ const Course = (props) => {
             </header>
             <div className="section">
                 <div className="search-container">
-                    <select className="select-css2" name="switch" onChange={switchFilter}>
-                        <option>All</option>
-                        <option>Code</option>
+                    <select className="select-css2" name="switch">
+                        <option>Name</option>
+                        {/* <option>Code</option>
                         <option>Name</option>
                         <option>Unit</option>
-                        <option>Lecturer</option>
+                        <option>Lecturer</option> */}
                     </select>
-                    <input placeholder="Enter keyword to search" onChange={onChangeHandler}/>
+                    <input placeholder="Search by name" onChange={onChangeHandler} />
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                         setId2(Math.random().toString());
@@ -479,7 +413,7 @@ const Course = (props) => {
                         </tr>
                     </thead>
                     <TransitionGroup component="tbody" className="gfg">
-                       {loading === true ? newArr.map(course => {
+                       {isLoading === false ? data?.courses.map(course => {
                             return(
                                 <CSSTransition
                                 timeout={900}
@@ -526,7 +460,7 @@ const Course = (props) => {
                                     <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                                 </CSSTransition>
                         }
-                        {newArr.length === 0 && loading === true ? 
+                        {data?.courses.length === 0 && isLoading === false ? 
                                 <CSSTransition
                                     timeout={900}
                                     classNames="slide2"
@@ -541,12 +475,31 @@ const Course = (props) => {
                     </table>
                 </div>
 
+                <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    />
+
 
                 {/* Delete Modal */}
                 <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>
-                <p>Are you sure you want to delete Course {deleteName}?</p>
+                <p>Are you sure you want to delete Course {
+                    data?.courses.map((course)=> {
+                        if(course._id === deleteId){
+                            return(
+                                <em key={deleteId} className="deleteName">{course.name}</em>
+                            )
+                        }
+                    })} ? </p>
                     <div>
-                        <button onClick={()=> deleteCourse()} className="red2">Yes</button>
+                        <button onClick={()=> deleteFn(deleteId)} className="red2">Yes</button>
                         <button onClick={()=> setDeleter(false)}>No</button>
                     </div>
                 </div>
@@ -649,7 +602,7 @@ const Course = (props) => {
                                     <p>Venue</p>
                                     <select className="select-css" name="venue" onChange={venueFormData} required>
                                     <option value="" defaultValue>Select a venue</option>
-                                        {venues.map(venue => {
+                                        {venues.data?.map(venue => {
                                             return(
                                             <option value={venue._id} label={venue.name} key={venue._id}/>
                                         )})}
@@ -669,7 +622,7 @@ const Course = (props) => {
                                         <p>Professor</p>
                                         <select className="select-css" name="lecturer" onChange={lecturerFormData} required>
                                             <option value="" defaultValue>Select a lecturer</option>
-                                            {lecturers.map(lect => {
+                                            {lecturers.data?.map(lect => {
                                                 return(
                                                 <option value={lect._id} label={lect.name} key={lect._id}/>
                                             )})}
@@ -740,7 +693,7 @@ const Course = (props) => {
                                         <p>Professor</p>
                                         <select className="select-css" name="lecturer" defaultValue={labelData.lecturerLabel} onChange={lecturerFormData}>
                                             <option disabled value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
-                                            {lecturers.map(lect => {
+                                            {lecturers.data?.map(lect => {
                                                 return(
                                                 <option value={lect._id} label={lect.name} key={lect._id}/>
                                             )})}
@@ -760,7 +713,7 @@ const Course = (props) => {
                                     <p>Venue</p>
                                     <select className="select-css" name="venue" defaultValue={labelData.venueLabel} onChange={venueFormData}>
                                     <option value={labelData.venueLabel} disabled>{labelData.venueLabel}</option>
-                                        {venues.map(venue => {
+                                        {venues.data?.map(venue => {
                                             return(
                                             <option value={venue._id} label={venue.name} key={venue._id}/>
                                         )})}
@@ -778,8 +731,7 @@ const Course = (props) => {
                                 courseFormData(e);
                                 lecturerFormData(e);
                                 venueFormData(e);
-                                cleanObj()
-                                editCourses()
+                                editFn({editCourseId, finalDataObj1})
                                 successEdit()
                             }}>
                                 Edit course
