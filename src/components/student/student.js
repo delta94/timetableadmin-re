@@ -92,6 +92,18 @@ const editStud = (args) => {
         })
 }
 
+const getStudentsL = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
+
 
 const Student = (props) => {
 
@@ -100,6 +112,10 @@ const Student = (props) => {
     const [search, setSearch] = useState("")
     
     const {isLoading, data} = useQuery(['students', {pageNo, search}], getStud, {
+        refetchOnWindowFocus: false
+    })
+
+    const studentsL = useQuery('students', getStudentsL, {
         refetchOnWindowFocus: false
     })
 
@@ -356,7 +372,7 @@ const Student = (props) => {
                     <button onClick={()=>setPageSwitch("create")}><img src={plus} alt="plus"/>Add new student</button>
                 </div>
 
-                <p className="studReg">Students registered : {data?.students.length}</p>
+                <p className="studReg">Students registered : {studentsL.data?.length}</p>
                 {pageSwitch === "home" ? 
                 <div className="table-container">
                     <table className="table">

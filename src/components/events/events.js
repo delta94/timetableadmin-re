@@ -11,40 +11,73 @@ import pen from "../../images/pencil 1.png"
 import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
-import { useQuery } from "react-query"
+import ReactPaginate from "react-paginate"
+import { useQuery, useMutation, queryCache } from "react-query"
 import {format} from "date-fns"
 
 
 
-const getEvents = (events, {date}) => {
+const getEvents = (events, {date, pageNo, search}) => {
 
     var formattedDate = format(new Date(date), "yyyy-MM-dd")   
 
       return axios.get('https://tbe-node-deploy.herokuapp.com/user/events/day', {
         headers: { 
           'date1': date ? formattedDate : ""
-        }})
+        },
+        params: {perPage: 5, page: pageNo, searchQuery: search}
+        })
       .then((response) => {
         return response.data?.data
       })
 
 }
 
+const deleteEvents = (deleteId) => {
+          
+    return axios.delete('https://tbe-node-deploy.herokuapp.com/user/events/delete', {
+        headers: { 
+            '_id': deleteId
+        }
+    })
+    .then((response) => {
+        return response
+    })      
+}
+
+
 
 const Events = (props) => {
 
     const [date, setDate] = useState(null)
 
+    const [pageNo,setPageNo] = useState(null) 
 
-    const {data, isLoading} = useQuery(['events', {date}], getEvents, {
+    const [search, setSearch] = useState("")
+
+    const {data, isLoading} = useQuery(['events', {date, pageNo, search}], getEvents, {
         refetchOnWindowFocus: false
     })
 
-    console.log(isLoading, data?.length)
+    const [deleteFn] = useMutation(deleteEvents, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('events')
+            // setDeleter(false)
+            // setTimeout(() => {
+            //     setDeleted(true)
+            // }, 10);
+            // setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
 
 
     const [modalOut, setModalOut] = useState(false)
     const [id2, setId2] = useState("1234");
+    const [deleteId, setDeleteId] = useState("")
     const [eventData, setEventData] = useState(
         {
             name: "",
@@ -100,33 +133,6 @@ const Events = (props) => {
     //       console.log(error);
     //     });
     // }
-
-    // const getEve = () => {
-
-    //     let config = {
-    //         method: 'get',
-    //         url: 'https://tbe-node-deploy.herokuapp.com/user/events/day',
-    //         headers: { 
-    //           'date1': getDate
-    //         }
-    //       };
-          
-    //       axios(config)
-    //       .then((response) => {
-    //         console.log(JSON.stringify(response.data));
-    //         setEvents(response.data.data)
-    //         setLoading(true)
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-    // }
-
-    // useEffect(() => {
-    //     getEve()
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // },[events])
-
     
     // Remove empty inputs in edit room form object
     const cleanObj = () => {
@@ -137,6 +143,15 @@ const Events = (props) => {
         e.preventDefault()
         console.log(finalObj)
         // createEve()
+    }
+
+    const paginate = (data) => {
+        setPageNo(data.selected + 1)
+        console.log(data)
+    }
+
+    const onChangeHandler = (e) => {
+        setSearch(e.target.value)
     }
 
     return (
@@ -157,7 +172,7 @@ const Events = (props) => {
                     <select className="select-css2" name="switch">
                         <option>Name</option>
                     </select>
-                    <input placeholder="Filter by name"/>
+                    <input placeholder="Search by name" onChange={onChangeHandler}/>
                     <button onClick={()=>{
                         setModalOut(!modalOut);
                         setId2(Math.random().toString());
@@ -193,7 +208,7 @@ const Events = (props) => {
                                             src={bin}
                                             alt="bin"
                                             className="bin"
-                                            onClick={()=> {}}
+                                            onClick={()=> {deleteFn(deleteId)}}
                                             />
                                         </td>
                                     </tr>
@@ -207,6 +222,19 @@ const Events = (props) => {
                         </tbody>
                         </table>
                     </div>
+
+                    <ReactPaginate 
+                        previousLabel="<" 
+                        nextLabel=">"
+                        pageCount={data ? data?.pages : 0} 
+                        pageRangeDisplayed="2" 
+                        marginPagesDisplayed="2" 
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active2'}
+                        onPageChange={paginate}
+                    />
+
                     <div className={modalOut === true ? "overlay modOut" : "overlay"}
                         onClick={()=>{
                             setModalOut(!modalOut);

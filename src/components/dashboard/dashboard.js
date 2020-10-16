@@ -7,110 +7,90 @@ import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import { CSSTransition} from "react-transition-group";
+import {useQuery} from "react-query"
 
+
+const getVenues = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
+const getCourses = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
+const getLecturers = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getlecturer', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
+const getClasses = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/class/all', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
+const getStudents = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
+        headers: {},
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
 
 
 const Dashboard = (props) => {
 
+    const venues = useQuery('venues', getVenues, {
+        refetchOnWindowFocus: false
+    })
+
+    const courses = useQuery('courses', getCourses, {
+        refetchOnWindowFocus: false
+    })
+
+    const classes = useQuery('classes', getClasses, {
+        refetchOnWindowFocus: false
+    })
+
+    const lecturers = useQuery('lecturers', getLecturers, {
+        refetchOnWindowFocus: false
+    })
+
+    const {isLoading, data} = useQuery('students', getStudents, {
+        refetchOnWindowFocus: false
+    })
+
     const [modalOut, setModalOut] = useState(false)
     const [updateOut, setUpdateOut] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [rooms,setRooms] = useState([])   
-    const [courses, setCourses] = useState([])
-    const [lecturers,setLecturers] = useState([])
-    const [classes,setClasses] = useState([])
-    const [students,setStudents] = useState([])   
 
-    // For cancelling requests
-    const source = axios.CancelToken.source();
-
-    const [roomL, setRoomL] = useState("")
-    const [courseL, setCourseL] = useState("")
-    const [lectL, setLectL] = useState("")
-    const [classL, setClassL] = useState("")
-    const [studentsL,setStudentsL] = useState([])   
-
-    const getDetails = () => {
-
-            axios({
-                method: 'get',
-                url: 'https://tbe-node-deploy.herokuapp.com/Admin/room',
-                headers: { },
-                cancelToken: source.token
-            })
-            .then((response) => {
-                setRooms(response.data.data)
-            })
-            .catch((error) => {
-            });
-
-            axios({
-                method: 'get',
-                url: 'https://tbe-node-deploy.herokuapp.com/Admin/getCourse',
-                headers: { },
-                cancelToken: source.token
-                })
-            .then((response) => {
-                var res = response.data.data
-                setCourses(res)
-            })
-            .catch((error) => {
-            });
-
-            axios({
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/getlecturer',
-            headers: { },
-            cancelToken: source.token
-            })
-            .then((response) => {
-            setLecturers(response.data.data)
-            })
-            .catch((error) => {
-            });
-
-            axios({
-                method: 'get',
-                url: 'https://tbe-node-deploy.herokuapp.com/Admin/class/all',
-                headers: { },
-                cancelToken: source.token
-                })
-            .then((response) => {
-                setClasses(response.data.data)
-            })
-            .catch((error) => {
-            });
-
-            axios({
-            method: 'get',
-            url: 'https://tbe-node-deploy.herokuapp.com/Admin/students/all',
-            headers: { },
-            cancelToken: source.token
-            })
-            .then((response) => {
-            setStudents(response.data.data)
-            setLoading(true)
-            })
-            .catch((error) => {
-            });
-    }
-
-    const getDetailsLength = () => {
-        setRoomL(rooms.length)
-        setCourseL(courses.length)
-        setLectL(lecturers.length)
-        setClassL(classes.length)
-        setStudentsL(students.length)
-    }
-
-    useEffect(() => {
-        getDetails()
-        getDetailsLength()
-        return () => {
-            source.cancel("Component got unmounted");
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[students])
 
     return(
         <>  
@@ -129,7 +109,7 @@ const Dashboard = (props) => {
                     </Link>
                   </div>
               </header>
-              {loading === true ?  
+              {isLoading === false ?  
                 <div className="card-container">       
                     <CSSTransition
                             timeout={10}
@@ -144,7 +124,7 @@ const Dashboard = (props) => {
                             <Link to="/app/rooms">
                                 <div className="card card-room">
                                     <h3>Lecture Rooms</h3>
-                                    <p>{roomL}</p>
+                                    <p>{venues.data?.length}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -161,7 +141,7 @@ const Dashboard = (props) => {
                             <Link to="/app/courses">
                                 <div className="card card-course">
                                     <h3>Courses</h3>
-                                    <p>{courseL}</p>
+                                    <p>{courses.data?.length}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -178,7 +158,7 @@ const Dashboard = (props) => {
                             <Link to="/app/lecturers">
                                 <div className="card card-lect">
                                     <h3>Lecturers</h3>
-                                    <p>{lectL}</p>
+                                    <p>{lecturers.data?.length}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -195,7 +175,7 @@ const Dashboard = (props) => {
                             <Link to="/app/classes">
                                 <div className="card card-class">
                                     <h3>Classes</h3>
-                                    <p>{classL}</p>
+                                    <p>{classes.data?.length}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -212,12 +192,12 @@ const Dashboard = (props) => {
                             <Link to='/app/student'>
                                 <div className="card card-stud">
                                     <h3>Students</h3>
-                                    <p>{studentsL}</p>
+                                    <p>{data?.length}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
             </div>
-            : <div className="spinnerContainer"><img src={spinner} alt="loading.."/></div>}
+                : <div className="spinnerContainer"><img src={spinner} alt="loading.."/></div>}
 
             <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
                 <p>Timetable update</p>
