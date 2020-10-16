@@ -77,7 +77,7 @@ const Events = (props) => {
 
     const [modalOut, setModalOut] = useState(false)
     const [id2, setId2] = useState("1234");
-    const [deleteId, setDeleteId] = useState("")
+    // const [deleteId, setDeleteId] = useState("")
     const [eventData, setEventData] = useState(
         {
             name: "",
