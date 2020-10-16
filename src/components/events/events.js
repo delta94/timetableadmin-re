@@ -12,7 +12,7 @@ import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import ReactPaginate from "react-paginate"
-import { useQuery, useMutation, queryCache } from "react-query"
+import { useQuery} from "react-query"
 import {format} from "date-fns"
 
 
@@ -33,17 +33,17 @@ const getEvents = (events, {date, pageNo, search}) => {
 
 }
 
-const deleteEvents = (deleteId) => {
+// const deleteEvents = (deleteId) => {
           
-    return axios.delete('https://tbe-node-deploy.herokuapp.com/user/events/delete', {
-        headers: { 
-            '_id': deleteId
-        }
-    })
-    .then((response) => {
-        return response
-    })      
-}
+//     return axios.delete('https://tbe-node-deploy.herokuapp.com/user/events/delete', {
+//         headers: { 
+//             '_id': deleteId
+//         }
+//     })
+//     .then((response) => {
+//         return response
+//     })      
+// }
 
 
 
