@@ -59,20 +59,20 @@ const Events = (props) => {
         refetchOnWindowFocus: false
     })
 
-    const [deleteFn] = useMutation(deleteEvents, { 
-        onSuccess: () => {
-            console.log("deleted")
-            queryCache.refetchQueries('events')
-            // setDeleter(false)
-            // setTimeout(() => {
-            //     setDeleted(true)
-            // }, 10);
-            // setDeleted(false)
-        },
-        onError: () => {
-            console.log("error o")
-        }
-    })
+    // const [deleteFn] = useMutation(deleteEvents, { 
+    //     onSuccess: () => {
+    //         console.log("deleted")
+    //         queryCache.refetchQueries('events')
+    //         // setDeleter(false)
+    //         // setTimeout(() => {
+    //         //     setDeleted(true)
+    //         // }, 10);
+    //         // setDeleted(false)
+    //     },
+    //     onError: () => {
+    //         console.log("error o")
+    //     }
+    // })
 
 
     const [modalOut, setModalOut] = useState(false)
