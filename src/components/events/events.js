@@ -12,7 +12,7 @@ import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import ReactPaginate from "react-paginate"
-import { useQuery} from "react-query"
+import { useQuery, useMutation, queryCache } from "react-query"
 import {format} from "date-fns"
 
 
@@ -25,25 +25,27 @@ const getEvents = (events, {date, pageNo, search}) => {
         headers: { 
           'date1': date ? formattedDate : ""
         },
-        params: {perPage: 5, page: pageNo, searchQuery: search}
+        params: {perPage: 3, page: pageNo, searchQuery: search}
         })
       .then((response) => {
-        return response.data?.data
+            var events = response.data?.data.docs
+            var pages = response.data?.data.totalPages
+            return {events, pages}
       })
 
 }
 
-// const deleteEvents = (deleteId) => {
+const deleteEvents = (deleteId) => {
           
-//     return axios.delete('https://tbe-node-deploy.herokuapp.com/user/events/delete', {
-//         headers: { 
-//             '_id': deleteId
-//         }
-//     })
-//     .then((response) => {
-//         return response
-//     })      
-// }
+    return axios.delete('https://tbe-node-deploy.herokuapp.com/user/events/delete', {
+        headers: { 
+            '_id': deleteId
+        }
+    })
+    .then((response) => {
+        return response
+    })      
+}
 
 
 
@@ -59,20 +61,20 @@ const Events = (props) => {
         refetchOnWindowFocus: false
     })
 
-    // const [deleteFn] = useMutation(deleteEvents, { 
-    //     onSuccess: () => {
-    //         console.log("deleted")
-    //         queryCache.refetchQueries('events')
-    //         // setDeleter(false)
-    //         // setTimeout(() => {
-    //         //     setDeleted(true)
-    //         // }, 10);
-    //         // setDeleted(false)
-    //     },
-    //     onError: () => {
-    //         console.log("error o")
-    //     }
-    // })
+    const [deleteFn] = useMutation(deleteEvents, { 
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('events')
+            // setDeleter(false)
+            // setTimeout(() => {
+            //     setDeleted(true)
+            // }, 10);
+            // setDeleted(false)
+        },
+        onError: () => {
+            console.log("error o")
+        }
+    })
 
 
     const [modalOut, setModalOut] = useState(false)
@@ -192,7 +194,7 @@ const Events = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            { isLoading === false ? data.map((eve)=>{
+                            { isLoading === false ? data?.events.map((eve)=>{
                                 return(
                                     <tr className="default" key={eve._id}>
                                         <td>{eve.name}</td>
@@ -208,7 +210,7 @@ const Events = (props) => {
                                             src={bin}
                                             alt="bin"
                                             className="bin"
-                                            // onClick={()=> {deleteFn(deleteId)}}
+                                            onClick={()=> {deleteFn(eve._id)}}
                                             />
                                         </td>
                                     </tr>
