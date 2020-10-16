@@ -208,7 +208,7 @@ const Events = (props) => {
                                             src={bin}
                                             alt="bin"
                                             className="bin"
-                                            onClick={()=> {deleteFn(deleteId)}}
+                                            // onClick={()=> {deleteFn(deleteId)}}
                                             />
                                         </td>
                                     </tr>
