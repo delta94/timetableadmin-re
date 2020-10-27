@@ -30,31 +30,31 @@ import ReactPaginate from "react-paginate"
         })      
     }
 
-    const editLect = (args) => {
-        let data = JSON.stringify(args.formData);
+    const updateLecturer = (lectId) => {
+        let data = new FormData();
 
-        return axios.patch("https://tbe-node-deploy.herokuapp.com/Admin/lecturer/update", data, {
-            headers: { 
-                'Content-Type': 'application/json',
-                '_id': args.lectId
-            }
-        })
-        .then((response) => {
-            return response;
-        })
-        .then((error)=> {
-            return error
-        })
-    }
-
-    const updateImage = (lectId) => {
-        var data = new FormData()
-        
+        // Getting values
         var file = document.getElementById("fileInput").files[0]
+        var name = document.querySelector("#name").value
+        var edubg = document.querySelector("#edubg").value
+        var pos = document.querySelector("#ranking").value
+        var email = document.querySelector("#email").value
+        var phone = document.querySelector("#phoneno").value
+        var aos = document.querySelector("#aosc").value
+        var officeno = document.querySelector("#officeno").value
+        var degree = document.querySelector("#degree").value
 
-        data.append("image", file)
+        data.append('name', name);
+        data.append('email', email);
+        data.append('education_bg', edubg);
+        data.append('phone_no', phone);
+        data.append('office_no', officeno);
+        data.append('ranking', pos);
+        data.append('degree', degree);
+        data.append('areaOfSpec', aos);
+        data.append('image', file);
 
-        return axios.patch("https://tbe-node-deploy.herokuapp.com/image", data, {
+        return axios.patch("https://tbe-node-deploy.herokuapp.com/admin/v2/lecturer/update", data, {
             headers: { 
                 'Content-Type': 'multipart/form-data',
                 '_id': lectId
@@ -142,24 +142,9 @@ const Lecturer = (props) => {
         }
     })
 
-    const [editFn] = useMutation(editLect, {
+    const [editFn] = useMutation(updateLecturer, {
         onSuccess: () => {
             console.log("edited")
-            queryCache.refetchQueries('lecturers')
-            setPageSwitch("home")
-            setTimeout(() => {
-                setEdited(true)
-            }, 10);
-            setEdited(false)
-        },
-        onError: () => {
-            console.log("error o")
-        }
-    })
-
-    const [editImgFn] = useMutation(updateImage, {
-        onSuccess: () => {
-            console.log("image edited")
             queryCache.refetchQueries('lecturers')
             setPageSwitch("home")
             setTimeout(() => {
@@ -237,7 +222,6 @@ const Lecturer = (props) => {
             ...formData,
             [e.target.name]: e.target.value
         })
-        console.log(formData)
     }
 
     // Remove empty inputs in edit form obj
@@ -287,7 +271,7 @@ const Lecturer = (props) => {
 
     const editSub = (e) => {
         e.preventDefault()
-        editFn({lectId, formData}) && editImgFn(lectId)
+        editFn(lectId)
     }
 
     const formSub = (e) => {
@@ -553,7 +537,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
-                                    <input placeholder={labelData.nameL} name="name" onChange={setFormDataFn} className="wid-4"/>
+                                    <input placeholder={labelData.nameL} id="name" name="name" onChange={setFormDataFn} className="wid-4"/>
                                 </div>
                             </div>
                         </div>
@@ -566,11 +550,11 @@ const Lecturer = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Position</p>
-                                        <input placeholder={labelData.rankingL} name="ranking" onChange={setFormDataFn}/>
+                                        <input placeholder={labelData.rankingL} id="ranking" name="ranking" onChange={setFormDataFn}/>
                                     </div>
                                     <div className="field">
                                         <p>Area of specialization</p>
-                                        <textarea placeholder={labelData.areaOfSpecL} name="areaOfSpec" onChange={setFormDataFn}/>
+                                        <textarea placeholder={labelData.areaOfSpecL} id="aosc" name="areaOfSpec" onChange={setFormDataFn}/>
                                     </div>
                                 </div>
                             </div>
@@ -580,18 +564,18 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                     <div className="field">
                                         <p>Education Background</p>
-                                        <input placeholder={labelData.educationBgL} className="wid-4" name="email" onChange={setFormDataFn}/>
+                                        <input placeholder={labelData.educationBgL} id="edubg" className="wid-4" name="email" onChange={setFormDataFn}/>
                                     </div>
                             </div> 
 
                                 <div className="field">
                                     <p>Office No</p>
-                                    <input className="wid-4" name="office_no" placeholder={labelData.officeNoL} onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="office_no" id="officeno" placeholder={labelData.officeNoL} onChange={setFormDataFn}/>
                                 </div>
 
                                 <div className="field">
                                     <p>Degree</p>
-                                    <input className="wid-4" name="degree" placeholder={labelData.degreeL}  onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="degree" id="degree" placeholder={labelData.degreeL}  onChange={setFormDataFn}/>
                                 </div>
 
                             <div className="field-name">
@@ -601,7 +585,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input placeholder={labelData.emailL} className="wid-4" name="email" onChange={setFormDataFn} type="email"/>
+                                    <input placeholder={labelData.emailL} id="email" className="wid-4" name="email" onChange={setFormDataFn} type="email"/>
                                 </div>
                             </div>
                         </div>
@@ -614,7 +598,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input placeholder={labelData.phoneNoL} className="wid-4" name="phone_no" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.phoneNoL} id="phoneno" className="wid-4" name="phone_no" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" onChange={setFormDataFn}/>
                                 </div>
                                 <button className="updateProfileBtn" type="submit" onClick={(e)=> {
                                     cleanObj()

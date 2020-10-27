@@ -219,7 +219,6 @@ const Room = (props) => {
 
     //Get all the inputs...
     const inputs = document.querySelectorAll('form input');
-    // const textareas = document.querySelectorAll('textarea');
 
     // Loop through them...
     for(let input of inputs) {

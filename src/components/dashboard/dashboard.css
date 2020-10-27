@@ -130,6 +130,24 @@
   background-color: #fff;
 }
 
+
+.card-event{
+  background: url("../../images/Group 190.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+  background-size: 30px;
+}
+
+.card-event:hover{
+  background: url("../../images/Group 191.png");
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: top right;
+  background-color: #fff;
+}
+
 .timetable-update{
     height: auto;
     padding: 20px 20px;

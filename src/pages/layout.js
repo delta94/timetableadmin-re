@@ -30,6 +30,7 @@ import classes from "../images/room-icon.png"
 import period from "../images/clock.png"
 import acct from "../images/account-icon.png"
 import logout from "../images/logout-icon.png"
+import event from "../images/Group 190.png"
 import {Swipeable} from 'react-swipeable'
 
 
@@ -158,7 +159,7 @@ class SidebarExample extends Component{
                           onClick={()=> {
                             this.setState({sideBarOut: false})
                           }} activeClassName="active">
-                          <img alt="sidenav" src={acct}/>
+                          <img alt="sidenav" src={event}/>
                           Events</NavLink>  
               
                           <Link 

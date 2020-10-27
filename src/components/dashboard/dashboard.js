@@ -54,6 +54,19 @@ const getClasses = () => {
     })
 }
 
+const getEvents = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/user/events/day', {
+        headers: {
+            'date1': ''
+        },
+        params: { page: 1, searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.docs
+    })
+}
+
 const getStudents = () => {
 
     return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
@@ -81,6 +94,10 @@ const Dashboard = (props) => {
     })
 
     const lecturers = useQuery('lecturers', getLecturers, {
+        refetchOnWindowFocus: false
+    })
+
+    const events = useQuery('events', getEvents, {
         refetchOnWindowFocus: false
     })
 
@@ -193,6 +210,23 @@ const Dashboard = (props) => {
                                 <div className="card card-stud">
                                     <h3>Students</h3>
                                     <p>{data?.length}</p>
+                                </div>
+                            </Link>
+                    </CSSTransition>
+                    <CSSTransition
+                            timeout={10}
+                            className="cardanie"
+                            in={true}
+                            appear={true}
+                            key="evvd"
+                            onEntered={()=> {
+                                console.log("entered")
+                                document.querySelector(".cardanie").classList.add("cardanid2")
+                                }}>
+                            <Link to='/app/events'>
+                                <div className="card card-event">
+                                    <h3>Events</h3>
+                                    <p>{events.data?.length}</p>
                                 </div>
                             </Link>
                     </CSSTransition>

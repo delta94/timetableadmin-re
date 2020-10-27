@@ -77,6 +77,11 @@
     border-collapse: collapse;
     width: auto;
   }
+
+  .table2 td,
+  .table2 th{
+    padding: 10px 20px;
+  }
   
   .table-head {
     color: white;
@@ -635,6 +640,11 @@
   transition: all ease-in-out 300ms;
 }
 
+.cardanide{
+  opacity: 0;
+  transition: all ease-in-out 300ms;
+}
+
 .cardanid2{
   opacity: 1 !important;
 }
@@ -672,20 +682,18 @@
 .tableXcal{
   display: flex;
   justify-content: space-evenly;
-  flex-wrap: wrap-reverse;
-  align-items: flex-end;
+  flex-wrap: wrap;
   height: auto;
   margin-top: 30px;
 }
 
 .pagination{
   padding: 0;
-  margin: auto;
+  margin: 20px auto;
   width: fit-content;
   position: absolute;
   left: 105px;
   right: 0;
-  bottom: 20px;
   z-index: 1;
 }
 
