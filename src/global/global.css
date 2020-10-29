@@ -679,6 +679,15 @@
   color: #000 !important;
 }
 
+.checkboxes{
+  overflow-y: scroll;
+  height: 80px;
+}
+
+.checkboxes input{
+  width: auto !important;
+}
+
 .tableXcal{
   display: flex;
   justify-content: space-evenly;

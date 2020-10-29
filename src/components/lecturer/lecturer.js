@@ -10,6 +10,7 @@ import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import cross from "../../images/close.png"
 import checkg from "../../images/checkg.png"
+import pen from "../../images/pencil 1.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -30,7 +31,7 @@ import ReactPaginate from "react-paginate"
         })      
     }
 
-    const updateLecturer = (lectId) => {
+    const updateLecturer = (args) => {
         let data = new FormData();
 
         // Getting values
@@ -43,6 +44,14 @@ import ReactPaginate from "react-paginate"
         var aos = document.querySelector("#aosc").value
         var officeno = document.querySelector("#officeno").value
         var degree = document.querySelector("#degree").value
+        var array = []
+
+        for (var i = 0; i < args.datum.length; i++) {
+            array.push(args.datum[i])
+            data.append(`Courses[${args.datum.indexOf(args.datum[i])}]`, args.datum[i])
+        }
+
+        let data2 = new FormData()
 
         data.append('name', name);
         data.append('email', email);
@@ -54,10 +63,20 @@ import ReactPaginate from "react-paginate"
         data.append('areaOfSpec', aos);
         data.append('image', file);
 
-        return axios.patch("https://tbe-node-deploy.herokuapp.com/admin/v2/lecturer/update", data, {
+
+        for(var pair of data.entries()) {
+            if( pair[1] === "" || pair[1] === "undefined" ){
+            }else{
+                data2.append(pair[0], pair[1])
+            }
+        }
+
+        console.log(...data2)
+
+        return axios.patch("https://tbe-node-deploy.herokuapp.com/admin/v2/lecturer/update", data2, {
             headers: { 
                 'Content-Type': 'multipart/form-data',
-                '_id': lectId
+                '_id': args.lectId
             }
         })
         .then((response) => {
@@ -81,7 +100,7 @@ import ReactPaginate from "react-paginate"
         })
     }
 
-    const createLect = () => {
+    const createLect = (datum) => {
         let data = new FormData();
 
         // Getting values
@@ -103,7 +122,14 @@ import ReactPaginate from "react-paginate"
         data.append('degree', degree);
         data.append('areaOfSpec', aos);
         data.append('image', file);
+        var array = []
+
+        for (var i = 0; i < datum.length; i++) {
+            array.push(datum[i])
+            data.append(`Courses[${datum.indexOf(datum[i])}]`, datum[i])
+        }
     
+        console.log(...data)
 
         return axios.post('https://tbe-node-deploy.herokuapp.com/Admin/lecturer/image', data, {
             headers: { 
@@ -118,12 +144,29 @@ import ReactPaginate from "react-paginate"
         })
     }
 
+    const getCourses = () => {
+
+        return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
+            headers: {},
+            params: { page: 1, searchQuery: ''}
+        })
+        .then((response) => {
+            return response.data.data.docs
+        })
+    }
+
 const Lecturer = (props) => {
     const [pageNo,setPageNo] = useState(null)
 
     const [search, setSearch] = useState("")
 
     const {isLoading, data} = useQuery(['lecturers', {pageNo, search}], getLect, {
+        refetchOnWindowFocus: false
+    })
+
+    console.log(data)
+
+    const courses = useQuery('courses', getCourses, {
         refetchOnWindowFocus: false
     })
 
@@ -192,18 +235,6 @@ const Lecturer = (props) => {
             image:""
         }
     )
-    const [formData, setFormData] = useState(
-        {
-            name: "",
-            email: "",
-            phone_no: "",
-            areaOfSpec: "",
-            ranking: "",
-            office_no: "",
-            education_bg: "",
-            degree: ""
-        }
-    )
     const [labelData, setLabelData] = useState(
         {
             nameL: "",
@@ -216,18 +247,6 @@ const Lecturer = (props) => {
             educationBgL: ""
         }
     )
-
-    const setFormDataFn = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    // Remove empty inputs in edit form obj
-    const cleanObj = () => {
-        Object.keys(formData).forEach((key) => (formData[key] === "") && delete formData[key]);
-    }
 
     // Generate profile data
     const genProfileData = (datum) => {
@@ -271,13 +290,14 @@ const Lecturer = (props) => {
 
     const editSub = (e) => {
         e.preventDefault()
-        editFn(lectId)
+        const datum = [...document.querySelectorAll('input[type=checkbox]:checked')].map(e => e.value);
+        editFn({lectId, datum})
     }
 
     const formSub = (e) => {
         e.preventDefault()
-        setFormDataFn(e)
-        createFn()
+        const datum = [...document.querySelectorAll('input[type=checkbox]:checked')].map(e => e.value);
+        createFn(datum)
     }
 
     
@@ -369,8 +389,21 @@ const Lecturer = (props) => {
                                 <tr className="default" key={lect._id}>
                                     <td>{lect.name}</td>
                                     <td>{lect.email}</td>
-                                    <td>Courses handled</td>
+                                    <td>{lect.Courses.map((cour)=>{
+                                        return (
+                                            <p style={{'margin': '5px'}} key={cour}>{cour}</p>
+                                        );
+                                    })}</td>
                                     <td>
+                                        <img
+                                            src={pen}
+                                            alt="pencil"
+                                            className="pencil"
+                                            onClick={()=>{
+                                                setPageSwitch("edit")
+                                                genLabelData(lect._id)
+                                            }}
+                                        />
                                         <img
                                         src={bin}
                                         alt="bin"
@@ -537,7 +570,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
-                                    <input placeholder={labelData.nameL} id="name" name="name" onChange={setFormDataFn} className="wid-4"/>
+                                    <input placeholder={labelData.nameL} id="name" name="name" className="wid-4"/>
                                 </div>
                             </div>
                         </div>
@@ -550,11 +583,11 @@ const Lecturer = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Position</p>
-                                        <input placeholder={labelData.rankingL} id="ranking" name="ranking" onChange={setFormDataFn}/>
+                                        <input placeholder={labelData.rankingL} id="ranking" name="ranking"/>
                                     </div>
                                     <div className="field">
                                         <p>Area of specialization</p>
-                                        <textarea placeholder={labelData.areaOfSpecL} id="aosc" name="areaOfSpec" onChange={setFormDataFn}/>
+                                        <textarea placeholder={labelData.areaOfSpecL} id="aosc" name="areaOfSpec"/>
                                     </div>
                                 </div>
                             </div>
@@ -564,18 +597,34 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                     <div className="field">
                                         <p>Education Background</p>
-                                        <input placeholder={labelData.educationBgL} id="edubg" className="wid-4" name="email" onChange={setFormDataFn}/>
+                                        <input placeholder={labelData.educationBgL} id="edubg" className="wid-4" name="email"/>
                                     </div>
+
+                                    <div className="field">
+                                    <p>Courses handled</p>
+                                    <div className="checkboxes">
+                                        {
+                                            courses.data?.map((course)=> {
+                                                return (
+                                                <div key={Math.random()}>
+                                                    <input type="checkbox" key={Math.random()}  value={course._id}  name={course.name}/>
+                                                    <label key={course.name} htmlFor={course.name}>{course.name}</label>
+                                                </div>
+                                                );
+                                            })
+                                        }
+                                    </div>
+                                </div>  
                             </div> 
 
                                 <div className="field">
                                     <p>Office No</p>
-                                    <input className="wid-4" name="office_no" id="officeno" placeholder={labelData.officeNoL} onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="office_no" id="officeno" placeholder={labelData.officeNoL}/>
                                 </div>
 
                                 <div className="field">
                                     <p>Degree</p>
-                                    <input className="wid-4" name="degree" id="degree" placeholder={labelData.degreeL}  onChange={setFormDataFn}/>
+                                    <input className="wid-4" name="degree" id="degree" placeholder={labelData.degreeL} />
                                 </div>
 
                             <div className="field-name">
@@ -585,7 +634,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input placeholder={labelData.emailL} id="email" className="wid-4" name="email" onChange={setFormDataFn} type="email"/>
+                                    <input placeholder={labelData.emailL} id="email" className="wid-4" name="email" type="email"/>
                                 </div>
                             </div>
                         </div>
@@ -598,11 +647,10 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input placeholder={labelData.phoneNoL} id="phoneno" className="wid-4" name="phone_no" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" onChange={setFormDataFn}/>
+                                    <input placeholder={labelData.phoneNoL} id="phoneno" className="wid-4" name="phone_no" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)"/>
                                 </div>
                                 <button className="updateProfileBtn" type="submit" onClick={(e)=> {
-                                    cleanObj()
-                                    setFormDataFn(e)
+                                    // cleanObj()
                                 }}>
                                     Update Profile
                                 </button>
@@ -661,7 +709,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field pr">
                                     <p>Name</p>
-                                    <input name="name" id="namec" onChange={setFormDataFn} className="wid-4" required placeholder="Name"/>
+                                    <input name="name" id="namec" className="wid-4" required placeholder="Name"/>
                                 </div>
                             </div>
                         </div>
@@ -674,11 +722,11 @@ const Lecturer = (props) => {
                                 <div className="field-details field-details-flex">
                                     <div className="field pr">
                                         <p>Position</p>
-                                        <input name="ranking" id="posc" onChange={setFormDataFn} required/>
+                                        <input name="ranking" id="posc" required/>
                                     </div>
                                     <div className="field">
                                         <p>Area of specialization</p>
-                                        <textarea name="areaOfSpec" id="aosc" onChange={setFormDataFn} required/>
+                                        <textarea name="areaOfSpec" id="aosc" required/>
                                     </div>
                                 </div>
                             </div>
@@ -686,16 +734,31 @@ const Lecturer = (props) => {
 
                         <div className="input-field">
                                 <div className="field">
+                                    <p>Courses handled</p>
+                                    <div className="checkboxes">
+                                            {
+                                                courses.data?.map((course)=> {
+                                                    return (
+                                                    <div key={Math.random()}>
+                                                        <input type="checkbox" key={Math.random()}  value={course._id}  name={course.name} />
+                                                        <label key={course.name} htmlFor={course.name}>{course.name}</label>
+                                                    </div>
+                                                    );
+                                                })
+                                            }
+                                    </div>
+                                </div>
+                                <div className="field">
                                     <p>Education Background</p>
-                                    <input className="wid-4" id="edubgc" name="education_bg" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="edubgc" name="education_bg" required/>
                                 </div>
                                 <div className="field">
                                     <p>Office No</p>
-                                    <input className="wid-4" id="officenoc" name="office_no" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="officenoc" name="office_no" required/>
                                 </div>
                                 <div className="field">
                                     <p>Degree</p>
-                                    <input className="wid-4" id="degreec" name="degree" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="degreec" name="degree" required/>
                                 </div>
                             <div className="field-name">
                                 Email Address
@@ -704,7 +767,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Email Address</p>
-                                    <input className="wid-4" id="emailc" name="email" type="email" onChange={setFormDataFn} required/>
+                                    <input className="wid-4" id="emailc" name="email" type="email" required/>
                                 </div>
                             </div>
                         </div>
@@ -717,7 +780,7 @@ const Lecturer = (props) => {
                             <div className="field-details">
                                 <div className="field">
                                     <p>Phone Number</p>
-                                    <input className="wid-4" id="phonec" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" placeholder="+2341235467387" name="phone_no" onChange={setFormDataFn} title="must be a valid phone number" required/>
+                                    <input className="wid-4" id="phonec" type="tel" pattern="(^[0]\d{10}$)|(^[\+]?[234]\d{12}$)" placeholder="+2341235467387" name="phone_no" title="must be a valid phone number" required/>
                                 </div>
                                 <button className="updateProfileBtn" type="submit">
                                     Create lecturer

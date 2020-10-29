@@ -12,6 +12,7 @@ import cross from "../../images/close.png"
 import checkr from "../../images/checkr.png"
 import checkb from "../../images/checkb.png"
 import checkg from "../../images/checkg.png"
+import pen from "../../images/pencil 1.png"
 import plus from "../../images/plus.svg"
 import ReactPaginate from "react-paginate"
 import { useQuery, useMutation , queryCache } from "react-query"
@@ -25,6 +26,7 @@ const getStud = (page, {pageNo, search}) => {
         .then((response) => {
             var students = response.data?.data.docs
             var pages = response.data?.data.totalPages
+            // var courses = response.data?.data.docs[0].courses
             return {students, pages}
         })
  }
@@ -114,6 +116,8 @@ const Student = (props) => {
     const {isLoading, data} = useQuery(['students', {pageNo, search}], getStud, {
         refetchOnWindowFocus: false
     })
+
+    console.log(data)
 
     const studentsL = useQuery('students', getStudentsL, {
         refetchOnWindowFocus: false
@@ -400,8 +404,20 @@ const Student = (props) => {
                                 <tr className="default" key={stud._id}>
                                     <td>{stud.firstname} {stud.lastname}</td>
                                     <td>{stud.email}</td>
-                                    <td>Courses handled</td>
+                                    <td>{stud.courses.map((cour)=>{
+                                        return (
+                                            <p style={{'margin': '5px'}} key={cour.name}>{cour.name}</p>
+                                        );
+                                    })}</td>
                                     <td>
+                                        <img
+                                            src={pen}
+                                            alt="pencil"
+                                            className="pencil"
+                                            onClick={()=>{
+                                                setPageSwitch("edit")
+                                                genLabelData(stud._id)
+                                            }} />
                                         <img
                                         src={bin}
                                         alt="bin"
@@ -565,7 +581,7 @@ const Student = (props) => {
                                         <td>{course.code}</td>
                                         <td>{course.name}</td>
                                         <td>{course.unit}</td>
-                                        <td>{course.lecturer.name}</td>
+                                        <td>{course.lecturer[0].name}</td>
                                     </tr>
                                     );
                                 })}

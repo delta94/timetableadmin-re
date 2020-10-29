@@ -72,7 +72,7 @@ import checkb from "../../images/checkb.png"
         return axios.patch('https://tbe-node-deploy.herokuapp.com/user/event/update', args.finalObj, {
             headers: { 
                 'Content-Type': 'application/json',
-                'id': args.editEventId
+                '_id': args.editEventId
             }
         })
         .then((response) => {
@@ -194,12 +194,11 @@ const Events = (props) => {
               ...eventData,
               ...time
           })
-
     }
 
     // Remove empty inputs in edit room form object
     const cleanObj = () => {
-        Object.keys(eventData).forEach((key) => (eventData[key] === "" || eventData === "") && delete eventData[key]);
+        Object.keys(finalObj).forEach((key) => (finalObj[key] === "" || finalObj === "") && delete finalObj[key]);
     }
 
     //Get all the inputs...
@@ -256,7 +255,7 @@ const Events = (props) => {
 
     const formSubmitE = (e) => {
         e.preventDefault()
-        console.log(finalObj)
+        cleanObj()
         editFn({finalObj, editEventId})
         successEdit()
     }
@@ -455,7 +454,6 @@ const Events = (props) => {
                                     }}>Cancel</button>
                                 <button className="blue" type="submit" onClick={
                                     (e)=> {
-                                        cleanObj()
                                         eventDataFn(e)
                                     }
                                 }>
@@ -503,7 +501,6 @@ const Events = (props) => {
                                     }}>Cancel</button>
                                 <button className="blue" type="submit" onClick={
                                     (e)=> {
-                                        cleanObj()
                                         eventDataFn(e)
                                     }
                                 }>

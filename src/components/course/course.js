@@ -409,6 +409,7 @@ const Course = (props) => {
                         <th>Course Name</th>
                         <th>Course Unit</th>
                         <th>Lecturer</th>
+                        <th>Students registered</th>
                         <th>Action</th>
                         </tr>
                     </thead>
@@ -427,7 +428,8 @@ const Course = (props) => {
                                     <td>{course.code}</td>
                                     <td>{course.name}</td>
                                     <td>{course.unit}</td>
-                                    <td>{course.lecturer.name}</td>
+                                    <td>{course.lecturer}</td>
+                                    <td>{course.number}</td>
                                     <td>
                                         <img
                                         src={pen}
@@ -733,6 +735,7 @@ const Course = (props) => {
                                 venueFormData(e);
                                 editFn({editCourseId, finalDataObj1})
                                 successEdit()
+                                console.log(finalDataObj1)
                             }}>
                                 Edit course
                             </button>
