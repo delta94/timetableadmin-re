@@ -308,6 +308,9 @@ const Events = (props) => {
                     }}><img src={plus} alt="plus"/>Add new event</button>
                 </div>
                 <div className="tableXcal">
+                    <div className="calendar-container">
+                        <Calendar onChange={changeDate} className={["calendar"]} value={date} />
+                    </div>
                     <div className="table-container">
                         <table className="table2">
                         <thead className="table-head">
@@ -354,11 +357,6 @@ const Events = (props) => {
                         </tbody>
                         </table>
                     </div>
-                     
-                    <div className="calendar-container">
-                        <Calendar onChange={changeDate} className={["calendar"]} value={date} />
-                    </div>
-
 
                     {/* Delete modal */}
                     <div className={deleter === true ? "deleteModal delModOut" : "deleteModal"}>

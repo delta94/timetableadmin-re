@@ -21,7 +21,7 @@ const getStud = (page, {pageNo, search}) => {
 
         return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
             headers: {},
-            params: {perPage: 2, page: pageNo, searchQuery: search}
+            params: {perPage: 5, page: pageNo, searchQuery: search}
         })
         .then((response) => {
             var students = response.data?.data.docs

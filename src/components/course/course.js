@@ -428,7 +428,7 @@ const Course = (props) => {
                                     <td>{course.code}</td>
                                     <td>{course.name}</td>
                                     <td>{course.unit}</td>
-                                    <td>{course.lecturer}</td>
+                                    <td>{course.lecturer[0].name}</td>
                                     <td>{course.number}</td>
                                     <td>
                                         <img
