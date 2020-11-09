@@ -478,15 +478,9 @@ const Classes = (props) => {
                                     )})}
                                 </select>
                         </div>
-                        <div className="input-sub-group">
-                            <div className="input-g2">
-                                <p>Meeting</p>
-                                <input name="Meeting" onChange={classFormData} required/>
-                            </div>
-                            <div className="input-g2">
-                                <p>Population</p>
-                                <input name="Population" type="number" onChange={classFormData} required/>
-                            </div>
+                        <div className="input-g">
+                            <p>Population</p>
+                            <input name="Population" type="number" onChange={classFormData} required/>
                         </div>
                         <div className="input-g">
                             <p>Unavailable lecture rooms</p>
@@ -530,15 +524,9 @@ const Classes = (props) => {
                                     )})}
                                 </select>
                         </div>
-                        <div className="input-sub-group">
-                            <div className="input-g2">
-                                <p>Meeting</p>
-                                <input name="Meeting" onChange={classFormData} placeholder={labelData.meetingLabel}/>
-                            </div>
-                            <div className="input-g2">
-                                <p>Population</p>
-                                <input name="Population" onChange={classFormData} type="number" placeholder={labelData.populationLabel}/>
-                            </div>
+                        <div className="input-g">
+                            <p>Population</p>
+                            <input name="Population" onChange={classFormData} type="number" placeholder={labelData.populationLabel}/>
                         </div>
                         <div className="input-g">
                             <p>Unavailable lecture rooms</p>

@@ -1,3 +1,6 @@
+/* eslint-disable no-mixed-operators */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-unused-vars */
 import React,{useState} from "react"
 import {Link} from "react-router-dom"
 import "./dashboard.css"
@@ -7,7 +10,7 @@ import cross from "../../images/close.png"
 import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import { CSSTransition} from "react-transition-group";
-import {useQuery} from "react-query"
+import {useQuery, useMutation} from "react-query"
 
 
 const getVenues = () => {
@@ -78,12 +81,107 @@ const getStudents = () => {
     })
 }
 
+const getTRes = (tResponse, {uuid}) => {
+
+    return axios.get(`https://tbe-node-deploy.herokuapp.com/timetable/generated?timetableId=${uuid}`, {
+    })
+    .then((response) => {
+        return response
+    })
+}
+
+const postTimetable = (args) => {
+
+    var group1 = {}
+    var group2 = []
+    var group3 = {}
+    var group4 = []
+
+    args.classes.data.forEach((ar)=> {
+        group1 = { ...group1,
+            [ar.name]: {
+                capacity: ar.Population,
+                type: 'theory'
+            }
+        }
+    })
+
+    args.courses.data.forEach((arr)=> {
+        group2= [
+            ...group2,
+            {
+            name: arr.name,
+            lecturer: arr.lecturer[0].name,
+            type: 'theory',
+            students: arr.number,
+            unit: arr.unit
+        }]
+    })
+
+    for (var i = 0; i < args.datum.length; i++) {
+        group4.push(args.datum[i])
+    }
+
+    group3 = {
+        'timetableName': document.querySelector('.name').value,
+        'academicSession': document.querySelector('.aca-period').value,
+        'timetableId': args.uuid,
+        'selectedDay': group4,
+        'classroom': group1,
+        'courses': group2
+    }
+
+    console.log(group3)
+
+    return axios.post('https://tbe-node-deploy.herokuapp.com/timetable/new', group3, {
+        headers: { 
+            'Content-Type': 'application/json'
+        }
+    })
+    .then((response) => {
+        return response;
+    })
+    .then((error)=> {
+        return error
+    })
+}
+
 
 const Dashboard = (props) => {
+    const [timetableFn, {status}] = useMutation(postTimetable, {
+        onSuccess: () => {
+            console.log("created")
+            setCreated(true)
+            setModalOut(false)
+            setTimeout(() => {
+                // setCreated(true)
+            }, 10);
+            // setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+
+    function uuidFn() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+    const [uuid, setUuid] = useState(uuidFn())
 
     const venues = useQuery('venues', getVenues, {
         refetchOnWindowFocus: false
     })
+
+    const tResponse = useQuery(['tResponse', {uuid}], getTRes, {
+        refetchOnWindowFocus: false,
+        enabled: false
+    })
+
+    // console.log(tResponse.data?.data.data?.current_progress)
 
     const courses = useQuery('courses', getCourses, {
         refetchOnWindowFocus: false
@@ -107,6 +205,20 @@ const Dashboard = (props) => {
 
     const [modalOut, setModalOut] = useState(false)
     const [updateOut, setUpdateOut] = useState(false)
+    const [created, setCreated] = useState(false)
+
+
+    const submit = (e) => {
+
+        e.preventDefault()
+        const datum = [...document.querySelectorAll('input[type=checkbox]:checked')].map(e => e.value);
+
+        timetableFn({classes, courses, datum, uuid})
+
+        setInterval(() => {
+            tResponse.refetch()
+        }, 500); 
+    }
 
 
     return(
@@ -135,7 +247,6 @@ const Dashboard = (props) => {
                             appear={true}
                             key="e"
                             onEntered={()=> {
-                                console.log("entered")
                                 document.querySelector(".cardani").classList.add("cardani2")
                                 }}>
                             <Link to="/app/rooms">
@@ -152,7 +263,6 @@ const Dashboard = (props) => {
                             appear={true}
                             key="a"
                             onEntered={()=> {
-                                console.log("entered")
                                 document.querySelector(".cardania").classList.add("cardania2")
                                 }}>
                             <Link to="/app/courses">
@@ -169,7 +279,6 @@ const Dashboard = (props) => {
                             appear={true}
                             key="b"
                             onEntered={()=> {
-                                console.log("entered")
                                 document.querySelector(".cardanib").classList.add("cardanib2")
                                 }}>
                             <Link to="/app/lecturers">
@@ -186,7 +295,6 @@ const Dashboard = (props) => {
                             appear={true}
                             key="c"
                             onEntered={()=> {
-                                console.log("entered")
                                 document.querySelector(".cardanic").classList.add("cardanic2")
                                 }}>
                             <Link to="/app/classes">
@@ -203,7 +311,6 @@ const Dashboard = (props) => {
                             appear={true}
                             key="d"
                             onEntered={()=> {
-                                console.log("entered")
                                 document.querySelector(".cardanid").classList.add("cardanid2")
                                 }}>
                             <Link to='/app/student'>
@@ -220,8 +327,7 @@ const Dashboard = (props) => {
                             appear={true}
                             key="evvd"
                             onEntered={()=> {
-                                console.log("entered")
-                                document.querySelector(".cardanie").classList.add("cardanid2")
+                                document.querySelector(".cardanie").classList.add("cardanie2")
                                 }}>
                             <Link to='/app/events'>
                                 <div className="card card-event">
@@ -233,7 +339,7 @@ const Dashboard = (props) => {
             </div>
                 : <div className="spinnerContainer"><img src={spinner} alt="loading.."/></div>}
 
-            <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
+            { created === false ? <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
                 <p>Timetable update</p>
 
                 <hr />
@@ -243,32 +349,32 @@ const Dashboard = (props) => {
                 <button onClick={()=>{
                         setModalOut(!modalOut);
                     }}>Create new timetable now</button>
-            </div>
+            </div> : null}
 
-            <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
+            {created === true ? <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
                 <p className="mb-30">Timetable update</p>
 
                 <hr />
 
                 <p className="mb-20">Timetable available</p>
 
-                <em className="mb-30">Timetable available for 200 level management sciences</em>
+                <em className="mb-30">{tResponse.data?.data.data?.current_progress === 5000 ? <span>{tResponse.data?.data.data?.name}</span> : <span>Loading...</span>}</em>
 
                 <div className="timetable-stats">
                     <p>Status</p>
-                    <p>Complete</p>
+                    {tResponse.data?.data.data?.current_progress === 5000 ? <p>Complete</p> : <progress value={!tResponse.data.data.error && tResponse.data?.data.data?.current_progress  ? (tResponse.data?.data.data?.current_progress/tResponse.data?.data.data?.total_progress) * 100 : 0} max="100"/>}
                 </div>
 
                 <div className="timetable-stats mb-30">
                     <p>Time</p>
-                    <p>June 12th 2018 at 11:59pm</p>
+                    <p>{tResponse.data?.data.data?.current_progress === 5000 ? <span>{new Date(tResponse.data?.data.data?.updatedAt.substring(0,10)).toDateString()} - {tResponse.data?.data.data?.updatedAt.substring(11,16)}</span> : <span>Loading...</span>}</p>
                 </div>
 
                 <a href="/">Print Timetable</a>
-                <a href=".">View More</a>
-            </div>
+                <button>View More</button>
+            </div> : null}
 
-            <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
+            {/* <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
                 <p className="mb-30">Timetable update</p>
 
                 <hr />
@@ -285,7 +391,7 @@ const Dashboard = (props) => {
 
                 <button className="mb-20">Submit</button>
                 <Link to="/app/timetable">View More</Link>
-            </div>
+            </div> */}
 
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                     onClick={()=>{
@@ -299,55 +405,59 @@ const Dashboard = (props) => {
                         setModalOut(!modalOut);
                     }}/>
                     </div>
+                    <form onSubmit={submit}>
                     <div className="input-c">
                         <div className="input-g">
                             <p>Timetable Name</p>
-                            <input />
+                            <input name="name" className="name"/>
                         </div>
                         <div className="input-g">
                             <p>Select Academic Period</p>
-                            <input placeholder="Select an academic period"/>
+                            <input name="aca-period" className="aca-period" placeholder="Select an academic period"/>
                         </div>
                         <div className="input-g">
                             <p>Select days</p>
                             <div className="labels">
                                 <label className="container">Monday
-                                    <input type="checkbox" defaultChecked="checked" />
+                                    <input type="checkbox" value="monday" defaultChecked/>
                                     <span className="checkmark"></span>
                                 </label>
 
                                 <label className="container">Tuesday
-                                    <input type="checkbox" />
+                                    <input type="checkbox" value="tuesday" defaultChecked/>
                                     <span className="checkmark"></span>
                                 </label>
 
                                 <label className="container">Wednesday
-                                    <input type="checkbox" />
+                                    <input type="checkbox" value="wednesday" defaultChecked/>
                                     <span className="checkmark"></span>
                                 </label>
 
                                 <label className="container">Thursday
-                                    <input type="checkbox" />
+                                    <input type="checkbox" value="thursday" defaultChecked/>
                                     <span className="checkmark"></span>
                                 </label>
                                 <label className="container">Friday
-                                    <input type="checkbox" />
+                                    <input type="checkbox" value="friday" defaultChecked/>
                                     <span className="checkmark"></span>
                                 </label>
                                 <label className="container">Saturday
-                                    <input type="checkbox" />
+                                    <input type="checkbox" value="saturday" />
                                     <span className="checkmark"></span>
                                 </label>
                             <div />
                         </div>
                     </div>
                     <div className="buttons">
-                        <button className="red">Cancel</button>
-                        <button className="blue">
-                            Add course
+                        <button className="red" onClick={()=>{
+                        setModalOut(!modalOut);
+                    }}>Cancel</button>
+                        <button className="blue CTBtn" type="submit">
+                        {status === "loading" ? <span>Loading...</span> : <span>Create timetable</span>}
                         </button>
                     </div>
                 </div>
+                </form>
             </div>
         </>
     );

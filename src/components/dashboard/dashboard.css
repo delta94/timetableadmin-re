@@ -30,7 +30,7 @@
 }
 
 .card:hover{
-    transform: scale(1.05);
+    transform: scale(1.15);
     color: #fff;
     background-color: #75ae25 !important;
 }
@@ -212,6 +212,7 @@
 .timetable-stats{
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   width: 300px;
 }
 

@@ -640,9 +640,13 @@
   transition: all ease-in-out 300ms;
 }
 
-.cardanide{
+.cardanie{
   opacity: 0;
   transition: all ease-in-out 300ms;
+}
+
+.cardanie2{
+  opacity: 1 !important;
 }
 
 .cardanid2{
@@ -737,6 +741,37 @@
   width: fit-content;
   margin: 0;
   display: inline-block;
+}
+
+progress {
+  border-radius: 7px; 
+  width: 60%;
+  height: 22px;
+}
+progress[value]::-webkit-progress-bar {
+  background-color: #eee;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+progress::-webkit-progress-value {
+    background-color: #0395ff;
+    border-radius: 2px; 
+    background-size: 35px 20px, 100% 100%, 100% 100%;
+    -webkit-animation: animate-stripes 5s linear infinite;
+    animation: animate-stripes 5s linear infinite;
+}
+
+@-webkit-keyframes animate-stripes {
+  100% { background-position: -100px 0px; }
+}
+
+@keyframes animate-stripes {
+  100% { background-position: -100px 0px; }
+}
+
+.CTBtn{
+  width: auto !important;
 }
 
 @media only screen and (max-width: 600px){
@@ -865,6 +900,7 @@
   }
   .modal{
     width: 100%;
+    left: 0px !important;
   }
   .table{
     width: 120%;
