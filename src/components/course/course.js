@@ -181,19 +181,12 @@ const Course = (props) => {
             code: "",
             unit: "",
             level: "",
-            day: "",
             description: ""
         }
     );
     const [lecturer, lecturerData] = useState(
         {
             lecturer: ""
-        }
-    )
-
-    const [venue, venueData] = useState(
-        {
-            venue: ""
         }
     )
     const [id2, setId2] = useState("1234");
@@ -203,11 +196,8 @@ const Course = (props) => {
             nameLabel: "",
             codeLabel: "",
             unitLabel: "",
-            timeLabel: "",
             lecturerLabel: "",
-            venueLabel: "",
             levelL: "",
-            dayLabel: "",
             descLabel: ""
         }
     );
@@ -226,18 +216,6 @@ const Course = (props) => {
         
     }
 
-    const venueFormData = (e) => {
-
-        venueData({
-            ...venue,
-            // Trimming any whitespace
-            [e.target.name]: {
-                _id: e.target.value.trim()
-            }
-          });
-
-    }
-
     var finalDataObj1 = {}
 
     const lecturerFormData = (e) => {
@@ -252,14 +230,12 @@ const Course = (props) => {
 
           finalDataObj1 = {
             ...formData,
-            ...lecturer,
-            ...venue
+            ...lecturer
         }
 
         setFinalDataObj({
             ...formData,
-            ...lecturer,
-            ...venue
+            ...lecturer
         })
 
     }
@@ -274,11 +250,8 @@ const Course = (props) => {
                         nameLabel: course.name,
                         codeLabel: course.code,
                         unitLabel: course.unit,
-                        timeLabel: course.time,
                         lecturerLabel: course.lecturer.name,
-                        venueLabel: course.venue.name,
                         levelL: course.level,
-                        dayLabel: course.day.join(),
                         descLabel: course.description
                     })
                 }
@@ -550,7 +523,7 @@ const Course = (props) => {
                                 </div>
                                 <div className="input-gi">
                                     <p>Course code</p>
-                                    <input list="code" type="number" name="code" onChange={courseFormData}required/>
+                                    <input list="code" name="code" onChange={courseFormData}required/>
                                 </div>
                             </div>
                             <div className="input-flex">
@@ -575,7 +548,7 @@ const Course = (props) => {
                                     <input name="description" onChange={courseFormData} required/>
                                 </div>
                                 <div className="input-gi">
-                                        <p>Professor</p>
+                                        <p>Lecturer</p>
                                         <select className="select-css" name="lecturer" onChange={lecturerFormData} required>
                                             <option value="" defaultValue>Select a lecturer</option>
                                             {lecturers.data?.map(lect => {
@@ -594,7 +567,6 @@ const Course = (props) => {
                             <button className="blue" type="submit" onClick={(e) => {
                                 courseFormData(e);
                                 lecturerFormData(e);
-                                venueFormData(e);
                             }}>
                                 Add course
                             </button>
@@ -620,7 +592,7 @@ const Course = (props) => {
                                 </div>
                                 <div className="input-gi">
                                     <p>Course code</p>
-                                    <input list="code" name="code" type="number" placeholder={labelData.codeLabel} onChange={courseFormData}/>
+                                    <input list="code" name="code" placeholder={labelData.codeLabel} onChange={courseFormData}/>
                                 </div>
                             </div>
                             <div className="input-flex">
@@ -633,21 +605,9 @@ const Course = (props) => {
                                     <input name="unit" type="number" placeholder={labelData.unitLabel} onChange={courseFormData}/>
                                 </div>
                             </div>
-                            <div className="input-flex">
-                                <div className="input-gi">
-                                        <p>Description</p>
-                                        <input name="description" placeholder={labelData.descLabel} onChange={courseFormData}/>
-                                    </div>
-                                <div className="input-gi">
-                                    <p>Venue</p>
-                                    <select className="select-css" name="venue" defaultValue={labelData.venueLabel} onChange={venueFormData}>
-                                    <option value={labelData.venueLabel} disabled>{labelData.venueLabel}</option>
-                                        {venues.data?.map(venue => {
-                                            return(
-                                            <option value={venue._id} label={venue.name} key={venue._id}/>
-                                        )})}
-                                    </select>
-                                </div>
+                            <div className="input-gi">
+                                    <p>Description</p>
+                                    <input name="description" placeholder={labelData.descLabel} onChange={courseFormData}/>
                             </div>
                         </div>
                         <div className="buttons">
@@ -659,7 +619,6 @@ const Course = (props) => {
                                 e.preventDefault()
                                 courseFormData(e);
                                 lecturerFormData(e);
-                                venueFormData(e);
                                 editFn({editCourseId, finalDataObj1})
                                 successEdit()
                                 console.log(finalDataObj1)

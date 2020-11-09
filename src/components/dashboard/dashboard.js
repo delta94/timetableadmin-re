@@ -191,6 +191,8 @@ const Dashboard = (props) => {
         refetchOnWindowFocus: false
     })
 
+    console.log(venues?.data)
+
     const lecturers = useQuery('lecturers', getLecturers, {
         refetchOnWindowFocus: false
     })
