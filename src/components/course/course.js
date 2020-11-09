@@ -79,16 +79,6 @@ const getCourses = (page, {pageNo, search}) => {
     })
 }
 
-const getVenues = () => {
-
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
-        headers: {},
-        params: { page: 1, searchQuery: ''}
-    })
-    .then((response) => {
-        return response.data.data.docs
-    })
-}
 
 const getLecturers = () => {
 
@@ -110,10 +100,6 @@ const Course = (props) => {
     const [search, setSearch] = useState("")
 
     const {isLoading, data} = useQuery(['courses', {pageNo, search}], getCourses, {
-        refetchOnWindowFocus: false
-    })
-
-    const venues = useQuery('venues', getVenues, {
         refetchOnWindowFocus: false
     })
 
