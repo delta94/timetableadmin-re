@@ -160,7 +160,6 @@ const Classes = (props) => {
             name: "",
             Courses: "",
             Population: "",
-            Meeting: "",
             UnavailableRooms: ""
         }
     )
@@ -169,7 +168,6 @@ const Classes = (props) => {
         {
             nameLabel: "",
             courseLabel: "",
-            meetingLabel: "",
             populationLabel: "",
             uarLabel: ""
         }
@@ -201,7 +199,6 @@ const Classes = (props) => {
                         ...labelData,
                         nameLabel: clas.name,
                         courseLabel: clas.Courses[0].name,
-                        meetingLabel: clas.Meeting,
                         populationLabel: clas.Population,
                         uarLabel: clas.UnavailableRooms
                     })

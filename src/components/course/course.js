@@ -236,7 +236,7 @@ const Course = (props) => {
                         nameLabel: course.name,
                         codeLabel: course.code,
                         unitLabel: course.unit,
-                        lecturerLabel: course.lecturer.name,
+                        lecturerLabel: course.lecturer[0].name,
                         levelL: course.level,
                         descLabel: course.description
                     })
@@ -591,9 +591,21 @@ const Course = (props) => {
                                     <input name="unit" type="number" placeholder={labelData.unitLabel} onChange={courseFormData}/>
                                 </div>
                             </div>
-                            <div className="input-gi">
-                                    <p>Description</p>
-                                    <input name="description" placeholder={labelData.descLabel} onChange={courseFormData}/>
+                            <div className="input-flex">
+                                <div className="input-gi">
+                                        <p>Description</p>
+                                        <input name="description" placeholder={labelData.descLabel} onChange={courseFormData}/>
+                                </div>
+                                <div className="input-gi">
+                                        <p>Lecturer</p>
+                                        <select className="select-css" name="lecturer" onChange={lecturerFormData} defaultValue={labelData.lecturerLabel}>
+                                            <option value={labelData.lecturerLabel}>{labelData.lecturerLabel}</option>
+                                            {lecturers.data?.map(lect => {
+                                                return(
+                                                <option value={lect._id} label={lect.name} key={lect._id}/>
+                                            )})}
+                                        </select>
+                                </div>
                             </div>
                         </div>
                         <div className="buttons">

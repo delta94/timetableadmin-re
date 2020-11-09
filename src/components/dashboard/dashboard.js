@@ -17,10 +17,10 @@ const getVenues = () => {
 
     return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
         headers: {},
-        params: { page: 1, searchQuery: ''}
+        params: {searchQuery: ''}
     })
     .then((response) => {
-        return response.data.data.docs
+        return response.data.data.totalDocs
     })
 }
 
@@ -28,7 +28,18 @@ const getCourses = () => {
 
     return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
         headers: {},
-        params: { page: 1, searchQuery: ''}
+        params: {searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.totalDocs
+    })
+}
+
+const getCoursesT = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
+        headers: {},
+        params: {searchQuery: ''}
     })
     .then((response) => {
         return response.data.data.docs
@@ -39,10 +50,10 @@ const getLecturers = () => {
 
     return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getlecturer', {
         headers: {},
-        params: { page: 1, searchQuery: ''}
+        params: {searchQuery: ''}
     })
     .then((response) => {
-        return response.data.data.docs
+        return response.data.data.totalDocs
     })
 }
 
@@ -50,7 +61,18 @@ const getClasses = () => {
 
     return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/class/all', {
         headers: {},
-        params: { page: 1, searchQuery: ''}
+        params: {searchQuery: ''}
+    })
+    .then((response) => {
+        return response.data.data.totalDocs
+    })
+}
+
+const getClassesT = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/class/all', {
+        headers: {},
+        params: {searchQuery: ''}
     })
     .then((response) => {
         return response.data.data.docs
@@ -63,10 +85,10 @@ const getEvents = () => {
         headers: {
             'date1': ''
         },
-        params: { page: 1, searchQuery: ''}
+        params: {searchQuery: ''}
     })
     .then((response) => {
-        return response.data.data.docs
+        return response.data.data.totalDocs
     })
 }
 
@@ -74,10 +96,10 @@ const getStudents = () => {
 
     return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
         headers: {},
-        params: { page: 1, searchQuery: ''}
+        params: {searchQuery: ''}
     })
     .then((response) => {
-        return response.data.data.docs
+        return response.data.data.totalDocs
     })
 }
 
@@ -181,9 +203,13 @@ const Dashboard = (props) => {
         enabled: false
     })
 
-    // console.log(tResponse.data?.data.data?.current_progress)
+    console.log(venues.data)
 
     const courses = useQuery('courses', getCourses, {
+        refetchOnWindowFocus: false
+    })
+
+    const coursesT = useQuery('coursesT', getCoursesT, {
         refetchOnWindowFocus: false
     })
 
@@ -191,7 +217,9 @@ const Dashboard = (props) => {
         refetchOnWindowFocus: false
     })
 
-    console.log(venues?.data)
+    const classesT = useQuery('classesT', getClassesT, {
+        refetchOnWindowFocus: false
+    })
 
     const lecturers = useQuery('lecturers', getLecturers, {
         refetchOnWindowFocus: false
@@ -215,13 +243,17 @@ const Dashboard = (props) => {
         e.preventDefault()
         const datum = [...document.querySelectorAll('input[type=checkbox]:checked')].map(e => e.value);
 
-        timetableFn({classes, courses, datum, uuid})
+        timetableFn({classesT, coursesT, datum, uuid})
 
         setInterval(() => {
             tResponse.refetch()
-        }, 500); 
+        }, 100);
     }
 
+    const cProgress = tResponse.data?.data.data?.current_progress;
+    const tProgress = tResponse.data?.data.data?.total_progress;
+    const tDate = new Date(tResponse.data?.data.data?.updatedAt.substring(0,10)).toDateString();
+    const tTime = tResponse.data?.data.data?.updatedAt.substring(11,16);
 
     return(
         <>  
@@ -254,7 +286,7 @@ const Dashboard = (props) => {
                             <Link to="/app/rooms">
                                 <div className="card card-room">
                                     <h3>Lecture Rooms</h3>
-                                    <p>{venues.data?.length}</p>
+                                    <p>{venues.data}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -270,7 +302,7 @@ const Dashboard = (props) => {
                             <Link to="/app/courses">
                                 <div className="card card-course">
                                     <h3>Courses</h3>
-                                    <p>{courses.data?.length}</p>
+                                    <p>{courses.data}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -286,7 +318,7 @@ const Dashboard = (props) => {
                             <Link to="/app/lecturers">
                                 <div className="card card-lect">
                                     <h3>Lecturers</h3>
-                                    <p>{lecturers.data?.length}</p>
+                                    <p>{lecturers.data}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -302,7 +334,7 @@ const Dashboard = (props) => {
                             <Link to="/app/classes">
                                 <div className="card card-class">
                                     <h3>Classes</h3>
-                                    <p>{classes.data?.length}</p>
+                                    <p>{classes.data}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -318,7 +350,7 @@ const Dashboard = (props) => {
                             <Link to='/app/student'>
                                 <div className="card card-stud">
                                     <h3>Students</h3>
-                                    <p>{data?.length}</p>
+                                    <p>{data}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -334,7 +366,7 @@ const Dashboard = (props) => {
                             <Link to='/app/events'>
                                 <div className="card card-event">
                                     <h3>Events</h3>
-                                    <p>{events.data?.length}</p>
+                                    <p>{events.data}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -360,16 +392,16 @@ const Dashboard = (props) => {
 
                 <p className="mb-20">Timetable available</p>
 
-                <em className="mb-30">{tResponse.data?.data.data?.current_progress === 5000 ? <span>{tResponse.data?.data.data?.name}</span> : <span>Loading...</span>}</em>
+                <em className="mb-30">{cProgress === 5000 ? <span>{tResponse.data?.data.data?.name}</span> : <span>Loading...</span>}</em>
 
                 <div className="timetable-stats">
                     <p>Status</p>
-                    {tResponse.data?.data.data?.current_progress === 5000 ? <p>Complete</p> : <progress value={!tResponse.data.data.error && tResponse.data?.data.data?.current_progress  ? (tResponse.data?.data.data?.current_progress/tResponse.data?.data.data?.total_progress) * 100 : 0} max="100"/>}
+                    {cProgress === 5000 ? <p>Complete</p> : <progress value={!tResponse.data.data.error && cProgress  ? (cProgress/tProgress) * 100 : 0} max="100"/>}
                 </div>
 
                 <div className="timetable-stats mb-30">
                     <p>Time</p>
-                    <p>{tResponse.data?.data.data?.current_progress === 5000 ? <span>{new Date(tResponse.data?.data.data?.updatedAt.substring(0,10)).toDateString()} - {tResponse.data?.data.data?.updatedAt.substring(11,16)}</span> : <span>Loading...</span>}</p>
+                    <p>{cProgress === 5000 ? <span>{tDate} - {tTime}</span> : <span>Loading...</span>}</p>
                 </div>
 
                 <a href="/">Print Timetable</a>

@@ -358,7 +358,7 @@ const Period = (props) => {
                         <tr><td colSpan="5"><img src={spinner} className="spinner" alt="Spinner"/></td></tr>
                         </CSSTransition>
                         }
-                        {data?.periods.length === 0 && isLoading === true ? 
+                        {data?.periods.length === 0 && isLoading === false ? 
                         <CSSTransition
                         timeout={10}
                         classNames="slide2"
