@@ -13,25 +13,14 @@ import { CSSTransition} from "react-transition-group";
 import {useQuery, useMutation} from "react-query"
 
 
-const getVenues = () => {
 
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
-        headers: {},
-        params: {searchQuery: ''}
+const getLength = () => {
+
+    return axios.get('https://tbe-node-deploy.herokuapp.com/admin/count', {
+        headers: {}
     })
     .then((response) => {
-        return response.data.data.totalDocs
-    })
-}
-
-const getCourses = () => {
-
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getCourse', {
-        headers: {},
-        params: {searchQuery: ''}
-    })
-    .then((response) => {
-        return response.data.data.totalDocs
+        return response.data
     })
 }
 
@@ -46,31 +35,9 @@ const getCoursesT = () => {
     })
 }
 
-const getLecturers = () => {
+const getRoomsT = () => {
 
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/getlecturer', {
-        headers: {},
-        params: {searchQuery: ''}
-    })
-    .then((response) => {
-        return response.data.data.totalDocs
-    })
-}
-
-const getClasses = () => {
-
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/class/all', {
-        headers: {},
-        params: {searchQuery: ''}
-    })
-    .then((response) => {
-        return response.data.data.totalDocs
-    })
-}
-
-const getClassesT = () => {
-
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/class/all', {
+    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/room', {
         headers: {},
         params: {searchQuery: ''}
     })
@@ -79,29 +46,6 @@ const getClassesT = () => {
     })
 }
 
-const getEvents = () => {
-
-    return axios.get('https://tbe-node-deploy.herokuapp.com/user/events/day', {
-        headers: {
-            'date1': ''
-        },
-        params: {searchQuery: ''}
-    })
-    .then((response) => {
-        return response.data.data.totalDocs
-    })
-}
-
-const getStudents = () => {
-
-    return axios.get('https://tbe-node-deploy.herokuapp.com/Admin/students/all', {
-        headers: {},
-        params: {searchQuery: ''}
-    })
-    .then((response) => {
-        return response.data.data.totalDocs
-    })
-}
 
 const getTRes = (tResponse, {uuid}) => {
 
@@ -119,16 +63,16 @@ const postTimetable = (args) => {
     var group3 = {}
     var group4 = []
 
-    args.classes.data.forEach((ar)=> {
+    args.roomsT.data.forEach((ar)=> {
         group1 = { ...group1,
             [ar.name]: {
-                capacity: ar.Population,
+                capacity: ar.capacity,
                 type: 'theory'
             }
         }
     })
 
-    args.courses.data.forEach((arr)=> {
+    args.coursesT.data.forEach((arr)=> {
         group2= [
             ...group2,
             {
@@ -193,49 +137,34 @@ const Dashboard = (props) => {
         });
     }
     const [uuid, setUuid] = useState(uuidFn())
-
-    const venues = useQuery('venues', getVenues, {
-        refetchOnWindowFocus: false
-    })
+    const [int, setInt] = useState(2000)
+    const [enable, setEnable] = useState(false)
 
     const tResponse = useQuery(['tResponse', {uuid}], getTRes, {
         refetchOnWindowFocus: false,
-        enabled: false
-    })
-
-    console.log(venues.data)
-
-    const courses = useQuery('courses', getCourses, {
-        refetchOnWindowFocus: false
+        refetchInterval: int,
+        enabled: enable
     })
 
     const coursesT = useQuery('coursesT', getCoursesT, {
         refetchOnWindowFocus: false
     })
 
-    const classes = useQuery('classes', getClasses, {
+    console.log(tResponse.data?.data.data)
+
+    const roomsT = useQuery('roomsT', getRoomsT, {
         refetchOnWindowFocus: false
     })
 
-    const classesT = useQuery('classesT', getClassesT, {
-        refetchOnWindowFocus: false
-    })
-
-    const lecturers = useQuery('lecturers', getLecturers, {
-        refetchOnWindowFocus: false
-    })
-
-    const events = useQuery('events', getEvents, {
-        refetchOnWindowFocus: false
-    })
-
-    const {isLoading, data} = useQuery('students', getStudents, {
+    const {isLoading, data} = useQuery('lengths', getLength, {
         refetchOnWindowFocus: false
     })
 
     const [modalOut, setModalOut] = useState(false)
     const [updateOut, setUpdateOut] = useState(false)
     const [created, setCreated] = useState(false)
+    const [showT, setShowT] = useState(false)
+
 
 
     const submit = (e) => {
@@ -243,18 +172,176 @@ const Dashboard = (props) => {
         e.preventDefault()
         const datum = [...document.querySelectorAll('input[type=checkbox]:checked')].map(e => e.value);
 
-        timetableFn({classesT, coursesT, datum, uuid})
+        timetableFn({roomsT, coursesT, datum, uuid})
 
-        setInterval(() => {
-            tResponse.refetch()
-        }, 100);
+        setEnable(true)
+        tResponse.refetch()
     }
+
+    setInterval(()=> {
+        if(tResponse.data?.data.data?.current_progress === 5000){
+            setInt(-1)
+        }
+    }, 1000)
 
     const cProgress = tResponse.data?.data.data?.current_progress;
     const tProgress = tResponse.data?.data.data?.total_progress;
     const tDate = new Date(tResponse.data?.data.data?.updatedAt.substring(0,10)).toDateString();
     const tTime = tResponse.data?.data.data?.updatedAt.substring(11,16);
 
+
+    var monday;
+
+    const [mon1, setMon1] = useState([])
+    const [mon2, setMon2] = useState([])
+    const [mon3, setMon3] = useState([])
+    const [mon4, setMon4] = useState([])
+
+    var tuesday;
+
+    const [tue1, setTue1] = useState([])
+    const [tue2, setTue2] = useState([])
+    const [tue3, setTue3] = useState([])
+    const [tue4, setTue4] = useState([])
+
+    var wednesday;
+
+    const [wed1, setWed1] = useState([])
+    const [wed2, setWed2] = useState([])
+    const [wed3, setWed3] = useState([])
+    const [wed4, setWed4] = useState([])
+
+    var thursday;
+
+    const [thur1, setThur1] = useState([])
+    const [thur2, setThur2] = useState([])
+    const [thur3, setThur3] = useState([])
+    const [thur4, setThur4] = useState([])
+
+    var friday;
+
+    const [fri1, setFri1] = useState([])
+    const [fri2, setFri2] = useState([])
+    const [fri3, setFri3] = useState([])
+    const [fri4, setFri4] = useState([])
+
+    var saturday;
+
+    const [sat1, setSat1] = useState([])
+    const [sat2, setSat2] = useState([])
+    const [sat3, setSat3] = useState([])
+    const [sat4, setSat4] = useState([])
+
+    const arrangeT = () => {
+        // eslint-disable-next-line no-unused-expressions
+
+        console.log(JSON.stringify(tResponse.data?.data.data?.courses))
+
+        monday = tResponse.data?.data.data?.courses.filter((course) => {
+            return course.assignedDay === 'monday'
+        })
+
+        tuesday = tResponse.data?.data.data?.courses.filter((course) => {
+            return course.assignedDay === 'tuesday'
+        })
+
+        wednesday = tResponse.data?.data.data?.courses.filter((course) => {
+            return course.assignedDay === 'wednesday'
+        })
+
+        thursday = tResponse.data?.data.data?.courses.filter((course) => {
+            return course.assignedDay === 'thursday'
+        })
+
+        friday = tResponse.data?.data.data?.courses.filter((course) => {
+            return course.assignedDay === 'friday'
+        })
+
+        saturday = tResponse.data?.data.data?.courses.filter((course) => {
+            return course.assignedDay === 'saturday'
+        })
+
+
+
+        console.log(monday)
+        console.log(tuesday)
+        console.log(wednesday)
+        console.log(thursday)
+        console.log(friday)
+        console.log(saturday)
+
+        monday.map((mon)=> {
+            if(mon.startHour === 9){
+                setMon1(mon.name)
+            }else if(mon.startHour === 11){
+                setMon2(mon.name)
+            }else if(mon.startHour === 13){
+                setMon3(mon.name)
+            }else if(mon.startHour === 15){
+                setMon4(mon.name)
+            }
+        })
+
+        tuesday.map((tue)=> {
+            if(tue.startHour === 9){
+                setTue1(tue.name)
+            }else if(tue.startHour === 11){
+                setTue2(tue.name)
+            }else if(tue.startHour === 13){
+                setTue3(tue.name)
+            }else if(tue.startHour === 15){
+                setTue4(tue.name)
+            }
+        })
+
+        wednesday.map((wed)=> {
+            if(wed.startHour === 9){
+                setWed1(wed.name)
+            }else if(wed.startHour === 11){
+                setWed2(wed.name)
+            }else if(wed.startHour === 13){
+                setWed3(wed.name)
+            }else if(wed.startHour === 15){
+                setWed4(wed.name)
+            }
+        })
+
+        thursday.map((thur)=> {
+            if(thur.startHour === 9){
+                setThur1(thur.name)
+            }else if(thur.startHour === 11){
+                setThur2(thur.name)
+            }else if(thur.startHour === 13){
+                setThur3(thur.name)
+            }else if(thur.startHour === 15){
+                setThur4(thur.name)
+            }
+        })
+
+        friday.map((fri)=> {
+            if(fri.startHour === 9){
+                setFri1(fri.name)
+            }else if(fri.startHour === 11){
+                setFri2(fri.name)
+            }else if(fri.startHour === 13){
+                setFri3(fri.name)
+            }else if(fri.startHour === 15){
+                setFri4(fri.name)
+            }
+        })
+
+        saturday.map((sat)=> {
+            if(sat.startHour === 9){
+                setSat1(sat.name)
+            }else if(sat.startHour === 11){
+                setSat2(sat.name)
+            }else if(sat.startHour === 13){
+                setSat3(sat.name)
+            }else if(sat.startHour === 15){
+                setSat4(sat.name)
+            }
+        })
+    }
     return(
         <>  
             <header>
@@ -272,8 +359,10 @@ const Dashboard = (props) => {
                     </Link>
                   </div>
               </header>
-              {isLoading === false ?  
-                <div className="card-container">       
+             {isLoading === false ? 
+                <div className="card-container"> 
+                    {showT === false ? 
+                    <>     
                     <CSSTransition
                             timeout={10}
                             className="cardani"
@@ -286,7 +375,7 @@ const Dashboard = (props) => {
                             <Link to="/app/rooms">
                                 <div className="card card-room">
                                     <h3>Lecture Rooms</h3>
-                                    <p>{venues.data}</p>
+                                    <p>{data.rooms}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -302,7 +391,7 @@ const Dashboard = (props) => {
                             <Link to="/app/courses">
                                 <div className="card card-course">
                                     <h3>Courses</h3>
-                                    <p>{courses.data}</p>
+                                    <p>{data.courses}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -318,7 +407,7 @@ const Dashboard = (props) => {
                             <Link to="/app/lecturers">
                                 <div className="card card-lect">
                                     <h3>Lecturers</h3>
-                                    <p>{lecturers.data}</p>
+                                    <p>{data.lecturers}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -334,7 +423,7 @@ const Dashboard = (props) => {
                             <Link to="/app/classes">
                                 <div className="card card-class">
                                     <h3>Classes</h3>
-                                    <p>{classes.data}</p>
+                                    <p>{data.classess}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -350,7 +439,7 @@ const Dashboard = (props) => {
                             <Link to='/app/student'>
                                 <div className="card card-stud">
                                     <h3>Students</h3>
-                                    <p>{data}</p>
+                                    <p>{data.students}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
@@ -366,10 +455,12 @@ const Dashboard = (props) => {
                             <Link to='/app/events'>
                                 <div className="card card-event">
                                     <h3>Events</h3>
-                                    <p>{events.data}</p>
+                                    <p>{data.events}</p>
                                 </div>
                             </Link>
                     </CSSTransition>
+                    </>
+                    : null}
             </div>
                 : <div className="spinnerContainer"><img src={spinner} alt="loading.."/></div>}
 
@@ -404,8 +495,11 @@ const Dashboard = (props) => {
                     <p>{cProgress === 5000 ? <span>{tDate} - {tTime}</span> : <span>Loading...</span>}</p>
                 </div>
 
-                <a href="/">Print Timetable</a>
-                <button>View More</button>
+                <button onClick={()=> arrangeT()}>Print Timetable</button>
+                <button onClick={()=> {
+                    arrangeT()
+                    setShowT(true)}
+                }>View More</button>
             </div> : null}
 
             {/* <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
@@ -493,6 +587,89 @@ const Dashboard = (props) => {
                 </div>
                 </form>
             </div>
+
+            { showT === true ? <div className="timetable">
+
+                <div className="note">
+                    <p>Lr - Lecture room</p>
+                    <p>Lt - Lecture theatre</p>
+                    <p>Lh - Lecture hall</p>
+                </div>
+
+                <div className="tDetails">
+                    <p>Name : Timetable for 200L</p>
+                    <p>Academic Session : 2020/2021</p>
+                </div>
+
+                
+                <div className="table-container">
+                        <table className="table table2">
+                        <thead className="table-head">
+                            <tr className="row1">
+                            <th></th>
+                            <th>9:00-11:00</th>
+                            <th>11:00-13:00</th>
+                            <th>13:00-15:00</th>
+                            <th>15:00-17:00</th>
+                            </tr>
+                        </thead>
+                        <tbody className="gfg">
+                                    <tr className="default default2">
+                                        <td>Monday</td>
+                                        <td>{mon1}</td>
+                                        <td>{mon2}</td>
+                                        <td>{mon3}</td>
+                                        <td>{mon4}</td>
+                                    </tr>
+                                    <tr className="default default2">
+                                        <td>Tuesday</td>
+                                        <td>{tue1}</td>
+                                        <td>{tue2}</td>
+                                        <td>{tue3}</td>
+                                        <td>{tue4}</td>
+                                    </tr>
+                                    <tr className="default default2">
+                                        <td>Wednesday</td>
+                                        <td>{wed1}</td>
+                                        <td>{wed2}</td>
+                                        <td>{wed3}</td>
+                                        <td>{wed4}</td>
+                                    </tr>
+                                    <tr className="default default2">
+                                        <td>Thursday</td>
+                                        <td>{thur1}</td>
+                                        <td>{thur2}</td>
+                                        <td>{thur3}</td>
+                                        <td>{thur4}</td>
+                                    </tr>
+                                    <tr className="default default2">
+                                        <td>Friday</td>
+                                        <td>{fri1}</td>
+                                        <td>{fri2}</td>
+                                        <td>{fri3}</td>
+                                        <td>{fri4}</td>
+                                    </tr>
+                                    {/* <tr className="default default2">
+                                        <td>Saturday</td>
+                                        <td>{sat1}</td>
+                                        <td>{sat2}</td>
+                                        <td>{sat3}</td>
+                                        <td>{sat4}</td>
+                                    </tr> */}
+                            {/* { tuesday.map((timet)=>{
+                                    return (
+                                    <tr className="default default2" key={timet.name}>
+                                        <td>Tuesday</td>
+                                        <td>{timet.startHour === 9 ? <p>{timet.name}</p> : null}</td>
+                                        <td>{timet.startHour === 11 ? <p>{timet.name}</p> : null}</td>
+                                        <td>{timet.startHour === 13 ? <p>{timet.name}</p> : null}</td>
+                                        <td>{timet.startHour === 15 ? <p>{timet.name}</p> : null}</td>
+                                    </tr>
+                                    )})} */}
+                        </tbody>
+                        </table>
+                    </div>
+                </div> : null}
         </>
     );
 }

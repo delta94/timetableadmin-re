@@ -164,8 +164,6 @@ const Lecturer = (props) => {
         refetchOnWindowFocus: false
     })
 
-    console.log(data)
-
     const courses = useQuery('courses', getCourses, {
         refetchOnWindowFocus: false
     })
@@ -222,6 +220,7 @@ const Lecturer = (props) => {
     const [edited, setEdited] = useState(false)
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
+    const [coursesHandled, coursesHandler] = useState([])
     const [profileData, setProfileData] = useState(
         {
             name: "",
@@ -324,6 +323,15 @@ const Lecturer = (props) => {
 
     }
 
+    // Generating courses handled
+    const setCoursesHandled = (datum) => {
+        data.lect.map(lec => {
+            if(lec._id === datum){
+                coursesHandler(lec.Courses)
+            }
+        }) 
+    }
+
 
     const openDelete = (data) => {
         setDeleter(!deleter)
@@ -391,7 +399,7 @@ const Lecturer = (props) => {
                                     <td>{lect.email}</td>
                                     <td>{lect.Courses.map((cour)=>{
                                         return (
-                                            <p style={{'margin': '5px'}} key={cour}>{cour}</p>
+                                            <p style={{'margin': '5px'}} key={cour._id}>{cour.name}</p>
                                         );
                                     })}</td>
                                     <td>
@@ -416,6 +424,7 @@ const Lecturer = (props) => {
                                         genProfileData(lect._id)
                                         genLabelData(lect._id)
                                         setLectId(lect._id)
+                                        setCoursesHandled(lect._id)
                                         }
                                     }>View</button></td>
                                 </tr>
@@ -483,48 +492,74 @@ const Lecturer = (props) => {
                 }}></div>
 
                 {pageSwitch === "profile" ?
-                <div className="profile">
-                        <div className="circular">
-                            <img src={profileData.image} alt="profile"/>
-                        </div>
-                        <div className="name-groupl">
-                            <div className="detail">
-                                <p>Name:</p>
-                                <p>{profileData.name}</p>
+                <div className="profile-container">
+                    <div className="profile">
+                            <div className="circular">
+                                <img src={profileData.image} alt="profile"/>
                             </div>
-                            <div className="detail">
-                                <p>E-Mail:</p>
-                                <p>{profileData.email}</p>
-                            </div>
-                            <div className="detail">
-                                <p>Phone number:</p>
-                                <p>{profileData.phoneNo}</p>
-                            </div>
-                            <div className="detail">
-                                <p>Office no:</p>
-                                <p>{profileData.officeNo}</p>
-                            </div>
-                            <div className="detail">
-                                <p>Background:</p>
-                                <p>{profileData.educationBg}</p>
-                            </div>
-                            <div className="detail">
-                                <p>Degree:</p>
-                                <p>{profileData.degree}</p>
-                            </div>
-                            <div className="detail">
-                                <p>Position:</p>
-                                <p>{profileData.ranking}</p>
-                            </div>
-                            <div className="detail">
-                                <p>Area of Spec:</p>
-                                <p>{profileData.areaOfSpec}</p>
-                            </div>
-                            <div className="detail ma">
-                                <button className="backBtn" onClick={()=> setPageSwitch("home")}>Back</button>
-                                <button onClick={()=> setPageSwitch("edit")}>Edit</button>
-                            </div>
-                    </div>  
+                            <div className="name-groupl">
+                                <div className="detail">
+                                    <p>Name:</p>
+                                    <p>{profileData.name}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>E-Mail:</p>
+                                    <p>{profileData.email}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>Phone number:</p>
+                                    <p>{profileData.phoneNo}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>Office no:</p>
+                                    <p>{profileData.officeNo}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>Background:</p>
+                                    <p>{profileData.educationBg}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>Degree:</p>
+                                    <p>{profileData.degree}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>Position:</p>
+                                    <p>{profileData.ranking}</p>
+                                </div>
+                                <div className="detail">
+                                    <p>Area of Spec:</p>
+                                    <p>{profileData.areaOfSpec}</p>
+                                </div>
+                                <div className="detail ma">
+                                    <button className="backBtn" onClick={()=> setPageSwitch("home")}>Back</button>
+                                    <button onClick={()=> setPageSwitch("edit")}>Edit</button>
+                                </div>
+                            </div>  
+                    </div>
+
+                    <div className="table-container">
+                        <table className="table">
+                            <thead className="table-head">
+                                <tr className="row1">
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Course Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody className="gfg">
+                                {coursesHandled.map((course)=> {
+                                    return(
+                                        <tr className="default" key={course._id}>
+                                            <td>{course.code}</td>
+                                            <td>{course.name}</td>
+                                            <td>{course.unit}</td>
+                                        </tr>
+                                    );
+                                })}
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 : null}
 

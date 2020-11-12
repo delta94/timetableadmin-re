@@ -536,7 +536,7 @@ const Course = (props) => {
                                 <div className="input-gi">
                                         <p>Lecturer</p>
                                         <select className="select-css" name="lecturer" onChange={lecturerFormData} required>
-                                            <option value="" defaultValue>Select a lecturer</option>
+                                            <option defaultValue>Select a lecturer</option>
                                             {lecturers.data?.map(lect => {
                                                 return(
                                                 <option value={lect._id} label={lect.name} key={lect._id}/>

@@ -21,6 +21,12 @@
     background-color: #737a91 !important;
 }
 
+.tDetails{
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+}
+
 .note{
     height: auto;
     padding: 20px;

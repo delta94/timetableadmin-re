@@ -117,8 +117,6 @@ const Student = (props) => {
         refetchOnWindowFocus: false
     })
 
-    console.log(data)
-
     const studentsL = useQuery('students', getStudentsL, {
         refetchOnWindowFocus: false
     })
@@ -215,8 +213,6 @@ const Student = (props) => {
     const [deleter, setDeleter] = useState(false)
     const [deleteId, setDeleteId] = useState("")
     const [created, setCreated] = useState(false)
-
-    
 
 
     const setFormDataFn = (e) => {
@@ -406,7 +402,7 @@ const Student = (props) => {
                                     <td>{stud.email}</td>
                                     <td>{stud.courses.map((cour)=>{
                                         return (
-                                            <p style={{'margin': '5px'}} key={cour.name}>{cour.name}</p>
+                                            <p style={{'margin': '5px'}} key={cour._id}>{cour.name}</p>
                                         );
                                     })}</td>
                                     <td>

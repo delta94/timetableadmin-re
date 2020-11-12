@@ -456,7 +456,7 @@ const Period = (props) => {
                             <p>Course</p>
                             <select className="select-css nameInput" name="course" onChange={periodFormData} required>
                                     <option value="" defaultValue>Select a course</option>
-                                    {courses.data?.map(course => {
+                                    {courses?.data?.map(course => {
                                         return(
                                         <option value={course._id} label={course.name} key={course._id}/>
                                     )})}
