@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-mixed-operators */
 /* eslint-disable eqeqeq */
 /* eslint-disable no-unused-vars */
