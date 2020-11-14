@@ -841,6 +841,35 @@ progress::-webkit-progress-value {
   margin: 2px;
 }
 
+.timetables{
+  color: #0395ff !important;
+  cursor: pointer;
+}
+
+.timetables img{
+  height: 15px;
+  margin-left: 7px;
+}
+
+.timetables-container{
+  height: 150px;
+  overflow-y: scroll;
+  margin-bottom: 30px;
+}
+
+.timetables-container::-webkit-scrollbar-thumb{
+  background-color: #0395ff;
+  border-radius: 0.25rem;
+} 
+.timetables-container::-webkit-scrollbar{
+  width: 0.5em;
+  height: 10px;
+}
+
+.default2 em{
+  color: #0395ff;
+}
+
 @keyframes FadeAnimation {
   0% {
     opacity: 1;
