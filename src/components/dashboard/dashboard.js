@@ -14,7 +14,7 @@ import axios from "axios"
 import spinner from "../../images/spinner.gif"
 import arrowD from "../../images/down-arrow.png"
 import { CSSTransition} from "react-transition-group";
-import {useQuery, useMutation} from "react-query"
+import {useQuery, useMutation, queryCache} from "react-query"
 
 
 
@@ -127,16 +127,35 @@ const postTimetable = (args) => {
 }
 
 
+const deleteT = (deleteId) => {
+          
+    return axios.delete('https://tbe-node-deploy.herokuapp.com/timetable/delete', {
+        headers: { 
+            'id': deleteId
+        }
+    })
+    .then((response) => {
+        return response
+    })      
+}
+
+
 const Dashboard = (props) => {
     const [timetableFn, {status}] = useMutation(postTimetable, {
         onSuccess: () => {
             console.log("created")
             setCreated(true)
             setModalOut(false)
-            setTimeout(() => {
-                // setCreated(true)
-            }, 10);
-            // setCreated(false)
+        },
+        onError: (error) => {
+            console.log({...error})
+        }
+    })
+
+    const [deleteTimetable] = useMutation(deleteT, {
+        onSuccess: () => {
+            console.log("deleted")
+            queryCache.refetchQueries('timetables')
         },
         onError: (error) => {
             console.log({...error})
@@ -180,8 +199,19 @@ const Dashboard = (props) => {
     const [updateOut, setUpdateOut] = useState(false)
     const [created, setCreated] = useState(false)
     const [showT, setShowT] = useState(false)
-    const [showTimeDetails, setShowTimeDetails] = useState(false)
+    const [active, _setActive] = useState({});
 
+    const toggleActive = (idx) => () => {
+      _setActive((prev) => ({
+        ...prev,
+        [idx]: !prev[idx]
+      }));
+    };
+
+    const [timetableDetails, setTimeTableDetails] = useState({
+        name: '',
+        session: ''
+    }) 
 
 
     const submit = (e) => {
@@ -206,641 +236,198 @@ const Dashboard = (props) => {
     const tDate = new Date(tResponse.data?.data.data?.updatedAt.substring(0,10)).toDateString();
     const tTime = tResponse.data?.data.data?.updatedAt.substring(11,16);
 
-    var monday; var tuesday; var wednesday; var thursday; var friday;
+    var monday; var tuesday; var wednesday; var thursday; var friday; var saturday;
 
-    var mondayAll = [];
+    const [monday1, setMonday1] = useState([])
 
-    const [monName, setMonName] = useState('')
-    const [monVenue, setMonVenue] = useState('')
+    const [monday2, setMonday2] = useState([]) 
 
-    const [monName2, setMonName2] = useState('')
-    const [monVenue2, setMonVenue2] = useState('')
+    const [monday3, setMonday3] = useState([]) 
 
-    const [monName3, setMonName3] = useState('')
-    const [monVenue3, setMonVenue3] = useState('')
+    const [monday4, setMonday4] = useState([])
 
-    const [monName4, setMonName4] = useState('')
-    const [monVenue4, setMonVenue4] = useState('')
+    const [tuesday1, setTuesday1] = useState([])
 
+    const [tuesday2, setTuesday2] = useState([]) 
 
-    var tuesdayAll = [];
+    const [tuesday3, setTuesday3] = useState([]) 
 
-    const [tueName, setTueName] = useState('')
-    const [tueVenue, setTueVenue] = useState('')
+    const [tuesday4, setTuesday4] = useState([])
 
-    const [tueName2, setTueName2] = useState('')
-    const [tueVenue2, setTueVenue2] = useState('')
+    const [wednesday1, setWednesday1] = useState([])
 
-    const [tueName3, setTueName3] = useState('')
-    const [tueVenue3, setTueVenue3] = useState('')
+    const [wednesday2, setWednesday2] = useState([]) 
 
-    const [tueName4, setTueName4] = useState('')
-    const [tueVenue4, setTueVenue4] = useState('')
+    const [wednesday3, setWednesday3] = useState([]) 
 
+    const [wednesday4, setWednesday4] = useState([]) 
 
-    var wednesdayAll = [];
+    const [thursday1, setThursday1] = useState([])
 
-    const [wedName, setWedName] = useState('')
-    const [wedVenue, setWedVenue] = useState('')
+    const [thursday2, setThursday2] = useState([]) 
 
-    const [wedName2, setWedName2] = useState('')
-    const [wedVenue2, setWedVenue2] = useState('')
+    const [thursday3, setThursday3] = useState([]) 
 
-    const [wedName3, setWedName3] = useState('')
-    const [wedVenue3, setWedVenue3] = useState('')
+    const [thursday4, setThursday4] = useState([])
 
-    const [wedName4, setWedName4] = useState('')
-    const [wedVenue4, setWedVenue4] = useState('')
+    const [friday1, setFriday1] = useState([])
 
+    const [friday2, setFriday2] = useState([]) 
 
-    var thursdayAll = [];
+    const [friday3, setFriday3] = useState([]) 
 
-    const [thurName, setThurName] = useState('')
-    const [thurVenue, setThurVenue] = useState('')
+    const [friday4, setFriday4] = useState([]) 
 
-    const [thurName2, setThurName2] = useState('')
-    const [thurVenue2, setThurVenue2] = useState('')
+    const [saturday1, setSaturday1] = useState([])
 
-    const [thurName3, setThurName3] = useState('')
-    const [thurVenue3, setThurVenue3] = useState('')
+    const [saturday2, setSaturday2] = useState([]) 
 
-    const [thurName4, setThurName4] = useState('')
-    const [thurVenue4, setThurVenue4] = useState('')
+    const [saturday3, setSaturday3] = useState([]) 
 
+    const [saturday4, setSaturday4] = useState([]) 
 
-    var fridayAll = [];
+    const [satCheck, setSat] = useState(false)
 
-    const [friName, setFriName] = useState('')
-    const [friVenue, setFriVenue] = useState('')
-
-    const [friName2, setFriName2] = useState('')
-    const [friVenue2, setFriVenue2] = useState('')
-
-    const [friName3, setFriName3] = useState('')
-    const [friVenue3, setFriVenue3] = useState('')
-
-    const [friName4, setFriName4] = useState('')
-    const [friVenue4, setFriVenue4] = useState('')
-
-    const arrangeT = () => {
+    const arrangeT = (data) => {
         // eslint-disable-next-line no-unused-expressions
 
-        monday = tResponse.data?.data.data?.courses.filter((course) => {
+        // Monday
+        monday = data.filter((course) => {
             return course.assignedDay === 'monday'
         })
 
-        var monday1 = [];  var monday2 = []; var monday3 = []; var monday4 = []
-
-        monday1 = monday.filter((mon)=> {
+        setMonday1(monday.filter((mon)=> {
             return mon.startHour === 9
-        })
+        }))
 
-        monday2 = monday.filter((mon)=> {
+        setMonday2(monday.filter((mon)=> {
             return mon.startHour === 11
-        })
+        }))
 
-        monday3 = monday.filter((mon)=> {
+        setMonday3(monday.filter((mon)=> {
             return mon.startHour === 13
-        })
+        }))
 
-        monday4 = monday.filter((mon)=> {
+        setMonday4(monday.filter((mon)=> {
             return mon.startHour === 15
-        })
+        }))
 
-        mondayAll = [{
-            monday1,
-            monday2,
-            monday3,
-            monday4
-        }]
-
-        console.log(mondayAll)
-
-        var myMonName;
-        var myMonVenue;
-
-        var myMonName2;
-        var myMonVenue2;
-
-        var myMonName3;
-        var myMonVenue3;
-
-        var myMonName4;
-        var myMonVenue4;
-
-        mondayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.monday1.length; i++){
-                if (i > 0){
-                    myMonName += '\n' + test.monday1[i].name;
-                    myMonVenue += '\n' + test.monday1[i].venue;
-                }else{
-                    myMonName = test.monday1[i].name;
-                    myMonVenue = test.monday1[i].venue;
-                }
-            }
-            setMonName(myMonName)
-            setMonVenue(myMonVenue)
-        })
-
-        mondayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.monday2.length; i++){
-                if (i > 0){
-                    myMonName2 += '\n' + test.monday2[i].name;
-                    myMonVenue2 += '\n' + test.monday2[i].venue;
-                }else{
-                    myMonName2 = test.monday2[i].name;
-                    myMonVenue2 = test.monday2[i].venue;
-                }
-            }
-            setMonName2(myMonName2)
-            setMonVenue2(myMonVenue2)
-        })
-
-        mondayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.monday3.length; i++){
-                if (i > 0){
-                    myMonName3 += '\n' + test.monday3[i].name;
-                    myMonVenue3 += '\n' + test.monday3[i].venue;
-                }else{
-                    myMonName3 = test.monday3[i].name;
-                    myMonVenue3 = test.monday3[i].venue;
-                }
-            }
-            setMonName3(myMonName3)
-            setMonVenue3(myMonVenue3)
-        })
-
-        mondayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.monday4.length; i++){
-                if (i > 0){
-                    myMonName4 += '\n' + test.monday4[i].name;
-                    myMonVenue4 += '\n' + test.monday4[i].venue;
-                }else{
-                    myMonName4 = test.monday4[i].name;
-                    myMonVenue4 = test.monday4[i].venue;
-                }
-            }
-            setMonName4(myMonName4)
-            setMonVenue4(myMonVenue4)
-        })
     
-        tuesday = tResponse.data?.data.data?.courses.filter((course) => {
+        // Tuesday
+        tuesday = data.filter((course) => {
             return course.assignedDay === 'tuesday'
         })
 
-        var tuesday1 = [];  var tuesday2 = []; var tuesday3 = []; var tuesday4 = []
-
-        tuesday1 = tuesday.filter((tue)=> {
+        setTuesday1(tuesday.filter((tue)=> {
             return tue.startHour === 9
-        })
+        }))
 
-        tuesday2 = tuesday.filter((tue)=> {
+        setTuesday2(tuesday.filter((tue)=> {
             return tue.startHour === 11
-        })
+        }))
 
-        tuesday3 = tuesday.filter((tue)=> {
+        setTuesday3(tuesday.filter((tue)=> {
             return tue.startHour === 13
-        })
+        }))
 
-        tuesday4 = tuesday.filter((tue)=> {
+        setTuesday4(tuesday.filter((tue)=> {
             return tue.startHour === 15
-        })
+        }))
 
-        tuesdayAll = [{
-            tuesday1,
-            tuesday2,
-            tuesday3,
-            tuesday4
-        }]
-
-        console.log(tuesdayAll)
-
-        var myTueName;
-        var myTueVenue;
-
-        var myTueName2;
-        var myTueVenue2;
-
-        var myTueName3;
-        var myTueVenue3;
-
-        var myTueName4;
-        var myTueVenue4;
-
-        tuesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.tuesday1.length; i++){
-                if (i > 0){
-                    myTueName += '\n' + test.tuesday1[i].name;
-                    myTueVenue += '\n' + test.tuesday1[i].venue;
-                }else{
-                    myTueName = test.tuesday1[i].name;
-                    myTueVenue = test.tuesday1[i].venue;
-                }
-            }
-            setTueName(myTueName)
-            setTueVenue(myTueVenue)
-        })
-
-        tuesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.tuesday2.length; i++){
-                if (i > 0){
-                    myTueName2 += '\n' + test.tuesday2[i].name;
-                    myTueVenue2 += '\n' + test.tuesday2[i].venue;
-                }else{
-                    myTueName2 = test.tuesday2[i].name;
-                    myTueVenue2 = test.tuesday2[i].venue;
-                }
-            }
-            setTueName2(myTueName2)
-            setTueVenue2(myTueVenue2)
-        })
-
-        tuesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.tuesday3.length; i++){
-                if (i > 0){
-                    myTueName3 += '\n' + test.tuesday3[i].name;
-                    myTueVenue3 += '\n' + test.tuesday3[i].venue;
-                }else{
-                    myTueName3 = test.tuesday3[i].name;
-                    myTueVenue3 = test.tuesday3[i].venue;
-                }
-            }
-            setTueName3(myTueName3)
-            setTueVenue3(myTueVenue3)
-        })
-
-        tuesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.tuesday4.length; i++){
-                if (i > 0){
-                    myTueName4 += '\n' + test.tuesday4[i].name;
-                    myTueVenue4 += '\n' + test.tuesday4[i].venue;
-                }else{
-                    myTueName4 = test.tuesday4[i].name;
-                    myTueVenue4 = test.tuesday4[i].venue;
-                }
-            }
-            setTueName4(myTueName4)
-            setTueVenue4(myTueVenue4)
-        })
-
-
-
-
-        wednesday = tResponse.data?.data.data?.courses.filter((course) => {
+        // Wednesday
+        wednesday = data.filter((course) => {
             return course.assignedDay === 'wednesday'
         })
 
-        var wednesday1 = [];  var wednesday2 = []; var wednesday3 = []; var wednesday4 = []
-
-        wednesday1 = wednesday.filter((wed)=> {
+        setWednesday1(wednesday.filter((wed)=> {
             return wed.startHour === 9
-        })
+        }))
 
-        wednesday2 = wednesday.filter((wed)=> {
+        setWednesday2(wednesday.filter((wed)=> {
             return wed.startHour === 11
-        })
+        }))
 
-        wednesday3 = wednesday.filter((wed)=> {
+        setWednesday3(wednesday.filter((wed)=> {
             return wed.startHour === 13
-        })
+        }))
 
-        wednesday4 = wednesday.filter((wed)=> {
+        setWednesday4(wednesday.filter((wed)=> {
             return wed.startHour === 15
-        })
-
-        wednesdayAll = [{
-            wednesday1,
-            wednesday2,
-            wednesday3,
-            wednesday4
-        }]
-
-        console.log(wednesdayAll)
-
-        var myWedName;
-        var myWedVenue;
-
-        var myWedName2;
-        var myWedVenue2;
-
-        var myWedName3;
-        var myWedVenue3;
-
-        var myWedName4;
-        var myWedVenue4;
-
-        wednesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.wednesday1.length; i++){
-                if (i > 0){
-                    myWedName += '\n' + test.wednesday1[i].name;
-                    myWedVenue += '\n' + test.wednesday1[i].venue;
-                }else{
-                    myWedName = test.wednesday1[i].name;
-                    myWedVenue = test.wednesday1[i].venue;
-                }
-            }
-            setWedName(myWedName)
-            setWedVenue(myWedVenue)
-        })
-
-        wednesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.wednesday2.length; i++){
-                if (i > 0){
-                    myWedName2 += '\n' + test.wednesday2[i].name;
-                    myWedVenue2 += '\n' + test.wednesday2[i].venue;
-                }else{
-                    myWedName2 = test.wednesday2[i].name;
-                    myWedVenue2 = test.wednesday2[i].venue;
-                }
-            }
-            setWedName2(myWedName2)
-            setWedVenue2(myWedVenue2)
-        })
-
-        wednesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.wednesday3.length; i++){
-                if (i > 0){
-                    myWedName3 += '\n' + test.wednesday3[i].name;
-                    myWedVenue3 += '\n' + test.wednesday3[i].venue;
-                }else{
-                    myWedName3 = test.wednesday3[i].name;
-                    myWedVenue3 = test.wednesday3[i].venue;
-                }
-            }
-            setWedName3(myWedName3)
-            setWedVenue3(myWedVenue3)
-        })
-
-        wednesdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.wednesday4.length; i++){
-                if (i > 0){
-                    myWedName4 += '\n' + test.wednesday4[i].name;
-                    myWedVenue4 += '\n' + test.wednesday4[i].venue;
-                }else{
-                    myWedName4 = test.wednesday4[i].name;
-                    myWedVenue4 = test.wednesday4[i].venue;
-                }
-            }
-            setWedName4(myWedName4)
-            setWedVenue4(myWedVenue4)
-        })
+        }))
 
 
+        console.log(wednesday1, wednesday2, wednesday3, wednesday4)
 
-        thursday = tResponse.data?.data.data?.courses.filter((course) => {
+
+        // Thursday
+        thursday = data.filter((course) => {
             return course.assignedDay === 'thursday'
         })
 
-        var thursday1 = [];  var thursday2 = []; var thursday3 = []; var thursday4 = []
+        setThursday1(thursday.filter((thur)=> {
+            return thur.startHour === 9
+        }))
 
-        thursday1 = thursday.filter((mon)=> {
-            return mon.startHour === 9
-        })
+        setThursday2(thursday.filter((thur)=> {
+            return thur.startHour === 11
+        }))
 
-        thursday2 = thursday.filter((mon)=> {
-            return mon.startHour === 11
-        })
+        setThursday3(thursday.filter((thur)=> {
+            return thur.startHour === 13
+        }))
 
-        thursday3 = thursday.filter((mon)=> {
-            return mon.startHour === 13
-        })
+        setThursday4(thursday.filter((thur)=> {
+            return thur.startHour === 15
+        }))
 
-        thursday4 = thursday.filter((mon)=> {
-            return mon.startHour === 15
-        })
-
-        thursdayAll = [{
-            thursday1,
-            thursday2,
-            thursday3,
-            thursday4
-        }]
-
-        console.log(thursdayAll)
-
-        var myThurName;
-        var myThurVenue;
-
-        var myThurName2;
-        var myThurVenue2;
-
-        var myThurName3;
-        var myThurVenue3;
-
-        var myThurName4;
-        var myThurVenue4;
-
-        thursdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.thursday1.length; i++){
-                if (i > 0){
-                    myThurName += '\n' + test.thursday1[i].name;
-                    myThurVenue += '\n' + test.thursday1[i].venue;
-                }else{
-                    myThurName = test.thursday1[i].name;
-                    myThurVenue = test.thursday1[i].venue;
-                }
-            }
-            setThurName(myThurName)
-            setThurVenue(myThurVenue)
-        })
-
-        thursdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.thursday2.length; i++){
-                if (i > 0){
-                    myThurName2 += '\n' + test.thursday2[i].name;
-                    myThurVenue2 += '\n' + test.thursday2[i].venue;
-                }else{
-                    myThurName2 = test.thursday2[i].name;
-                    myThurVenue2 = test.thursday2[i].venue;
-                }
-            }
-            setThurName2(myThurName2)
-            setThurVenue2(myThurVenue2)
-        })
-
-        thursdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.thursday3.length; i++){
-                if (i > 0){
-                    myThurName3 += '\n' + test.thursday3[i].name;
-                    myThurVenue3 += '\n' + test.thursday3[i].venue;
-                }else{
-                    myThurName3 = test.thursday3[i].name;
-                    myThurVenue3 = test.thursday3[i].venue;
-                }
-            }
-            setThurName3(myThurName3)
-            setThurVenue3(myThurVenue3)
-        })
-
-        thursdayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.thursday4.length; i++){
-                if (i > 0){
-                    myThurName4 += '\n' + test.thursday4[i].name;
-                    myThurVenue4 += '\n' + test.thursday4[i].venue;
-                }else{
-                    myThurName4 = test.thursday4[i].name;
-                    myThurVenue4 = test.thursday4[i].venue;
-                }
-            }
-            setThurName4(myThurName4)
-            setThurVenue4(myThurVenue4)
-        })
-
-
-
-        friday = tResponse.data?.data.data?.courses.filter((course) => {
+        // Friday
+        friday = data.filter((course) => {
             return course.assignedDay === 'friday'
         })
 
-        var friday1 = [];  var friday2 = []; var friday3 = []; var friday4 = []
-
-        friday1 = friday.filter((fri)=> {
+        setFriday1(friday.filter((fri)=> {
             return fri.startHour === 9
-        })
+        }))
 
-        friday2 = friday.filter((fri)=> {
+        setFriday2(friday.filter((fri)=> {
             return fri.startHour === 11
-        })
+        }))
 
-        friday3 = friday.filter((fri)=> {
+        setFriday3(friday.filter((fri)=> {
             return fri.startHour === 13
-        })
+        }))
 
-        friday4 = monday.filter((fri)=> {
+        setFriday4(friday.filter((fri)=> {
             return fri.startHour === 15
+        }))
+
+        console.log(friday1, friday2, friday3, friday4)
+
+         // Saturday
+         saturday = data.filter((course) => {
+            return course.assignedDay === 'saturday'
         })
 
-        fridayAll = [{
-            friday1,
-            friday2,
-            friday3,
-            friday4
-        }]
+        if(saturday.length !== 0){
+            setSat(true)
+        }
 
-        console.log(fridayAll)
+        setSaturday1(saturday.filter((sat)=> {
+            return sat.startHour === 9
+        }))
 
-        var myFriName;
-        var myFriVenue;
+        setSaturday2(saturday.filter((sat)=> {
+            return sat.startHour === 11
+        }))
 
-        var myFriName2;
-        var myFriVenue2;
+        setSaturday3(saturday.filter((sat)=> {
+            return sat.startHour === 13
+        }))
 
-        var myFriName3;
-        var myFriVenue3;
-
-        var myFriName4;
-        var myFriVenue4;
-
-        fridayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.friday1.length; i++){
-                if (i > 0){
-                    myFriName += '\n' + test.friday1[i].name;
-                    myFriVenue += '\n' + test.friday1[i].venue;
-                }else{
-                    myFriName = test.friday1[i].name;
-                    myFriVenue = test.friday1[i].venue;
-                }
-            }
-            setFriName(myFriName)
-            setFriVenue(myFriVenue)
-        })
-
-        fridayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.friday2.length; i++){
-                if (i > 0){
-                    myFriName2 += '\n' + test.friday2[i].name;
-                    myFriVenue2 += '\n' + test.friday2[i].venue;
-                }else{
-                    myFriName2 = test.friday2[i].name;
-                    myFriVenue2 = test.friday2[i].venue;
-                }
-            }
-            setFriName2(myFriName2)
-            setFriVenue2(myFriVenue2)
-        })
-
-        fridayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.friday3.length; i++){
-                if (i > 0){
-                    myFriName3 += '\n' + test.friday3[i].name;
-                    myFriVenue3 += '\n' + test.friday3[i].venue;
-                }else{
-                    myFriName3 = test.friday3[i].name;
-                    myFriVenue3 = test.friday3[i].venue;
-                }
-            }
-            setFriName3(myFriName3)
-            setFriVenue3(myFriVenue3)
-        })
-
-        fridayAll.map((test)=> {
-            console.log(test)
-            for(let i=0; i<test.friday4.length; i++){
-                if (i > 0){
-                    myFriName4 += '\n' + test.friday4[i].name;
-                    myFriVenue4 += '\n' + test.friday4[i].venue;
-                }else{
-                    myFriName4 = test.friday4[i].name;
-                    myFriVenue4 = test.friday4[i].venue;
-                }
-            }
-            setFriName4(myFriName4)
-            setFriVenue4(myFriVenue4)
-        })
+        setSaturday4(saturday.filter((sat)=> {
+            return sat.startHour === 15
+        }))
     }
-
-    
-
-    // const test = () => {
-
-    //     var myString;
-    //     var myString2;
-
-    //     [{
-    //         monday: [
-    //             {name: 'a',value: 2},
-    //             {name: 'b', value: 3},
-    //             {name: 'hello', value: 4}
-    //         ],
-    //         monday2: [
-    //             {name: 'c'}
-    //         ]
-    //     }].map((test)=> {
-    //         console.log(test)
-    //         for(let i=0; i<test.monday.length; i++){
-    //             if (i > 0){
-    //                 myString += '\n' + test.monday[i].name;
-    //                 myString2 += '\n' + test.monday[i].value;
-    //             }else{
-    //                 myString = test.monday[i].name;
-    //                 myString2 = test.monday[i].value;
-    //             }
-    //         }
-    //         console.log(myString)
-    //         console.log(myString2)
-    //         setString(myString)
-    //         setString2(myString2)
-    //     })
-    // }
 
     return(
         <>  
@@ -972,12 +559,25 @@ const Dashboard = (props) => {
                 {timetables.data?.data.data.length > 0 ? <p>Timetables available</p> : <p>Timetables unavailable for now</p>}
                 <div className="timetables-container">
                 {
-                    timetables.data?.data.data.map((tt)=> {
+                    timetables.data?.data.data.map((tt, idx)=> {
                         return (
                             <div key={tt._id}>
-                                <p className="timetables" onClick={()=> setShowTimeDetails(!showTimeDetails)}>{tt.name}<img src={arrowD} alt="arrow"/></p>
-                                {showTimeDetails === true ? <div>
-                                    <em>{new Date(tt.updatedAt.substring(0,10)).toDateString()} - {tt.updatedAt.substring(11,16)}</em>
+                                <p className="timetables" onClick={toggleActive(idx)}>{tt.name}<img src={arrowD} alt="arrow"/></p>
+                                {active[idx] === true ? <div className="view-flex-container">
+                                    <em>Created - {new Date(tt.updatedAt.substring(0,10)).toDateString()} - {tt.updatedAt.substring(11,16)}</em>
+                                    <div className="view-flex">
+                                        <button onClick={()=>{
+                                            arrangeT(tt.courses)
+                                            setShowT(true)
+                                            setTimeTableDetails({
+                                                name: tt.name,
+                                                session: tt.session
+                                            })
+                                        }}>View more</button>
+                                        <button onClick={()=> {
+                                            deleteTimetable(tt._id)
+                                        }}>Delete</button>
+                                    </div>
                                 </div> : null}
                             </div>
                         );
@@ -1010,32 +610,17 @@ const Dashboard = (props) => {
                     <p>{cProgress === 5000 ? <span>{tDate} - {tTime}</span> : <span>Loading...</span>}</p>
                 </div>
 
-                <button onClick={()=> arrangeT()}>Print Timetable</button>
+                <button>Print Timetable</button>
                 <button onClick={()=> {
-                    arrangeT()
+                    arrangeT(tResponse.data?.data.data?.courses)
+                    setTimeTableDetails({
+                        name: tResponse.data?.data.data?.name,
+                        session: tResponse.data?.data.data?.session
+                    })
                     setShowT(true)
                 }
                 }>View More</button>
             </div> : null}
-
-            {/* <div className={updateOut === true ? "timetable-update updateOut" : "timetable-update"}>
-                <p className="mb-30">Timetable update</p>
-
-                <hr />
-
-                <p className="mb-20">Timetable available</p>
-
-                <em className="mb-20">Timetable available for 200 level management sciences</em>
-                <em className="mb-30">Timetable available for 300 level management sciences</em>
-
-                <div className="timetable-stats">
-                    <p>Created</p>
-                    <p>June 12th 2018 at 11:59PM</p>
-                </div>
-
-                <button className="mb-20">Submit</button>
-                <Link to="/app/timetable">View More</Link>
-            </div> */}
 
                 <div className={modalOut === true ? "overlay modOut" : "overlay"}
                     onClick={()=>{
@@ -1113,8 +698,8 @@ const Dashboard = (props) => {
                 </div>
 
                 <div className="tDetails">
-                    <p>Name : Timetable for 200L</p>
-                    <p>Academic Session : 2020/2021</p>
+                    <p>Name : {timetableDetails.name}</p>
+                    <p>Academic Session : {timetableDetails.session}</p>
                 </div>
 
                 
@@ -1130,41 +715,264 @@ const Dashboard = (props) => {
                             </tr>
                         </thead>
                         <tbody className="gfg">
-                                    <tr className="default default2">
-                                        <td>Monday</td>
-                                        <td>{monName} <br /> <em>{monVenue}</em></td>
-                                        <td>{monName2} <br /> <em>{monVenue2}</em></td>
-                                        <td>{monName3} <br /> <em>{monVenue3}</em></td>
-                                        <td>{monName4} <br /> <em>{monVenue4}</em></td>
-                                    </tr>
-                                    <tr className="default default2">
-                                        <td>Tuesday</td>
-                                        <td>{tueName} <br /> <em>{tueVenue}</em></td>
-                                        <td>{tueName2} <br /> <em>{tueVenue2}</em></td>
-                                        <td>{tueName3} <br /> <em>{tueVenue3}</em></td>
-                                        <td>{tueName4} <br /> <em>{tueVenue4}</em></td>
-                                    </tr>
-                                    <tr className="default default2">
-                                        <td>Wednesday</td>
-                                        <td>{wedName} <br /> <em>{wedVenue}</em></td>
-                                        <td>{wedName2} <br /> <em>{wedVenue2}</em></td>
-                                        <td>{wedName3} <br /> <em>{wedVenue3}</em></td>
-                                        <td>{wedName4} <br /> <em>{wedVenue4}</em></td>
-                                    </tr>
-                                    <tr className="default default2">
-                                        <td>Thursday</td>
-                                        <td>{thurName} <br /> <em>{thurVenue}</em></td>
-                                        <td>{thurName2} <br /> <em>{thurVenue2}</em></td>
-                                        <td>{thurName3} <br /> <em>{thurVenue3}</em></td>
-                                        <td>{thurName4} <br /> <em>{thurVenue4}</em></td>
-                                    </tr>
-                                    <tr className="default default2">
-                                        <td>Friday</td>
-                                        <td>{friName} <br /> <em>{friVenue}</em></td>
-                                        <td>{friName2} <br /> <em>{friVenue2}</em></td>
-                                        <td>{friName3} <br /> <em>{friVenue3}</em></td>
-                                        <td>{friName4} <br /> <em>{friVenue4}</em></td>
-                                    </tr>
+                                <tr className="default default2">
+                                    <td>Monday</td>
+                                    <td>
+                                        {monday1.map((mon)=>{
+                                            return(
+                                                <div key={mon.venue}>
+                                                    <span>{mon.code}</span><br />
+                                                    <em>({mon.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {monday2.map((mon)=>{
+                                            return(
+                                                <div key={mon.venue}>
+                                                    <span>{mon.code}</span><br />
+                                                    <em>({mon.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {monday3.map((mon)=>{
+                                            return(
+                                                <div key={mon.venue}>
+                                                    <span>{mon.code}</span><br />
+                                                    <em>({mon.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {monday4.map((mon)=>{
+                                            return(
+                                                <div key={mon.venue}>
+                                                    <span>{mon.code}</span><br />
+                                                    <em>({mon.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                </tr>
+                                <tr className="default default2">
+                                    <td>Tuesday</td>
+                                    <td>
+                                        {tuesday1.map((tue)=>{
+                                            return(
+                                                <div key={tue.venue}>
+                                                    <span>{tue.code}</span><br />
+                                                    <em>({tue.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {tuesday2.map((tue)=>{
+                                            return(
+                                                <div key={tue.venue}>
+                                                    <span>{tue.code}</span><br />
+                                                    <em>({tue.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {tuesday3.map((tue)=>{
+                                            return(
+                                                <div key={tue.venue}>
+                                                    <span>{tue.code}</span><br />
+                                                    <em>({tue.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {tuesday4.map((tue)=>{
+                                            return(
+                                                <div key={tue.venue}>
+                                                    <span>{tue.code}</span><br />
+                                                    <em>({tue.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                </tr>
+                                <tr className="default default2">
+                                    <td>Wednesday</td>
+                                    <td>
+                                        {wednesday1.map((wed)=>{
+                                            return(
+                                                <div key={wed.venue}>
+                                                    <span>{wed.code}</span><br />
+                                                    <em>({wed.venue})</em><br />
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {wednesday2.map((wed)=>{
+                                            return(
+                                                <div  key={wed.venue}>
+                                                    <span>{wed.code}</span><br />
+                                                    <em>({wed.venue})</em><br />
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {wednesday3.map((wed)=>{
+                                            return(
+                                                <div  key={wed.venue}>
+                                                    <span>{wed.code}</span><br />
+                                                    <em>({wed.venue})</em><br />
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {wednesday4.map((wed)=>{
+                                            return(
+                                                <div  key={wed.venue}>
+                                                    <span>{wed.code}</span><br />
+                                                    <em>({wed.venue})</em><br />
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                </tr>
+                                <tr className="default default2">
+                                    <td>Thursday</td>
+                                    <td>
+                                        {thursday1.map((thur)=>{
+                                            return(
+                                                <div key={thur.venue}>
+                                                    <span>{thur.code}</span><br />
+                                                    <em>({thur.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {thursday2.map((thur)=>{
+                                            return(
+                                                <div key={thur.venue}>
+                                                    <span>{thur.code}</span><br />
+                                                    <em>({thur.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {thursday3.map((thur)=>{
+                                            return(
+                                                <div key={thur.venue}>
+                                                    <span>{thur.code}</span><br />
+                                                    <em>({thur.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {thursday4.map((thur)=>{
+                                            return(
+                                                <div key={thur.venue}>
+                                                    <span>{thur.code}</span><br />
+                                                    <em>({thur.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                </tr>
+                                <tr className="default default2">
+                                    <td>Friday</td>
+                                    <td>
+                                        {friday1.map((fri)=>{
+                                            return(
+                                                <div key={fri.venue}>
+                                                    <span>{fri.code}</span><br />
+                                                    <em>({fri.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {friday2.map((fri)=>{
+                                            return(
+                                                <div key={fri.venue}>
+                                                    <span>{fri.code}</span><br />
+                                                    <em>({fri.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {friday3.map((fri)=>{
+                                            return(
+                                                <div key={fri.venue}>
+                                                    <span>{fri.code}</span><br />
+                                                    <em>({fri.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {friday4.map((fri)=>{
+                                            return(
+                                                <div key={fri.venue}>
+                                                    <span>{fri.code}</span><br />
+                                                    <em>({fri.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                </tr>
+                                { satCheck === true ? <tr className="default default2">
+                                    <td>Saturday</td>
+                                    <td>
+                                        {saturday1.map((sat)=>{
+                                            return(
+                                                <div key={sat.venue}>
+                                                    <span>{sat.code}</span><br />
+                                                    <em>({sat.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {saturday2.map((sat)=>{
+                                            return(
+                                                <div key={sat.venue}>
+                                                    <span>{sat.code}</span><br />
+                                                    <em>({sat.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {saturday3.map((sat)=>{
+                                            return(
+                                                <div key={sat.venue}>
+                                                    <span>{sat.code}</span><br />
+                                                    <em>({sat.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>
+                                        {saturday4.map((sat)=>{
+                                            return(
+                                                <div key={sat.venue}>
+                                                    <span>{sat.code}</span><br />
+                                                    <em>({sat.venue})</em>
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                </tr> : null}
                         </tbody>
                         </table>
                     </div>

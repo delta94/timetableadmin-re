@@ -762,6 +762,28 @@ progress::-webkit-progress-value {
     animation: animate-stripes 5s linear infinite;
 }
 
+.view-flex-container{
+  display: flex;
+  flex-direction: column;
+  height: 120px;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 300px;
+  margin: 30px auto;
+}
+
+.view-flex button{
+  padding: 10px;
+  border-radius: .25rem;
+  width: fit-content !important;
+}
+
 @-webkit-keyframes animate-stripes {
   100% { background-position: -100px 0px; }
 }
